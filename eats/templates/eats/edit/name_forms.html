@@ -1,0 +1,92 @@
+  <fieldset>
+    <div class="form-row">
+      {{ name_form.authority_record.label_tag }} {{ name_form.authority_record }} {{ name_form.authority_record.errors }}
+    </div>
+  </fieldset>
+  <fieldset>
+    <div class="form-row">
+      {{ name_form.name_type.label_tag }} {{ name_form.name_type }} {{ name_form.name_type.errors }}
+    </div>
+    <div class="form-row">
+      {{ name_form.language.label_tag }} {{ name_form.language }} {{ name_form.language.errors }}
+    </div>
+    <div class="form-row">
+      {{ name_form.script.label_tag }} {{ name_form.script }} {{ name_form.script.errors }}
+    </div>
+    <div class="form-row">
+      {{ name_form.display_form.label_tag }} {{ name_form.display_form }} {{ name_form.display_form.errors }}
+    </div>
+    <div class="form-row">
+      {{ name_form.is_preferred.label_tag }} {{ name_form.is_preferred }} {{ name_form.is_preferred.errors }}
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <h2>Name parts</h2>
+
+    <table>
+      <thead>
+        <tr>
+          {% if edit_form %}
+          <th>Delete?</th>
+          {% endif %}
+          <th>Type</th>
+          <th>Language</th>
+          <th>Script</th>
+          <th>Name part</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in name_part_forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          {% if edit_form %}
+          <td>{% if not form.is_new_form %}{{ form.delete }}{% endif %}{{ form.name }}</td>
+          {% endif %}
+          <td>{{ form.name_part_type }}</td>
+          <td>{{ form.language }}</td>
+          <td>{{ form.script }}</td>
+          <td>{{ form.name_part }}</td>
+          <td class="errors">{% if form.errors %}<ul>
+          {% for errors in form.errors.values %}
+          <li>{{ errors }}</li>
+          {% endfor %}
+          </ul>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </fieldset>
+
+  <fieldset>
+    <h2>Note</h2>
+
+    <table>
+      <thead>
+        <tr>
+          {% if edit_form %}
+          <th>Delete?</th>
+          {% endif %}
+          <th>Note</th>
+          <th>Is internal?</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in name_note_forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          {% if edit_form %}
+          <td>{% if not form.is_new_form %}{{ form.delete }}{% endif %}{{ form.name }}</td>
+          {% endif %}
+          <td>{{ form.note }}</td>
+          <td>{{ form.is_internal }}</td>
+          <td class="errors">{% if form.errors %}<ul>
+          {% for errors in form.errors.values %}
+          <li>{{ errors }}</li>
+          {% endfor %}
+          </ul>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </fieldset>

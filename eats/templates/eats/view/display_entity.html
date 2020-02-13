@@ -1,0 +1,131 @@
+{% extends "eats/view/base.html" %}
+{% load eats_user_customise %}
+{% load eats_display_shortcuts %}
+{% block eats_title %}{% eats_user_wrap entity get_single_name single_name %}{{ block.super }}Entity display: {{ single_name }}{% endblock eats_title %}
+{% block style %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}eats/css/screen/entity_record.css"/>
+{% endblock %}
+{% block eats_content %}
+<!-- Fulfil the requirements and recommendations for PSIs, from
+     Published Subjects: Introduction and Basic Requirements, revision 02,
+     http://www.oasis-open.org/committees/documents.php?wg_abbrev=tm-pububj
+     -->
+
+<!-- PSI Requirement 2 (PSID resolve to human-interpretable PSI),
+     Recommendation 1 (human-readable metadata) -->
+{% eats_user_wrap entity get_single_name single_name %}
+<h1>{{ single_name }}</h1>
+
+{% if user.is_authenticated %}
+<p><a href="{% url eats.views.edit.edit_model_object "entity",entity.id %}">Edit</a></p>
+{% endif %}
+
+<div id="eats-entity-record">
+  <h2>Authority records</h2>
+
+  <p class="info-note">Every piece of information about an entity is
+associated with an authority record.</p>
+
+  <ul>
+  {% for record in entity.get_authority_records %}
+    <li>{% eats_display_linked_authority_record record %}</li>
+  {% endfor %}
+  </ul>
+
+  {% if entity.get_dates %}
+  <h2>Dates</h2>
+
+  <p class="info-note">Dates expressing when this entity existed.</p>
+
+  <ul>
+  {% for date in entity.get_dates %}
+    <li>{{ date }} <span class="authority-record">[{% eats_display_linked_authority_record date.assertion.authority_record 'true' %}]</span></li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+
+  <h2>Types</h2>
+
+<ul>
+  {% for type in entity.get_entity_types %}
+  <li>{{ type }} <span class="authority-record">[{% eats_display_linked_authority_record type.assertion.get.authority_record 'true' %}]</span>{% eats_display_dates_for_property type %}</li>
+  {% endfor %}
+</ul>
+
+<h2>Names</h2>
+
+<ul>
+  {% for name in entity.get_names %}
+  <li>{{ name }} <span class="authority-record">[{% eats_display_linked_authority_record name.assertion.get.authority_record 'true' %}]</span><br/>
+  <span class="name-details">{{ name.name_type }}, {{ name.language.language_name }}, {{ name.script.script_name }}</span>{% eats_display_dates_for_property name %}</li>
+  {% endfor %}
+</ul>
+
+{% if entity.get_relationships or entity.get_reverse_relationships %}
+<h2>Relationships</h2>
+
+<ul>
+  {% for relationship in entity.get_relationships %}
+  <li>This entity {{ relationship.entity_relationship_type.entity_relationship_type }} <a href="../{{ relationship.related_entity.id }}/">{{ relationship.related_entity }}</a> <span class="authority-record">[{% eats_display_linked_authority_record relationship.assertion.get.authority_record 'true' %}]</span>{% eats_display_dates_for_property relationship %}</li>
+  {% endfor %}
+  {% for relationship in entity.get_reverse_relationships %}
+  <li><a href="../{{ relationship.assertion.get.entity.id }}/">{{ relationship.assertion.get.entity }}</a> {{ relationship.entity_relationship_type.entity_relationship_type }} this entity <span class="authority-record">[{% eats_display_linked_authority_record relationship.assertion.get.authority_record 'true' %} — associated with related entity]</span>{% eats_display_dates_for_property relationship %}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if entity.get_external_notes %}
+<h2>Notes</h2>
+
+<ul>
+  {% for note in entity.get_external_notes %}
+  <li>{{ note.note }} <span class="authority-record">[{% eats_display_linked_authority_record note.assertion.get.authority_record 'true' %}]</span>{% eats_display_dates_for_property note %}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+{% if entity.get_references %}
+<h2>References</h2>
+
+<ul>
+  {% for reference in entity.get_references %}
+  <li><a href="{{ reference.url }}">{{ reference.label }}</a> <span class="authority-record">[{% eats_display_linked_authority_record reference.assertion.get.authority_record 'true' %}]</span>{% eats_display_dates_for_property reference %}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+</div>
+
+<div id="eats-psi-footer">
+  <!-- PSI Requirement 1 (PSID is a URI), Requirement 3 (state unique
+       PSID URI), Recommendations 4 (Statement of Purpose) and 5
+       (Publisher Identification) -->
+  <p>This resource is intended to be used as a <a
+  href="http://www.oasis-open.org/committees/download.php/1217/wd-pubsubj-introduction-01.htm#s.2.4">Published
+  Subject Indicator</a>. The canonical <abbr title="Published Subject
+  Identifier">PSID</abbr> for this <abbr title="Published Subject
+  Indicator">PSI</abbr> is
+  <a href="http://{{ site.domain }}{{ entity.get_absolute_url }}">http://{{ site.domain }}{{ entity.get_absolute_url }}</a>. This
+  <abbr title="Published Subject Indicator">PSI</abbr> is published by
+  <a href="http://{{ site.domain }}">{{ site.name }}</a>, although the entity metadata may be drawn from other
+  sources, as identified.</p>
+
+  <!-- PSI Recommendation 2 (machine-processable metadata) -->
+  <p>This record's data is also available in the following
+  machine-processable forms:</p>
+
+  <ul>
+    <li><a href="eatsml/"><abbr title="Entity Authority Tool Set">EATS</abbr> XML</a></li>
+    {% if eac_authority_records %}
+    <li><abbr title="Encoded Archival Context - Corporate Bodies, Persons, and Families">EAC-CPF</abbr> (by authority record):
+    <ul>
+      {% for record in eac_authority_records %}
+      <li><a href="eac/{{ record.id }}/">{{ record.authority.get_short_name }} record {{ record.get_id }}</a></li>
+      {% endfor %}
+    </ul>
+    </li>
+    {% endif %}
+    <li><a href="xtm/"><abbr title="XML Topic Maps">XTM</abbr></a> (incomplete)</li>
+  </ul>
+</div>
+{% endblock eats_content %}

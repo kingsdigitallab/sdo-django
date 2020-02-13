@@ -1,0 +1,12 @@
+{% load eats_user_customise %}
+{% load eats_display_shortcuts %}
+
+<h3>Entity Types</h3>
+<ul>
+  {% for type in entity_types %}
+    <li>
+      <a href="{% url eats.views.main.entities_by_type type.pk %}">{{ type.entity_type }}</a>
+      <span> ({{ type.authority }})</span>
+    </li>
+  {% endfor %}
+</ul>

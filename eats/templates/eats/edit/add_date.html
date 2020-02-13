@@ -1,0 +1,14 @@
+{% extends "eats/edit/base_edit.html" %}
+{% block eats_title %}{{ block.super }}Add date{% endblock eats_title %}
+{% block eats_content %}
+<h1>Add date</h1>
+
+<form method="post" action="." name="add_date">
+
+  <p><input type="submit" name="submit" value="Add"/> <input type="submit" name="submit_continue" value="Add and continue editing"/></p>
+
+  {% include "eats/edit/date_form.html" %}
+
+  <p><input type="submit" name="submit" value="Add"/> <input type="submit" name="submit_continue" value="Add and continue editing"/></p>
+</form>
+{% endblock eats_content %}

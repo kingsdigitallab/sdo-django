@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<collection xmlns="http://hdl.handle.net/10063/234">
+  <authorities>
+    <authority xml:id="authority-1" is_default="true" default_calendar="calendar-1" default_date_period="date_period-1" default_date_type="date_type-1" default_language="language-1" default_script="script-1">
+      <name>New Zealand Electronic Text Centre</name>
+      <abbreviated_name>NZETC</abbreviated_name>
+      <base_id/>
+      <base_url/>
+    </authority>
+  </authorities>
+  <entity_types>
+    <entity_type xml:id="entity_type-1" authority="authority-1">place</entity_type>
+  </entity_types>
+  <name_types>
+    <name_type xml:id="name_type-1" authority="authority-1" is_default="true">regular</name_type>
+  </name_types>
+  <system_name_part_types>
+    <system_name_part_type xml:id="system_name_part_type-1">
+      <name>given</name>
+      <description/>
+    </system_name_part_type>
+    <system_name_part_type xml:id="system_name_part_type-2">
+      <name>family</name>
+      <description/>
+    </system_name_part_type>
+  </system_name_part_types>
+  <languages>
+    <language xml:id="language-1">
+      <name>English</name>
+      <code>en</code>
+      <system_name_part_types>
+        <system_name_part_type ref="system_name_part_type-1"/>
+        <system_name_part_type ref="system_name_part_type-2"/>
+      </system_name_part_types>
+    </language>
+  </languages>
+  <scripts>
+    <script xml:id="script-1">
+      <name>Latin</name>
+      <code>Latn</code>
+    </script>
+  </scripts>
+  <date_periods>
+    <date_period xml:id="date_period-1">lifespan</date_period>
+  </date_periods>
+  <date_types>
+    <date_type xml:id="date_type-1">exact</date_type>
+  </date_types>
+  <calendars>
+    <calendar xml:id="calendar-1">Gregorian</calendar>
+  </calendars>
+  <authority_records>
+    <authority_record xml:id="authority_record-1" authority="authority-1">
+      <authority_system_id is_complete="true">name-000001</authority_system_id>
+      <authority_system_url is_complete="true"/>
+    </authority_record>
+  </authority_records>
+  <entities>
+    <entity xml:id="entity-1">
+      <entity_type_assertions>
+        <entity_type_assertion xml:id="entity_type_assertion-2" authority_record="authority_record-1" is_preferred="true" entity_type="entity_type-1"/>
+      </entity_type_assertions>
+      <name_assertions>
+        <name_assertion authority_record="authority_record-1" is_preferred="false" xml:id="name_assertion-3" type="name_type-1" language="language-1" script="script-1">
+          <display_form>Saint Petersburg</display_form>
+          <assembled_form/>
+        </name_assertion>
+      </name_assertions>
+    </entity>
+  </entities>
+</collection>

@@ -1,0 +1,39 @@
+{% extends "eats/edit/base_name.html" %}
+{% block eats_title %}{{ block.super }}Edit name {{ name }}{% endblock eats_title %}
+{% block eats_content %}
+<h1>Edit name {{ name }}</h1>
+
+<form method="post" action="." name="edit_name">
+
+  <p><input type="submit" name="submit" value="Save"/> <input type="submit" name="submit_continue" value="Save and continue editing"/> <input class="delete-submit" type="submit" name="submit_delete" value="Delete"/></p>
+
+  {% include "eats/edit/name_forms.html" %}
+
+  <fieldset>
+    <h2>Dates</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for date in dates %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td><a href="../../date/{{ date.id }}/">{{ date }}</a></td>
+          <td>{{ date.note }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+          <td colspan="2"><a href="../../create_date/{{ assertion.id }}/">Add a date</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </fieldset>
+
+  <p><input type="submit" name="submit" value="Save"/> <input type="submit" name="submit_continue" value="Save and continue editing"/> <input class="delete-submit" type="submit" name="submit_delete" value="Delete"/></p>
+</form>
+
+{% endblock eats_content %}

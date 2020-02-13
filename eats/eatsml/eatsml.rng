@@ -1,0 +1,736 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grammar xmlns="http://relaxng.org/ns/structure/1.0" ns="http://hdl.handle.net/10063/234" datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes" xmlns:a="http://www.example.com/annotation">
+  <start>
+    <element name="collection">
+      <ref name="authorities"/>
+      <ref name="entity_types"/>
+      <ref name="entity_relationship_types"/>
+      <ref name="name_elements"/>
+      <ref name="date_elements"/>
+      <ref name="authority_records"/>
+      <ref name="entities"/>
+    </element>
+  </start>
+
+  <define name="authorities">
+    <optional>
+      <element name="authorities">
+        <oneOrMore>
+          <element name="authority">
+            <ref name="id_attribute"/>
+            <ref name="last_modified_attribute"/>
+	    <ref name="is_default_attribute"/>
+	    <optional>
+	      <ref name="user_default_attribute"/>
+	    </optional>
+	    <choice>
+	      <ref name="eats_id_attribute"/>
+	      <group>
+		<optional>
+		  <ref name="eats_id_attribute"/>
+		</optional>
+		<ref name="authority_defaults_attributes"/>
+	      </group>
+	    </choice>
+	    <element name="name">
+	      <text/>
+	    </element>
+            <element name="abbreviated_name">
+              <text/>
+            </element>
+            <element name="base_id">
+              <text/>
+            </element>
+            <element name="base_url">
+              <text/>
+            </element>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name="entity_types">
+    <optional>
+      <element name="entity_types">
+        <oneOrMore>
+          <element name="entity_type">
+            <ref name="id_attribute"/>
+            <attribute name="authority">
+              <data type="IDREF"/>
+            </attribute>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name="entity_relationship_types">
+    <optional>
+      <element name="entity_relationship_types">
+        <oneOrMore>
+          <element name="entity_relationship_type">
+            <ref name="id_attribute"/>
+            <attribute name="authority">
+              <data type="IDREF"/>
+            </attribute>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name="name_elements">
+    <optional>
+      <element name="name_types">
+        <oneOrMore>
+          <element name="name_type">
+            <ref name="id_attribute"/>
+            <attribute name="authority">
+              <data type="IDREF"/>
+            </attribute>
+            <ref name="last_modified_attribute"/>
+	    <optional>
+	      <ref name="eats_id_attribute"/>
+	    </optional>
+            <optional>
+              <ref name="user_default_attribute"/>
+            </optional>
+	    <ref name="is_default_attribute"/>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+    <optional>
+      <element name="system_name_part_types">
+        <oneOrMore>
+          <element name="system_name_part_type">
+            <ref name="id_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <element name="name">
+              <text/>
+            </element>
+            <element name="description">
+              <text/>
+            </element>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+    <optional>
+      <element name="name_part_types">
+        <oneOrMore>
+          <element name="name_part_type">
+            <ref name="id_attribute"/>
+            <attribute name="authority">
+              <data type="IDREF"/>
+            </attribute>
+            <attribute name="system_name_part_type">
+              <data type="IDREF"/>
+            </attribute>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <ref name="last_modified_attribute"/>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+    <optional>
+      <element name="languages">
+        <oneOrMore>
+          <element name="language">
+            <ref name="id_attribute"/>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <optional>
+              <ref name="user_default_attribute"/>
+            </optional>
+            <element name="name">
+              <text/>
+            </element>
+            <element name="code">
+              <text/>
+            </element>
+            <element name="system_name_part_types">
+              <oneOrMore>
+                <element name="system_name_part_type">
+                  <attribute name="ref">
+                    <data type="IDREF"/>
+                  </attribute>
+                </element>
+              </oneOrMore>
+            </element>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="scripts">
+        <oneOrMore>
+          <element name="script">
+            <ref name="id_attribute"/>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <optional>
+              <ref name="user_default_attribute"/>
+            </optional>
+            <element name="name">
+              <text/>
+            </element>
+            <element name="code">
+              <text/>
+            </element>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+    <optional>
+      <element name="name_relationship_types">
+        <oneOrMore>
+          <element name="name_relationship_type">
+            <ref name="id_attribute"/>
+            <attribute name="authority">
+              <data type="IDREF"/>
+            </attribute>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name="date_elements">
+    <optional>
+      <element name="date_periods">
+        <oneOrMore>
+          <element name="date_period">
+            <ref name="id_attribute"/>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <optional>
+              <ref name="user_default_attribute"/>
+            </optional>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="date_types">
+        <oneOrMore>
+          <element name="date_type">
+            <ref name="id_attribute"/>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <optional>
+              <ref name="user_default_attribute"/>
+            </optional>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+      <element name="calendars">
+        <oneOrMore>
+          <element name="calendar">
+            <ref name="id_attribute"/>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <optional>
+              <ref name="user_default_attribute"/>
+            </optional>
+            <text/>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name="authority_records">
+    <optional>
+      <element name="authority_records">
+        <oneOrMore>
+          <element name="authority_record">
+            <ref name="id_attribute"/>
+            <attribute name="authority">
+              <data type="IDREF"/>
+            </attribute>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <choice>
+              <attribute name="auto_create_data">
+                <a:documentation>This attribute indicates that the ID,
+                URL and is_complete values for this record should be
+                created by the EATS system
+                automatically.</a:documentation>
+                <value>true</value>
+              </attribute>
+              <group>
+                <element name="authority_system_id">
+                  <attribute name="is_complete">
+                    <data type="boolean"/>
+                  </attribute>
+                  <text/>
+                </element>
+                <element name="authority_system_url">
+                  <attribute name="is_complete">
+                    <data type="boolean"/>
+                  </attribute>
+                  <text/>
+                </element>
+              </group>
+            </choice>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name="entities">
+    <optional>
+      <element name="entities">
+        <oneOrMore>
+          <element name="entity">
+            <ref name="id_attribute"/>
+            <ref name="last_modified_attribute"/>
+            <optional>
+              <ref name="eats_id_attribute"/>
+            </optional>
+            <optional>
+              <attribute name="is_related">
+                <data type="boolean"/>
+              </attribute>
+            </optional>
+            <optional>
+              <ref name="existence_assertions"/>
+            </optional>
+            <optional>
+              <ref name="entity_type_assertions"/>
+            </optional>
+            <optional>
+              <ref name="entity_note_assertions"/>
+            </optional>
+            <optional>
+              <ref name="entity_reference_assertions"/>
+            </optional>
+            <optional>
+              <ref name="name_assertions"/>
+            </optional>
+            <optional>
+              <ref name="entity_relationship_assertions"/>
+            </optional>
+            <optional>
+              <ref name="name_relationship_assertions"/>
+            </optional>
+          </element>
+        </oneOrMore>
+      </element>
+    </optional>
+  </define>
+
+  <define name="existence_assertions">
+    <element name="existence_assertions">
+      <oneOrMore>
+        <element name="existence_assertion">
+          <ref name="id_attribute"/>
+          <ref name="assertion_attributes"/>
+          <optional>
+            <ref name="eats_id_attribute"/>
+          </optional>
+          <optional>
+            <ref name="dates"/>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="entity_type_assertions">
+    <element name="entity_type_assertions">
+      <oneOrMore>
+        <element name="entity_type_assertion">
+          <ref name="id_attribute"/>
+          <ref name="assertion_attributes"/>
+          <attribute name="entity_type">
+            <data type="IDREF"/>
+          </attribute>
+          <optional>
+            <ref name="eats_id_attribute"/>
+          </optional>
+          <optional>
+            <ref name="dates"/>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="entity_note_assertions">
+    <element name="entity_note_assertions">
+      <oneOrMore>
+        <element name="entity_note_assertion">
+          <ref name="id_attribute"/>
+          <ref name="assertion_attributes"/>
+          <optional>
+            <ref name="eats_id_attribute"/>
+          </optional>
+          <ref name="is_internal_attribute"/>
+          <element name="note">
+            <text/>
+          </element>
+          <optional>
+            <ref name="dates"/>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="entity_reference_assertions">
+    <element name="entity_reference_assertions">
+      <oneOrMore>
+        <element name="entity_reference_assertion">
+          <ref name="id_attribute"/>
+          <ref name="assertion_attributes"/>
+          <optional>
+            <ref name="eats_id_attribute"/>
+          </optional>
+          <element name="label">
+            <text/>
+          </element>
+          <element name="url">
+            <text/>
+          </element>
+          <optional>
+            <ref name="dates"/>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="name_assertions">
+    <element name="name_assertions">
+      <oneOrMore>
+        <element name="name_assertion">
+          <ref name="id_attribute"/>
+          <ref name="assertion_attributes"/>
+          <ref name="name_assertion_attributes"/>
+          <optional>
+            <ref name="eats_id_attribute"/>
+          </optional>
+          <optional>
+            <ref name="user_default_attribute"/>
+          </optional>
+          <element name="display_form">
+            <text/>
+          </element>
+          <optional>
+            <element name="name_parts">
+              <oneOrMore>
+                <element name="name_part">
+                  <ref name="name_assertion_part_attributes"/>
+                  <text/>
+                </element>
+              </oneOrMore>
+            </element>
+          </optional>
+          <optional>
+            <element name="assembled_form">
+              <text/>
+            </element>
+          </optional>
+          <optional>
+            <element name="variant_forms">
+              <zeroOrMore>
+                <element name="variant_form">
+                  <text/>
+                </element>
+              </zeroOrMore>
+            </element>
+          </optional>
+          <optional>
+            <ref name="dates"/>
+          </optional>
+          <optional>
+            <element name="name_notes">
+              <oneOrMore>
+                <element name="name_note">
+                  <ref name="is_internal_attribute"/>
+                  <text/>
+                </element>
+              </oneOrMore>
+            </element>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="entity_relationship_assertions">
+    <element name="entity_relationship_assertions">
+      <oneOrMore>
+        <element name="entity_relationship_assertion">
+          <ref name="id_attribute"/>
+          <ref name="assertion_attributes"/>
+          <ref name="type_attribute"/>
+          <attribute name="related_entity">
+            <data type="IDREF"/>
+          </attribute>
+          <optional>
+            <ref name="eats_id_attribute"/>
+          </optional>
+          <optional>
+            <ref name="dates"/>
+          </optional>
+          <optional>
+            <element name="entity_relationship_notes">
+              <oneOrMore>
+                <element name="entity_relationship_note">
+                  <ref name="is_internal_attribute"/>
+                  <text/>
+                </element>
+              </oneOrMore>
+            </element>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="name_relationship_assertions">
+    <element name="name_relationship_assertions">
+      <oneOrMore>
+        <element name="name_relationship_assertion">
+          <ref name="id_attribute"/>
+          <ref name="assertion_attributes"/>
+          <ref name="type_attribute"/>
+          <choice>
+            <attribute name="name">
+              <data type="IDREF"/>
+            </attribute>
+            <attribute name="eats_name"/>
+          </choice>
+          <attribute name="related_name">
+            <data type="IDREF"/>
+          </attribute>
+          <optional>
+            <ref name="eats_id_attribute"/>
+          </optional>
+          <optional>
+            <ref name="dates"/>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="dates">
+    <element name="dates">
+      <oneOrMore>
+        <element name="date">
+          <ref name="id_attribute"/>
+          <attribute name="period">
+            <data type="IDREF"/>
+          </attribute>
+          <optional>
+            <ref name="eats_id_attribute"/>
+          </optional>
+          <oneOrMore>
+            <element name="date_part">
+              <attribute name="type">
+                <choice>
+                  <value>start_terminus_post</value>
+                  <value>start_date</value>
+                  <value>start_terminus_ante</value>
+                  <value>point_terminus_post</value>
+                  <value>point_date</value>
+                  <value>point_terminus_ante</value>
+                  <value>end_terminus_post</value>
+                  <value>end_date</value>
+                  <value>end_terminus_ante</value>
+                </choice>
+              </attribute>
+              <attribute name="calendar">
+                <data type="IDREF"/>
+              </attribute>
+              <attribute name="date_type">
+                <data type="IDREF"/>
+              </attribute>
+              <attribute name="confident">
+                <data type="boolean"/>
+              </attribute>
+              <element name="raw">
+                <text/>
+              </element>
+              <element name="normalised">
+                <text/>
+              </element>
+            </element>
+          </oneOrMore>
+          <optional>
+            <element name="note">
+              <text/>
+            </element>
+          </optional>
+          <optional>
+            <element name="assembled_form">
+              <text/>
+            </element>
+          </optional>
+        </element>
+      </oneOrMore>
+    </element>
+  </define>
+
+  <define name="point_date_elements">
+    <element name="point_date">
+      <text/>
+    </element>
+    <element name="point_date_calendar">
+      <attribute name="calendar">
+        <data type="IDREF"/>
+      </attribute>
+    </element>
+    <element name="point_date_normalised">
+      <text/>
+    </element>
+    <element name="point_date_type">
+      <attribute name="date_type">
+        <data type="IDREF"/>
+      </attribute>
+    </element>
+    <element name="point_date_confident">
+      <data type="boolean"/>
+    </element>
+  </define>
+
+  <define name="id_attribute">
+    <attribute name="xml:id">
+      <data type="ID"/>
+    </attribute>
+  </define>
+
+  <define name="eats_id_attribute">
+    <a:documentation>The ID in the EATS system for the object that
+    corresponds to this one. When this attribute is present, an
+    importer must not create a new object, or change the data for this
+    object. Where the object is an entity, this does not mean that new
+    property assertions may not be created for it.</a:documentation>
+    <attribute name="eats_id"/>
+  </define>
+
+  <define name="user_default_attribute">
+    <attribute name="user_default">
+      <data type="boolean"/>
+    </attribute>
+  </define>
+
+  <define name="last_modified_attribute">
+    <optional>
+      <attribute name="last_modified">
+        <data type="dateTime"/>
+      </attribute>
+    </optional>
+  </define>
+
+  <define name="authority_defaults_attributes">
+    <attribute name="default_calendar">
+      <data type="IDREF"/>
+    </attribute>
+    <attribute name="default_date_period">
+      <data type="IDREF"/>
+    </attribute>
+    <attribute name="default_date_type">
+      <data type="IDREF"/>
+    </attribute>
+    <attribute name="default_language">
+      <data type="IDREF"/>
+    </attribute>
+    <attribute name="default_script">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+
+  <define name="is_default_attribute">
+    <attribute name="is_default">
+      <data type="boolean"/>
+    </attribute>
+  </define>
+
+  <define name="is_internal_attribute">
+    <attribute name="is_internal">
+      <data type="boolean"/>
+    </attribute>
+  </define>
+
+  <define name="assertion_attributes">
+    <attribute name="authority_record">
+      <data type="IDREF"/>
+    </attribute>
+    <attribute name="is_preferred">
+      <data type="boolean"/>
+    </attribute>
+  </define>
+
+  <define name="name_assertion_attributes">
+    <ref name="language_attribute"/>
+    <ref name="script_attribute"/>
+    <ref name="type_attribute"/>
+  </define>
+
+  <define name="name_assertion_part_attributes">
+    <optional>
+      <ref name="language_attribute"/>
+    </optional>
+    <optional>
+      <ref name="script_attribute"/>
+    </optional>
+    <ref name="type_attribute"/>
+  </define>
+
+  <define name="language_attribute">
+    <attribute name="language">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+
+  <define name="script_attribute">
+    <attribute name="script">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+
+  <define name="type_attribute">
+    <attribute name="type">
+      <data type="IDREF"/>
+    </attribute>
+  </define>
+
+</grammar>

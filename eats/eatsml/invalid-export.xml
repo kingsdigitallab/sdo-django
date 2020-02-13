@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='utf-8'?>
+<collection xmlns="http://hdl.handle.net/10063/234">
+  <authorities>
+    <authority xml:id="authority-1" eats_id="1" last_modified="2010-06-12T01:57:20.909876" is_default="true" default_calendar="calendar-1" default_date_period="date_period-1" default_date_type="date_type-1" default_language="language-1" default_script="script-1">
+      <name>Test</name>
+      <abbreviated_name></abbreviated_name>
+      <base_id></base_id>
+      <base_url>http://www.example.com/</base_url>
+    </authority>
+  </authorities>
+  <entity_types>
+    <entity_type xml:id="entity_type-1" eats_id="1" authority="authority-1" last_modified="2010-06-06T05:52:29.289919">place</entity_type>
+  </entity_types>
+  <name_types>
+    <name_type xml:id="name_type-1" eats_id="1" authority="authority-1" last_modified="2010-06-12T02:10:08.869099">regular</name_type>
+  </name_types>
+  <system_name_part_types>
+    <system_name_part_type xml:id="system_name_part_type-1" eats_id="1">
+      <name>given</name>
+      <description>Given names.</description>
+    </system_name_part_type>
+  </system_name_part_types>
+  <languages>
+    <language xml:id="language-1" eats_id="1" last_modified="2010-06-04T01:03:40.447459">
+      <name>English</name>
+      <code>en</code>
+      <system_name_part_types>
+        <system_name_part_type ref="system_name_part_type-1"/>
+      </system_name_part_types>
+    </language>
+  </languages>
+  <scripts>
+    <script xml:id="script-1" eats_id="1" last_modified="2010-06-04T01:03:48.592538">
+      <name>Latin</name>
+      <code>Latn</code>
+    </script>
+  </scripts>
+  <date_periods>
+    <date_period xml:id="date_period-1" eats_id="1" last_modified="2010-06-04T01:03:08.532626">lifespan</date_period>
+  </date_periods>
+  <date_types>
+    <date_type xml:id="date_type-1" eats_id="1" last_modified="2010-06-04T01:03:17.761371">exact</date_type>
+  </date_types>
+  <calendars>
+    <calendar xml:id="calendar-1" eats_id="1" last_modified="2010-06-04T01:02:57.340322">test</calendar>
+  </calendars>
+  <authority_records>
+    <authority_record xml:id="authority_record-1" eats_id="1" authority="authority-1" last_modified="2010-06-06T05:52:50.912460">
+      <authority_system_id is_complete="true">entity-000001</authority_system_id>
+      <authority_system_url is_complete="false">entity-000001.html</authority_system_url>
+    </authority_record>
+  </authority_records>
+  <entities>
+    <entity xml:id="entity-1" eats_id="1" last_modified="2010-06-06T05:52:50.915794">
+      <existence_assertions>
+        <existence_assertion xml:id="existence_assertion-1" eats_id="1" authority_record="authority_record-1" is_preferred="true">
+          <dates>
+            <date xml:id="date-1" eats_id="1" period="date_period-1">
+              <date_part type="start_date" calendar="calendar-1" date_type="date_type-1" confident="true">
+                <raw>789</raw>
+                <normalised>789</normalised>
+              </date_part>
+              <assembled_form>789 –</assembled_form>
+            </date>
+          </dates>
+        </existence_assertion>
+      </existence_assertions>
+      <entity_type_assertions>
+        <entity_type_assertion xml:id="entity_type_assertion-2" eats_id="2" authority_record="authority_record-1" is_preferred="true" entity_type="entity_type-1"/>
+      </entity_type_assertions>
+      <entity_note_assertions>
+        <entity_note_assertion xml:id="note_assertion-4" eats_id="4" authority_record="authority_record-1" is_preferred="false" is_internal="true">
+          <note>A nation in Europe. Lorem ipsum dolor sit, te metuum ubi quoque etsi bellum tono vindicatus est.</note>
+        </entity_note_assertion>
+        <entity_note_assertion xml:id="note_assertion-5" eats_id="5" authority_record="authority_record-1" is_preferred="false" is_internal="false">
+          <note>Western European nation, a member of the European Union. Capital city is Paris, home to the Sorbonne.</note>
+        </entity_note_assertion>
+      </entity_note_assertions>
+      <name_assertions>
+        <name_assertion authority_record="authority_record-1" is_preferred="true" xml:id="name_assertion-3" eats_id="3" type="name_type-1" language="language-1" script="script-1">
+          <display_form>France</display_form>
+          <assembled_form></assembled_form>
+        </name_assertion>
+      </name_assertions>
+    </entity>
+  </entities>
+</collection>

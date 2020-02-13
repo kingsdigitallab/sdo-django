@@ -1,0 +1,16 @@
+{% extends "eats/edit/base_edit.html" %}
+{% load eats_user_customise %}
+{% block eats_title %}{{ block.super }}date {{ date }}{% endblock eats_title %}
+{% block eats_content %}
+{% eats_user_wrap entity get_single_name single_name %}
+<h1>Edit date {{ date }} of {{ date.assertion.get_type }} ... for {{ single_name }}</h1>
+
+<form method="post" action="." name="edit_date">
+
+  <p><input type="submit" name="submit" value="Save"/> <input type="submit" name="submit_continue" value="Save and continue editing"/> <input class="delete-submit" type="submit" name="submit_delete" value="Delete"/></p>
+
+  {% include "eats/edit/date_form.html" %}
+
+  <p><input type="submit" name="submit" value="Save"/> <input type="submit" name="submit_continue" value="Save and continue editing"/> <input class="delete-submit" type="submit" name="submit_delete" value="Delete"/></p>
+</form>
+{% endblock eats_content %}

@@ -1,0 +1,71 @@
+{% extends "admin/base_site_report.html" %}
+
+{% block content %}
+<div id="content-main">
+  <h1>Repositories</h1>
+    
+  <div>
+    <table summary="Repositories" width="100%">
+      <tr>
+        <th>Name</th><th>Identifier</th><th>RISM Identifier</th></th><th>Description</th><th>Address</th>
+      </tr>
+       {% for repository in repository_list|dictsort:"name" %}
+       
+       
+       
+      <tr>
+        <td>{{ repository.name }}</td>
+       
+        {% if repository.identifier %}
+        <td>{{ repository.identifier }}</td>
+      {% else %}
+        <td><span class="errors">n/a</span></td>
+      {% endif %}
+   
+   {% if repository.rism_identifier %}
+        <td>{{ repository.rism_identifier }}</td>
+        {% else %}
+        <td><span class="errors">n/a</span></td>
+        {% endif %}
+   
+   {% if repository.description %}
+        <td>{{ repository.description }}</td>
+        {% else %}
+        <td><span class="errors">n/a</span></td>
+        {% endif %}
+   
+      
+      <td>
+      {% for address in repository.address_set.select_related %}
+
+        <strong>{{ address.get_address_type_display }}</strong><br/>
+        {{ address.address1 }} <br/> 
+        {{ address.address2 }} <br/>
+        {{ address.city }}<br/> 
+        {{ address.province }}<br/> 
+        {{ address.postal_code }}<br/>
+        <br/>
+        Note: {{ address.note }}<br/>
+        
+        <hr/>    
+        
+       
+      
+      {% endfor %}
+      </td>
+      
+      
+      
+      
+      
+   
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+</div>
+
+
+
+{% endblock %}

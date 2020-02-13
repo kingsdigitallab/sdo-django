@@ -1,0 +1,26 @@
+#eats-entity-record ul {
+    list-style-type: none;
+}
+
+#eats-entity-record li {
+    margin-bottom: 1em;
+}
+
+#eats-entity-record .info-note {
+}
+
+#eats-entity-record .authority-record {
+    font-size: smaller;
+}
+
+#eats-entity-record .authority-record :link,
+#eats-entity-record .authority-record :visited {
+    color: inherit;
+    background-color: inherit;
+    text-decoration: none;
+}
+
+#eats-entity-record .name-details {
+    padding-left: 3em;
+    font-size: smaller;
+}

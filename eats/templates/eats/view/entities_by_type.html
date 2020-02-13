@@ -1,0 +1,27 @@
+{% load eats_user_customise %}
+{% load eats_display_shortcuts %}
+
+<h3>{{ entity_type }} entities ({{ entity_count }})</h3>
+<ul>
+  {% for entity in entities %}
+   {% eats_user_wrap entity get_single_name single_name %}
+    <li>
+      {% for record in entity.get_authority_records %}
+        <span>{{ record.authority_system_id }}</span>
+      {% endfor %}
+      
+      <a href="{{ entity.get_absolute_url }}">View</a>
+      {% if user.is_authenticated %}
+        <a href="{% url eats.views.edit.edit_model_object "entity", entity.id %}">Edit</a>
+      {% endif %}
+      
+      <ul>
+        {% for name in entity.get_names %}
+        <li>
+          {{ name }}
+       </li>
+        {% endfor %}
+      </ul>
+    </li>
+  {% endfor %}
+</ul>

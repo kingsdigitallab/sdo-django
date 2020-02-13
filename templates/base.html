@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>{% block title %}{% endblock title %}</title>
+    {% block metadata %}{% endblock metadata %}
+    {% block style %}{% endblock style %}
+    {% block js %}{% endblock js %}
+  </head>
+  <body>
+    {% block header %}
+    <div id="header">
+      <div id="header-account">
+        <p>
+          {% if user.is_authenticated %}
+          <a href="{% url django.contrib.auth.views.logout_then_login %}">Logout</a>
+          {% else %}
+          <a href="{% url django.contrib.auth.views.login %}?next={{ request.get_full_path }}">Login</a>
+          {% endif %}
+        </p>
+      </div>
+    </div>
+    {% endblock header %}
+    <div id="content">
+      {% block content %}
+      {% endblock content %}
+    </div>
+  </body>
+</html>

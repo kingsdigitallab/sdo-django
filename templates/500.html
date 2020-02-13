@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}{{ block.super }}Server error{% endblock title %}
+{% block content %}
+<h1>Server error</h1>
+
+<p>Something is broken in or on the server.</p>
+
+{% if message %}
+<p>The following error message was retrieved from the wreckage:</p>
+<p style="margin: 0 6em 0 4em; padding: 2em; border: thin solid red; max-width: 35em;">{{ message }}</p>
+{% endif %}
+
+{% endblock content %}

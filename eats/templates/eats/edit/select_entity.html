@@ -1,0 +1,29 @@
+{% extends "eats/edit/base_edit.html" %}
+{% block eats_title %}{{ block.super }}Select an entity{% endblock eats_title %}
+{% block eats_style %}
+{# block.super #}
+<link rel="stylesheet" href="{{ MEDIA_URL }}eats/css/screen/search.css"
+      type="text/css" media="screen"/>
+{% endblock eats_style %}
+{% block eats_content %}
+<h1>Select an entity</h1>
+
+<form action="." method="post">
+  <table>
+    {{ form }}
+  </table>
+  <p><input type="submit"/></p>
+</form>
+
+{% if eats_search_results %}
+<h2>Search results</h2>
+    
+{% include "eats/view/search_results.html" %}
+
+{% else %}
+{% if form.is_bound %}
+<h2>No results</h2>
+{% endif %}
+{% endif %}
+
+{% endblock eats_content %}

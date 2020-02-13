@@ -1,0 +1,163 @@
+{% extends "eats/edit/base.html" %}
+{% block eats_title %}{{ block.super }}Find/create an authority record{% endblock eats_title %}
+{% block eats_style %}
+{{ block.super }}
+<link rel="stylesheet" type="text/css" media="screen"
+      href="{{ MEDIA_URL }}eats/css/screen/search.css"/>
+<style type="text/css">
+p { margin-bottom: 1em !important; }
+ul { list-style-type: disc !important;
+     margin-left: 2em; }
+</style>
+{% endblock eats_style %}
+{% block eats_js %}
+{{ block.super }}
+<script type="application/javascript">
+  var authority_data = {};
+  {% for authority in authorities %}
+  authority_data["{{ authority.id }}"] = {"base_id": "{{ authority.base_id }}", "base_url": "{{ authority.base_url }}"};
+  {% endfor %}
+  function display_authority_data (select_widget) {
+    var authority_id = select_widget.options[select_widget.selectedIndex].value;
+    var base_id = authority_data[authority_id]["base_id"];
+    var base_url = authority_data[authority_id]["base_url"];
+    var base_id_node = document.createTextNode(base_id);
+    var base_url_node = document.createTextNode(base_url);
+    var authority_base_id_node = window.document.getElementById("authority_base_id");
+    var authority_base_url_node = window.document.getElementById("authority_base_url");
+    if (authority_base_id_node.childNodes.length > 0) {
+      authority_base_id_node.removeChild(authority_base_id_node.childNodes[0]);
+    }
+    authority_base_id_node.appendChild(base_id_node);
+    if (authority_base_url_node.childNodes.length > 0) {
+      authority_base_url_node.removeChild(authority_base_url_node.childNodes[0]);
+    }
+    authority_base_url_node.appendChild(base_url_node);
+  }
+</script>
+{% endblock eats_js %}
+{% block eats_content %}
+<h1>Find/create an authority record</h1>
+
+<p>To manually select an authority record:</p>
+
+<ol>
+  <li><p>Use the search to check whether it already exists. You only need to specify one or other of ID and URL.</p></li>
+  <li><p>If a result is found, select it.</p></li>
+  <li><p>If no result is found, use the create form to create it.</p></li>
+  <li><p>If the form shows an authority's base ID or URL, then take this into account when entering the ID/URL. If the ID/URL you wish to enter includes the base form, do not include that base in the text box, and leave the "is complete ID/URL" checkbox empty. Otherwise, enter the full ID/URL and check the checkbox.</p></li>
+  <li><p>The Record ID and Record URL are two distinct pieces of information. If the URL includes the record's ID, then you must put enter that ID in both the Record ID and Record URL fields.</p>
+  <p>So, for example, if the record's ID is A090453b, and the URL for that record is http://www.example.org/biogs/A090453b.html, and the base URL of the authority is http://www.example.org/biogs/, then:</p>
+  <ul>
+    <li><p>Put A090453b in the Record ID field.</p></li>
+    <li><p>Put A090453b.html in the Record URL field.</p></li>
+  </ul></li>
+  <li><p>Press the Create button.</p></li>
+  <li><p>Select the created record.</p></li>
+</ol>
+
+<form action="." method="post">
+
+  <ul id="form-menu">
+    <li id="form-nav-search"{% if show_search %} class="selected"{% endif %}><a href="#" onclick="switch_class('selected', 'form-nav-search', 'form-nav-create'); switch_sections('search_form', 'create_form'); return false;">Search</a></li>
+    <li id="form-nav-create"{% if not show_search %} class="selected"{% endif %}><a href="#" onclick="switch_class('selected', 'form-nav-create', 'form-nav-search'); switch_sections('create_form', 'search_form'); return false;">Create</a></li>
+  </ul>
+  
+  <div id="form-contents">
+    <div id="search_form"{% if not show_search %} style="display: none;"{% endif %}>
+      <p>Search for an existing authority record.</p>
+
+      <table>
+        {{ search_form }}
+        <tr>
+          <td/>
+          <td><input type="submit" name="submit_search" value="Search"/></td>
+        </tr>
+      </table>
+    </div>
+
+    <div id="create_form"{% if show_search %} style="display: none;"{% endif %}>
+      <p>Create a new authority record.</p>
+
+      <table>
+        <tr>
+          <td/>
+          <td>{{ create_form.non_field_errors }}</td>
+        </tr>
+        <tr>
+          <th>{{ create_form.authority.label_tag }}</th>
+          <td>{{ create_form.authority.errors }} {{ create_form.authority }}</td>
+        </tr>
+        <tr>
+          <th>Authority's base ID</th>
+          <td id="authority_base_id"></td>
+        </tr>
+        <tr>
+          <th>{{ create_form.authority_system_id.label_tag }}</th>
+          <td>{{ create_form.authority_system_id.errors }} {{ create_form.authority_system_id }}</td>
+        </tr>
+        <tr>
+          <th>{{ create_form.is_complete_id.label_tag }}</th>
+          <td>{{ create_form.is_complete_id.errors }} {{ create_form.is_complete_id }}</td>
+        </tr>
+        <tr>
+          <th>Authority's base URL</th>
+          <td id="authority_base_url"></td>
+        </tr>
+        <tr>
+          <th>{{ create_form.authority_system_url.label_tag }}</th>
+          <td>{{ create_form.authority_system_url.errors }} {{ create_form.authority_system_url }}</td>
+        </tr>
+        <tr>
+          <th>{{ create_form.is_complete_url.label_tag }}</th>
+          <td>{{ create_form.is_complete_url.errors }} {{ create_form.is_complete_url }}</td>
+        </tr>
+        <tr>
+          <td/>
+          <td><input type="submit" name="submit_create" value="Create"/></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</form>
+
+{% if search_results %}
+<h2>Search results</h2>
+
+<table class="search-results-table">
+  <thead>
+    <tr>
+      <th scope="col">Record</th>
+      <th scope="col">Associated entities</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for object in search_results %}
+    <tr class="{% cycle row1,row2 %}">
+      <td>{{ object.get_id }}{% if object.get_id %}<br/>{% endif %}<a href="{{ object.get_url }}">{{ object.get_url }}</a><br/>
+        <button onclick="select_authority_record('{{ object.id }}', '{{ object }}');">Select</button></td>
+      <td><ul>{% for entity in object.get_entities %}<li><a href="{{ entity.get_absolute_url }}">{{ entity.get_single_name }}</a></li>{% endfor %}</ul></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% else %}
+{% comment %}
+is_bound is not a useful check, since the hidden fields linking to the
+widgets in the opening window will make search_form bound even when a
+creation is performed.
+{% endcomment %}
+{% if search_form.authority %}
+<h2>No results</h2>
+{% endif %}
+{% endif %}
+
+{% if create_result %}
+<h2>Created authority record</h2>
+
+<p>{{ create_result.get_id }}{% if create_result.get_id %}<br/>{% endif %}<a href="{{ create_result.get_url }}">{{ create_result.get_url }}</a><br/>
+<button onclick="select_authority_record('{{ create_result.id }}', '{{ create_result }}');">Select</button></p>
+{% endif %}
+
+{% endblock eats_content %}

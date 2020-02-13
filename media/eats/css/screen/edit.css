@@ -1,0 +1,133 @@
+body {
+       font-family: "Lucida Grande","DejaVu Sans","Bitstream Vera Sans",sans-serif;
+}
+
+fieldset {
+           margin: 0 0 1em 0;
+           padding: 0;
+           border: 1px solid #CCCCCC;
+}
+
+fieldset h2 {
+              color: white;
+              background-color: #7CA0C7;
+              margin: 0;
+              font-size: 1em;
+              padding: 0.3em;
+}
+
+fieldset table {
+                 border-right: 1px solid #EEEEEE;
+}
+
+table {
+        border-collapse: collapse;
+        border-color: #CCC;
+}
+
+tbody {
+        border-color: #CCC;
+}
+
+tr {
+     vertical-align: top;
+}
+
+th, td {
+         text-align: left;
+         border-bottom: 1px solid #EEEEEE;
+}
+
+td.multi-row { border-bottom: none; }
+
+tr.row1 {
+          background-color: #EDF3FE;
+          color: inherit;
+}
+
+tr.row2 {
+          background-color: white;
+          color: inherit;
+}
+
+tr.hide_button td {
+                    padding: 1em 0 0 1em;
+}
+
+th {
+     padding: 0.2em 0.5em;
+     color: #666666;
+     background: inherit;
+}
+
+th[colspan] { text-align: center; }
+
+td {
+     padding: 0.2em 0.5em;
+}
+
+td ul {
+        padding: 0;
+        margin: 0;
+}
+
+td li {
+        list-style-type: none;
+}
+
+ul + p {
+         margin-top: 0.5em ! important;
+}
+
+td p {
+       padding-top: 0;
+       margin-top: 0;
+}
+
+.toggle-button {
+                 background-color: silver;
+                 padding: 0.2em;
+                 text-decoration: none;
+                 color: black;
+}
+
+input, select, textarea {
+                          border: thin solid #CCCCCC;
+                          padding: 0.1em;
+}
+
+a {
+    text-decoration: none;
+    color: #5B80B2;
+    background: inherit;
+}
+
+:visited {
+           color: #5B80B2;
+           background: inherit;
+}
+
+.form-row {
+            padding: 0.2em;
+            clear: both;
+            border-bottom: 1px solid #EEEEEE;
+            overflow-x: hidden;
+            overflow-y: hidden;
+}
+
+.form-row label {
+                  float: left;
+                  display: block;
+                  width: 8em;
+                  padding: 0.2em;
+}
+
+.form-row input,
+.form-row select,
+.form-row textarea {
+                     vertical-align: middle;
+}
+
+select { max-width: 20em; }
+
+input.delete-submit { color: red; border: thin solid red; }

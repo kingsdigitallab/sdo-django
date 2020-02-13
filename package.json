@@ -1,0 +1,16 @@
+{
+  "name": "vagrant",
+  "version": "1.0.0",
+  "description": "This is the repository for the sdo project at [Kings Digital Lab](https://kdl.kcl.ac.uk)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^3.4.1",
+    "vue": "^2.6.11"
+  }
+}

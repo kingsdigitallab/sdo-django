@@ -1,0 +1,116 @@
+{% load eats_user_customise %}
+{% load eats_display_shortcuts %}
+
+<table id="eats-search-results-table">
+  <thead>
+    <tr>
+      <th scope="col">{{ user_preferences.authority.get_short_name|escape }} Key</th>
+      <th scope="col">Relationships</th>
+      <th scope="col">{{ user_preferences.authority.get_short_name|escape }} names</th>
+      <th scope="col">Other authorities' names</th>
+      <th scope="col">URLs</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for object in eats_search_results %}
+    {% eats_user_wrap object get_single_name single_name %}
+    {% eats_user_wrap object get_preferred_authority_records preferred_authority_records %}
+    {% eats_user_wrap object get_preferred_entity_types preferred_entity_types %}
+    {% eats_user_wrap object get_preferred_authority_names preferred_authority_names %}
+    {% eats_user_wrap object get_non_preferred_authority_names non_preferred_authority_names %}
+    <tr class="{% cycle 'row1' 'row2' %}">
+      <th rowspan="2" scope="row" class="eats-search-key-column">
+        <h3>{{ single_name }}</h3>
+        {% if preferred_entity_types %}
+	  <ul>
+          {% for type in preferred_entity_types %}
+	    <li><i>{{ type|escape }}</i></li>
+	  {% endfor %}
+          </ul>
+	{% endif %}
+        {% if object.get_dates %}
+	  <ul>
+          {% for date in object.get_dates %}
+	    <li>{{ date }}</li>
+	  {% endfor %}
+          </ul>
+	{% endif %}
+        <ul>
+	{% if preferred_authority_records %}
+          {% for record in preferred_authority_records %}
+            <li>{% eats_display_linked_authority_record_id record %}</li>
+          {% endfor %}
+        {% else %}
+	  <li>[No {{ user_preferences.authority|escape }} identifier]</li>
+	{% endif %}
+        </ul>
+        <div class="eats-search-links">
+          <p><a href="{{ object.get_absolute_url }}">View</a></p>
+          {% if user.is_authenticated %}
+            <p><a href="{% url eats.views.edit.edit_model_object "entity",object.id %}">Edit</a></p>
+          {% endif %}
+          {% if entity_selector %}
+            <button onclick="select_entity('{{ object.id }}', '{{ single_name }}');">Select</button>
+          {% endif %}
+        </div>
+      </th>
+      <td>
+        <ul>
+        {% for relationship in object.get_relationships %}
+          {% eats_user_wrap relationship.related_entity get_single_name rel_single_name %}
+          <li>This entity {{ relationship.entity_relationship_type.entity_relationship_type }} <a href="{{ relationship.related_entity.get_absolute_url }}">{{ rel_single_name }}</a></li>
+        {% endfor %}
+        {% for relationship in object.get_reverse_relationships %}
+          {% eats_user_wrap relationship.assertion.get.entity get_single_name rel_single_name %}
+          <li><a href="{{ relationship.assertion.get.entity.get_absolute_url }}">{{ rel_single_name }}</a> {{ relationship.entity_relationship_type.entity_relationship_type }} this entity</li>
+        {% endfor %}
+        </ul>
+      </td>
+      <td>
+      {% if preferred_authority_names %}
+        <ul>
+          {% for name in preferred_authority_names %}
+            <li>{% if name.is_preferred %}<span class="preferred">{{ name|escape }}</span>{% else %}{{ name|escape }}{% endif %}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      </td>
+      <td>
+      {% if non_preferred_authority_names %}
+        <ul>
+          {% for name in non_preferred_authority_names %}
+            <li>{% eats_display_name_authority name %}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      </td>
+      <td>
+        <ul>
+          {% for reference in object.get_references %}
+            <li><a href="{{ reference.url }}">{{ reference.label }}</a></li>
+          {% endfor %}
+          {% for record in object.get_authority_records %}
+            {% if record.get_url %}
+              <li><a href="{{ record.get_url }}">{{ record.authority.get_short_name }}{% if record.get_id %}: {{ record.get_id }}{% endif %}</a></li>
+            {% endif %}
+          {% endfor %}
+        </ul>
+      </td>
+    </tr>
+    <tr class="{% cycle 'row1' 'row2' %}">
+      <td colspan="4">
+        <ul>
+        {% for note in object.get_external_notes %}
+          <li class="eats-external-note">{{ note.note|escape }}</li>
+        {% endfor %}
+        {% if editable_authorities %}
+          {% for note in object.get_internal_notes %}
+            <li class="eats-internal-note">{{ note.note|escape }}</li>
+          {% endfor %}
+	{% endif %}
+        </ul>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

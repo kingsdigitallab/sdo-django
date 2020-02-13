@@ -1,0 +1,429 @@
+{% extends "eats/edit/base_edit.html" %}
+{% load eats_user_customise %}
+{% load eats_edit %}
+{% block eats_title %}{{ block.super }}entity {{ entity }}{% endblock eats_title %}
+{% block eats_js %}{{ block.super}}
+<script type="application/javascript" src="{{ MEDIA_URL }}eats/js/edit_entity.js"></script>
+{% endblock eats_js %}
+{% block eats_content %}
+{% eats_user_wrap entity get_single_name single_name %}
+<h1>Edit entity {{ single_name }}</h1>
+
+<p><a href="{{ entity.get_absolute_url }}">Record for display</a></p>
+
+<form method="post" action="." name="edit_entity">
+
+  <p><input type="submit" value="Save"/></p>
+
+  <fieldset id="existences">
+    <h2>Existences</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Delete?</th>
+          <th>Dates</th>
+          <th>Authority record</th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in existence_form_set.get_forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td>{% if not form.is_new_form %}{{ form.delete }}{% endif %}</td>
+          <td>{% if not form.is_new_form %}{% if form.assertion.dates.all %}<ul>
+          {% for date in form.assertion.dates.all %}<li><a href="../../date/{{ date.id }}/">{{ date }}</a></li>
+          {% endfor %}</ul>{% endif %}
+          <p><a href="../../create_date/{{ form.assertion.id }}/">Add a date</a></p>{% endif %}</td>
+          <td>{{ form.authority_record }}{{ form.authority_record_name }}{% if form.assertion.authority_record.authority_system_url %} (<a href="{{ form.assertion.authority_record.get_url }}">record</a>){% endif %}<br/>
+          <a href="#" onclick="open_authority_record_selector('{{ form.authority_record.auto_id }}', '{{ form.authority_record_name.auto_id }}'); return false;">Select authority record</a></td>
+          <td>{% ifequal form.assertion.authority_record.authority.authority "New Zealand Electronic Text Centre" %}<a href="http://localhost/cgi-bin/keyindex/key_search.cgi?key={{ form.assertion.authority_record.get_id }}">Find in TEI</a>{% endifequal %}</td>
+          <td class="errors">{% if form.errors %}<ul>
+          {% for errors in form.errors.values %}
+          <li>{{ errors }}</li>
+          {% endfor %}
+          </ul>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% if existence_non_editable %}
+      <tbody>
+        <tr class="hide_button">
+          <td colspan="4"><a id="toggle-existence-button" onclick="toggle_display('toggle-existence-block', 'toggle-existence-button');" class="toggle-button">Hide other authorities' data</a></td>
+        </tr>
+      </tbody>
+      <tbody id="toggle-existence-block">
+        {% for assertion in existence_non_editable %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td></td>
+          <td>{% if assertion.dates.all %}
+          <ul>{% for date in assertion.dates.all %}
+          <li>{{ date }}</li>
+          {% endfor %}</ul>{% endif %}</td>
+          <td>{{ assertion.authority_record|urlize }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>
+
+  </fieldset>
+
+  <fieldset id="entity_types">
+    <h2>Entity types</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Delete?</th>
+          <th>Entity type</th>
+          <th>Authority record</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in entity_type_form_set.get_forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td>{% if not form.is_new_form %}{{ form.delete }}{% endif %}</td>
+          <td>{{ form.entity_type }}</td>
+          <td>{{ form.authority_record }}</td>
+          <td class="errors">{% if form.errors %}<ul>
+          {% for errors in form.errors.values %}
+          <li>{{ errors }}</li>
+          {% endfor %}
+          </ul>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% if entity_type_non_editable %}
+      <tbody>
+        <tr class="hide_button">
+          <td colspan="4"><a id="toggle-entity-type-button" onclick="toggle_display('toggle-entity-type-block', 'toggle-entity-type-button');" class="toggle-button">Hide other authorities' data</a></td>
+        </tr>
+      </tbody>
+      <tbody id="toggle-entity-type-block">
+        {% for assertion in entity_type_non_editable %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td></td>
+          <td>{{ assertion.entity_type }}</td>
+          <td>{{ assertion.authority_record }}</td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>           
+
+  </fieldset>
+
+  <fieldset id="names">
+    <h2>Names and their relationships</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Language</th>
+          <th>Script</th>
+          <th>Dates</th>
+          <th>Notes</th>
+          <th>Preferred?</th>
+          <th>Authority record</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for assertion in name_editable %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td class="multi-row"><a href="../../name/{{ assertion.name.id }}/">{{ assertion.name }}</a></td>
+          <td class="multi-row">{{ assertion.name.name_type }}</td>
+          <td class="multi-row">{{ assertion.name.language }}</td>
+          <td class="multi-row">{{ assertion.name.script }}</td>
+          <td class="multi-row">{% if assertion.dates.all %}
+          <ul>{% for date in assertion.dates.all %}
+          <li>{{ date }}</li>
+          {% endfor %}</ul>{% endif %}</td>
+          <td class="multi-row">{% for note in assertion.name.notes.all %}<p>{{ note }}</p>{% endfor %}</td>
+          <td class="multi-row">{{ assertion.is_preferred|yesno:"Yes," }}</td>
+          <td class="multi-row">{{ assertion.authority_record }}</td>
+          <td class="multi-row"><a href="../../../search/?name={{ assertion.name|urlencode }}">Search</a></td>
+        </tr>
+        {% eats_get_keyed_forms name_relationship_form_set assertion.name.id forms %}
+        {% if forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td></td>
+          <td colspan="8">
+            <table>
+              <tbody>
+                {% for form in forms %}
+                <tr>
+                  <td class="multi-row">{{ form.name }}{% if not form.is_new_form %}{{ form.delete }}{% endif %}</td>
+                  <td class="multi-row">{{ form.name_relationship_type }}</td>
+                  <td class="multi-row">{{ form.related_name }}</td>
+                  <td class="multi-row">{{ form.authority_record }}</td>
+                  <td class="multi-row">{% if not form.is_new_form %}{% if form.assertion.dates.all %}<ul>
+                  {% for date in form.assertion.dates.all %}
+                  <li><a href="../../date/{{ date.id }}/">{{ date }}</a></li>
+                  {% endfor %}</ul>{% endif %}
+                  <p><a href="../../create_date/{{ form.assertion.id }}/">Add a date</a></p>{% endif %}</td>
+                  <td class="errors multi-row">{% if form.errors %}<ul>
+                    {% for errors in form.errors.values %}
+                    <li>{{ errors }}</li>
+                    {% endfor %}
+                  </ul>{% endif %}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+        <tr>
+          <td colspan="5"><strong><a href="../../create_name/{{ entity.id }}/">Create a new name</a></strong></td>
+        </tr>
+      </tbody>
+      {% if name_non_editable %}
+      <tbody>
+        <tr class="hide_button">
+          <td colspan="4"><a id="toggle-name-button" onclick="toggle_display('toggle-name-block', 'toggle-name-button');" class="toggle-button">Hide other authorities' data</a></td>
+        </tr>
+      </tbody>
+      <tbody id="toggle-name-block">
+        {% for assertion in name_non_editable %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td><a href="../../name/{{ assertion.name.id }}/">{{ assertion.name }}</a></td>
+          <td>{{ assertion.name.language }}</td>
+          <td>{{ assertion.name.script }}</td>
+          <td>{% if assertion.dates.all %}
+          <ul>{% for date in assertion.dates.all %}
+          <li>{{ date }}</li>
+          {% endfor %}</ul>{% endif %}</td>
+          <td>{% for note in assertion.name.namenote_set.all %}<p>{{ note }}</p>{% endfor %}</td>
+          <td>{{ assertion.is_preferred|yesno:"Yes," }}</td>
+          <td>{{ assertion.authority_record }}</td>
+          <td><a href="../../../search/?name={{ assertion.name|urlencode }}">Search</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>
+
+  </fieldset>
+
+  <fieldset id="entity_relationships">
+    <h2>Entity relationships</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Delete?</th>
+          <th>Relationship</th>
+          <th>Related entity</th>
+          <th>Dates</th>
+          <th>Authority record</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in entity_relationship_form_set.get_forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td class="multi-row">{% if not form.is_new_form %}{{ form.delete }}{% endif %}</td>
+          <td class="multi-row">{{ form.entity_relationship_type }}</td>
+          <td class="multi-row">{{ form.related_entity }}{{ form.related_entity_name }} {% if form.assertion.entity_relationship %}(<a href="../{{ form.assertion.entity_relationship.related_entity.id }}/">record</a>){% endif %}<br/>
+          <a href="#" onclick="open_entity_selector('{{ form.related_entity.auto_id }}', '{{ form.related_entity_name.auto_id }}'); return false;">Select entity</a></td>
+          <td class="multi-row">{% if not form.is_new_form %}{% if form.assertion.dates.all %}<ul>
+          {% for date in form.assertion.dates.all %}
+          <li><a href="../../date/{{ date.id }}/">{{ date }}</a></li>
+          {% endfor %}</ul>{% endif %}
+          <p><a href="../../create_date/{{ form.assertion.id }}/">Add a date</a></p>{% endif %}</td>
+          <td class="multi-row">{{ form.authority_record }}</td>
+          <td class="errors multi-row">{% if form.errors %}<ul>
+          {% for errors in form.errors.values %}
+          <li>{{ errors }}</li>
+          {% endfor %}
+          </ul>{% endif %}</td>
+        </tr>
+        {% eats_get_keyed_forms entity_relationship_form_set form.property.id forms %}
+        {% if forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td></td>
+          <td colspan="5">
+            <table>
+              <tbody>
+                {% for form in forms %}
+                <tr>
+                  <td>{{ form.entity_relationship }}{% if not form.is_new_form %}{{ form.delete }}{% endif %}</td>
+                  <td>{{ form.note }}</td>
+                  <td>{{ form.is_internal }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+      {% if entity_relationship_non_editable %}
+      <tbody>
+        <tr class="hide_button">
+          <td colspan="4"><a id="toggle-entity-relationship-button" onclick="toggle_display('toggle-entity-relationship-block', 'toggle-entity-relationship-button');" class="toggle-button">Hide other authorities' data</a></td>
+        </tr>
+      </tbody>
+      <tbody id="toggle-entity-relationship-block">
+        {% for assertion in entity_relationship_non_editable %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td></td>
+          <td>{{ assertion.entity_relationship.entity_relationship_type }}</td>
+          <td>{{ assertion.entity_relationship.related_entity }}</td>
+          <td>{% if assertion.dates.all %}
+          <ul>{% for date in assertion.dates.all %}
+          <li>{{ date }}</li>
+          {% endfor %}</ul>{% endif %}</td>
+          <td>{{ assertion.authority_record }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>
+  
+  </fieldset>
+
+  <fieldset id="reverse_entity_relationships">
+    <h2>Reverse entity relationships</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Entity</th>
+          <th>Relationship</th>
+          <th></th>
+          <th>Dates</th>
+          <th>Authority Record</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for relationship in reverse_entity_relationships %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td><a href="../{{ relationship.assertion.get.entity.id }}/">{{ relationship.assertion.get.entity }}</a></td>
+          <td>{{ relationship.entity_relationship_type.entity_relationship_type }}</td>
+          <td>this entity</td>
+          <td>{% if relationship.assertion.get.dates.all %}
+          <ul>{% for date in relationship.assertion.get.dates.all %}
+          <li>{{ date }}</li>
+          {% endfor %}</ul>{% endif %}</td>
+          <td>{{ relationship.assertion.get.authority_record }}</td>
+        </tr>
+        {% if relationship.notes.all %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td/>
+          <td colspan="4">{% for note in relationship.notes.all %}<p>{{ note }}</p>{% endfor %}</td>
+        </tr>
+        {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </fieldset>
+
+  <fieldset id="notes">  
+    <h2>Notes</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Delete?</th>
+          <th>Note</th>
+          <th>Internal?</th>
+          <th>Authority record</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in note_form_set.get_forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td>{% if not form.is_new_form %}{{ form.delete }}{% endif %}</td>
+          <td>{{ form.note }}</td>
+          <td>{{ form.is_internal }}</td>
+          <td>{{ form.authority_record }}</td>
+          <td class="errors">{% if form.errors %}<ul>
+          {% for errors in form.errors.values %}
+          <li>{{ errors }}</li>
+          {% endfor %}
+          </ul>{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% if note_non_editable %}
+      <tbody>
+        <tr class="hide_button">
+          <td colspan="5"><a id="toggle-note-button" onclick="toggle_display('toggle-note-block', 'toggle-note-button');" class="toggle-button">Hide other authorities' data</a></td>
+        </tr>
+      </tbody>
+      <tbody id="toggle-note-block">
+        {% for assertion in note_non_editable %}
+        <tr>
+          <td></td>
+          <td>{{ assertion.note }}</td>
+          <td></td>
+          <td>{{ assertion.authority_record }}</td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>
+  </fieldset>
+
+  <fieldset id="references">
+    <h2>References</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Delete?</th>
+          <th>Label</th>
+          <th>URL</th>
+          <th>Authority record</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for form in reference_form_set.get_forms %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td>{% if not form.is_new_form %}{{ form.delete }}{% endif %}</td>
+          <td>{{ form.label }}</td>
+          <td>{{ form.url }}</td>
+          <td>{{ form.authority_record }}</td>
+          <td class="errors">{% if form.errors %}{{ form.errors }}{% endif %}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% if reference_non_editable %}
+      <tbody>
+        <tr class="hide_button">
+          <td colspan="5"><a id="toggle-reference-button" onclick="toggle_display('toggle-reference-block', 'toggle-reference-button');" class="toggle-button">Hide other authorities' data</a></td>
+        </tr>
+      </tbody>
+      <tbody id="toggle-reference-block">
+        {% for assertion in reference_non_editable %}
+        <tr class="{% cycle 'row1' 'row2' %}">
+          <td></td>
+          <td>{{ assertion.reference.label }}</td>
+          <td>{{ assertion.reference.url|urlize }}</td>
+          <td>{{ assertion.authority_record }}</td>
+          <td></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+      {% endif %}
+    </table>
+  </fieldset>
+
+  <p><input type="submit" value="Save"/></p>
+
+    <p><input class="delete-submit" type="submit" name="submit_delete" value="Delete"/></p>
+</form>
+{% endblock eats_content %}

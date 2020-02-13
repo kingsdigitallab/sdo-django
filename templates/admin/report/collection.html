@@ -1,0 +1,59 @@
+{% extends "admin/base_site_report.html" %}
+
+{% block content %}
+<div id="content-main">
+  <h1>Collections</h1>
+    
+  <div >
+    <table summary="Collections" width="100%">
+      <tr>
+        <th>Name</th><th>Name Supplied?</th><th>Identifier</th><th>Description</th><th>Statement</th>
+      </tr>
+       {% for collection in collection_list|dictsort:"name" %}
+      <tr>
+        <td>{{ collection.name }} ({{collection.repository.name}})</td>
+        <td>
+          {% if collection.name_supplied %}
+          yes
+          {%else %}
+          no
+          {%endif%}
+      </td>
+      {% if collection.identifier %}
+        <td>{{ collection.identifier }}</td>
+      {% else %}
+        <td><span class="errors">n/a</span></td>
+      {% endif %}
+   
+   {% if collection.description %}
+        <td>{{ collection.description }}</td>
+        {% else %}
+        <td><span class="errors">n/a</span></td>
+        {% endif %}
+   
+      
+      <td>
+      {% for statement in collection.collectionstatements_set.select_related %}
+
+        <strong>{{ statement.get_statement_type_display }}</strong><br/>
+         {{ statement.description }}<br/>
+        
+        <hr/>    
+             
+      {% endfor %}
+      </td>
+      
+       
+      
+      
+   
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+
+</div>
+
+
+
+{% endblock %}

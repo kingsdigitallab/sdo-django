@@ -1,0 +1,247 @@
+---
+# Install and configure system packages
+# run as root
+- hosts: all
+  vars_files:
+    - vars.yml
+  gather_facts: false
+  become: yes
+
+  tasks:
+  - name: fix debian sudoers file
+    lineinfile:
+      path: /etc/sudoers
+      backup: yes
+      regexp: "^%sudo\\s+ALL=\\(ALL:ALL\\)\\s+ALL$"
+      line: "%sudo   ALL=(ALL) NOPASSWD: ALL"
+    tags:
+      - system
+
+  - name: apt | install https transport for apt
+    apt:
+      pkg: apt-transport-https
+      state: present
+      update_cache: yes
+    tags:
+      -system
+
+  - name: apt | install required system packages
+    apt:
+      pkg: '{{ system_packages }}'
+      state: present
+      update_cache: yes
+    tags:
+      - system
+
+  - name: Upgrade all packages to the latest version
+    apt:
+      upgrade: yes
+    tags:
+      - system
+
+  - name: zsh | clone oh-my-zsh repo
+    git: repo={{ zsh.oh_my_zsh }} dest={{ user_home }}/.oh-my-zsh
+    tags:
+      - system
+
+  - name: zsh | deploy .zshrc
+    copy: src={{ zsh.zshrc }} dest={{ user_home }}/.zshrc owner=vagrant
+    tags:
+      - system
+
+  - name: zsh | as default shell
+    user: name=vagrant shell=/bin/zsh
+    tags:
+      - system
+
+  - name: motd | clean existing
+    shell: 'rm -rf /etc/update-motd.d/*'
+    tags:
+      - system
+
+  - name: motd | deploy motd
+    copy: src={{ motd.file }} dest=/etc/update-motd.d/00-kdl owner=root
+    tags:
+      - system
+
+  - name: motd | permissions
+    shell: 'chmod +x /etc/update-motd.d/*'
+    tags:
+      - system
+
+  - name: python | install pipenv
+    pip:
+      name: pipenv
+      state: latest
+    tags:
+      - python
+
+  - name: npm | upgrade node.js and npm
+    npm:
+      name: "n"
+      global: true
+    tags:
+      - system
+      - javascript
+  - command: "n stable"
+    tags:
+      - system
+      - javascript
+
+# Python and Javascript Package Managers
+# run as vagrant
+
+- hosts: all
+  vars_files:
+    - vars.yml
+  gather_facts: false
+
+  tasks:
+  - name: python | lock pipfiles packages
+    # for second and later deployments (Pipfile already exists)
+    command: "pipenv lock"
+    args:
+      chdir: "{{ project_root }}"
+    tags:
+      - python
+
+  - name: python | install packages from Pipfiles
+    # for second and later deployments (Pipfile already exists)
+    command: "pipenv sync -d"
+    args:
+      chdir: "{{ project_root }}"
+    tags:
+      - python
+
+  - name: npm | create dummy package.json
+    # this creates a dummy package.json. Needed for all other npm commands.
+    command: "npm init -y"
+    args:
+      chdir: "{{ project_root }}"
+      creates: "{{ project_root }}/package.json"
+    tags:
+      - javascript
+
+  - name: npm | install original javascript packages from vars.yml
+    # only for the initial setup of the repository
+    # it will install packages selected during bare-bone bootstrap
+    command: "npm i {{ npm.original_packages }}"
+    args:
+      chdir: "{{ project_root }}"
+      creates: "{{ project_root }}/package-lock.json"
+    tags:
+      - javascript
+
+  - name: npm | install javascript packages from package.json
+    npm:
+      path: "{{ project_root }}"
+    tags:
+      - javascript
+
+# Database Management
+# run as root
+
+- hosts: all
+  vars_files:
+    - vars.yml
+  # gather_facts: false 
+
+  tasks:
+
+  - name: locale | setup gb locale
+    locale_gen:
+      name: "{{ mysql.locale }}"
+      state: present
+    become: yes
+    tags:
+      - db
+
+  - name: mysql | create user
+    become: yes
+    mysql_user:
+      name: '{{ mysql.user }}'
+      password: '{{ mysql.password }}'
+      priv: '*.*:ALL'
+      state: present
+    tags:
+      - db
+
+  - name: check if initial data file exists
+    stat:
+      path: "{{ project_root }}/.vagrant_provisioning/{{ mysql.initial_data_file }}"
+    register: idf
+    tags:
+      - db
+      - data
+
+  - name: mysql | create db
+    when: idf.stat.exists
+    mysql_db:
+      name: "{{ app.name }}"
+      encoding: "{{mysql.encoding}}"
+      login_user: '{{ mysql.user }}'
+      login_password: '{{ mysql.password }}'
+
+    tags:
+      - db
+
+  - name: mysql | load initial data file
+    mysql_db: login_user={{ mysql.user }} login_password={{ mysql.password }} state=import encoding={{mysql.encoding}}  name={{ app.name }} target={{ project_root }}/.vagrant_provisioning/{{ mysql.initial_data_file }}
+    ignore_errors: yes # initial file may not exist
+
+    tags:
+      - db
+      - data
+
+# Django
+# run as vagrant
+- hosts: all
+  vars_files:
+    - vars.yml
+  tasks:
+  - name: django | default local settings
+    copy: src=local_settings.py dest={{ project_root }}/{{ app.name }}/settings/local.py owner=vagrant
+    tags:
+      - django
+
+  - name: django | migrations
+    command: "pipenv run python manage.py makemigrations"
+    args:
+      chdir: "{{ project_root }}"
+  - command: "pipenv run python manage.py migrate"
+    args:
+      chdir: "{{ project_root }}"
+    tags:
+      - django
+
+  - name: django | add default (vagrant/vagrant) superuser
+    command: "pipenv run python manage.py shell -c \"from django.contrib.auth.models import User; User.objects.create_superuser('vagrant', 'vagrant@localhost', 'vagrant')\""
+    args:
+      chdir: "{{ project_root }}"
+    ignore_errors: yes # The user may already exist
+    tags:
+      - django
+
+# GIT config
+# run as vagrant
+- hosts: all
+  vars_files:
+      - vars.yml
+  tasks:
+  - name: git | init
+    command: "git init"
+    args:
+      chdir: "{{ project_root }}"
+    tags:
+      - git
+
+  - name: git | flake8 pre-commit hook
+    command: "pipenv run flake8 --install-hook=git"
+    ignore_errors: yes # Stop errors if it already exists
+    args:
+      chdir: "{{ project_root }}"
+  - command: "git config flake8.strict True"
+    args:
+      chdir: "{{ project_root }}"
+    tags:
+      - git

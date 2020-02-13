@@ -1,0 +1,10 @@
+<dates>
+  {% for doc in docs %}
+  <doc>
+    <id>{{ doc.id }}</id>
+    <start>{{ doc.coverage_start }}</start>
+    <end>{{ doc.coverage_end }}</end>
+  </doc>
+  {% endfor %}
+</dates>
+

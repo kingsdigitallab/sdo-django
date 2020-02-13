@@ -1,0 +1,21 @@
+{% extends "eats/edit/base.html" %}
+{% block js %}{{ block.super }}
+<script type="application/x-javascript">
+var name_type_options = {};
+{% for key, name_types in name_type_map.items %}name_type_options[{{ key }}] = [{% for name_type in name_types %}["{{ name_type|escape }}", {{ name_type.id }}]{% if not forloop.last %}, {% endif %}{% endfor %}];
+{% endfor %}
+
+var name_part_type_options = {};
+{% for key, name_part_types in name_part_type_map.items %}name_part_type_options[{{ key }}] = [{% for name_part_type in name_part_types %}["{{ name_part_type|escape }}", {{ name_part_type.id}}]{% if not forloop.last %}, {% endif %}{% endfor %}];
+{% endfor %}
+
+var name_type_map = {};
+var name_part_type_map = {};
+{% for authority_record in authority_records %}
+name_type_map[{{ authority_record.id }}] = name_type_options[{{ authority_record.authority_id }}];
+name_part_type_map[{{ authority_record.id }}] = name_part_type_options[{{ authority_record.authority_id }}];
+{% endfor %}
+
+var name_part_type_select_ids = [{% for id in name_part_type_select_ids %}"{{ id }}"{% if not forloop.last %}, {% endif %}{% endfor %}];
+</script>
+{% endblock js %}

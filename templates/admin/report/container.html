@@ -1,0 +1,217 @@
+{% extends "admin/base_site_report.html" %}
+
+{% block content %}
+<div id="content-main">
+  <h1>{{ page_title }} Containers</h1>
+  
+  <div>
+    Below find information about all containers that have been catalogued on this site, along with information about documents contained in each container.
+    Empty fields are indicated with messages highlighted in yellow.
+  </div>
+    
+  <div>
+       
+       {% if container_list %}
+      <ul>
+      {% regroup container_list by collection.name as collection_list %}
+      
+      {% for collection in collection_list %}
+      
+        <h2>{{ collection.grouper }}</h2>
+        
+      
+      {% for item in collection.list|dictsort:"box" %}
+                
+       
+        <h3>Collection Statements</h3>
+        
+        {% if item.collection.collectionstatements_set.select_related %}
+        
+        <hr/>
+        <table summary="Statements" width="90%">
+          
+          {% for statement in item.collection.collectionstatements_set.select_related %}
+          <tr>
+            <td>
+              {{ statement.get_statement_type_display }} : {{ statement.description }}
+            </td>
+          </tr>
+          
+          
+          {% endfor %}
+        </table>
+        <hr/>
+        {% else %}
+        <table width="50%">
+          <tr><td> <span class="errornote">There are no statements associated with this collection.</span></td></tr>
+        </table>
+        
+        {% endif %}
+       
+       
+        <h3> {{item.collection.abbreviation }}  Box: {{ item.box }}  Folder: {{item.folder }} </h3>
+        
+                 
+        
+        <h4>Container Statements</h4>
+        {% if item.containerstatements_set.select_related %}
+        
+        <hr/>
+        <table summary="Statements" width="90%">
+                        
+        {% for statement in item.containerstatements_set.select_related %}
+        <tr>
+          <td>
+        {{ statement.get_statement_type_display }} : {{ statement.description }}
+          </td>
+          </tr>
+
+        
+        {% endfor %}
+        </table>
+        <hr/>
+        {% else %}
+        <table width="50%">
+          <tr><td> <span class="errornote">There are no statements associated with this container.</span></td></tr>
+          </table>
+       
+        {% endif %}
+        
+        <h4>Container Description</h4>
+        {% if item.description %}
+        
+        {{ item.description }}
+        
+        {%else%}
+        <table width="50%">
+          <tr><td>
+            <span class="errornote">This container has no description.</span>
+          </td>
+          </tr>
+        </table>
+        {% endif %}
+        
+        
+        <h4>Documents</h4>
+        
+        {% if item.document_set.select_related %}
+        <table summary="Documents" width="90%">
+          <tr>
+            <th>Identifiers</th><th>Document ID Supplied</th><th>Series</th><th>Dates</th><th>Document Description</th>
+          </tr>
+          
+          {% for document in item.document_set.select_related %}
+          
+          <tr>
+            <td>
+              {%if item.collection.repository.identifier %}
+              
+              {{item.collection.repository.identifier}} 
+              {%endif%}
+              {%if item.collection.repository.rism_identifier %}
+              
+              {{item.collection.repository.rism_identifier}} 
+              {%endif%}
+              
+              {%if item.collection.identifier %}
+              
+               {{ item.collection.identifier }}
+              {%endif %}
+              {% if item.box %} 
+              
+              {{ item.box }}               
+              {% endif %}  
+              {% if item.folder %}  {{ item.folder }} {% endif %}
+              {% if document.id_supplied %} [{{ document.unitid }}]   {% else %} {{ document.unitid }}  {% endif %}
+              
+            </td>
+            
+             <td>
+            {% if document.id_supplied %}
+                yes
+            {%else %}
+                no
+            {%endif%}
+            {% if item.series %}
+            </td>
+            <td>{{ item.series }}</td>
+            {% else %}
+            <td><span class="errors">n/a</span></td>
+            {% endif %}
+            </td>
+            <td>
+            Start: {{ document.coverage_start}} <br/>
+            
+            {% if document.coverage_end %}
+            End:  {{ document.coverage_end}}
+            {% endif %}
+              
+             </td>
+            
+            
+            {% if document.description %}
+            <td>{{document.description}}</td>
+           {% else %}
+            <td><span class="errors">n/a</span></td>
+           {% endif %}
+           
+            </tr>
+          <tr>
+            <td colspan="5">
+              <h5>Document Statements</h5>
+              
+              {% if document.documentstatements_set.select_related %}
+              
+              
+              {% for statement in document.documentstatements_set.select_related %}
+              
+              {{ statement.get_statement_type_display }} : {{ statement.description }}<br/>
+              
+              <hr/>    
+              
+              {% endfor %}
+              
+              {% else %}
+              
+              <span class="errormessage">There are no statements associated with this document.</span>
+              
+              {% endif %}
+              
+            </td>
+          
+          {% endfor %}
+          
+          
+          
+        </table>
+        {% else %}
+        <table width="50%">
+          <tr><td>
+        <span class="errormessage">There are no documents associated with this container.</span>
+          </td>
+          </tr>
+          </table>
+        {% endif %}
+        <br/><br/>
+        
+        {% endfor %}
+        
+        <br/><br/>
+        
+       {% endfor %}
+       
+       {%else %}
+       
+        <table width="50%">
+          <tr><td> <span class="errornote">No {{page_title}} materials have been catalogued on this site.</span></td></tr>
+        </table>       
+       {% endif %}
+      
+        
+  </div>
+
+</div>
+
+
+
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends "eats/base.html" %}
+{% block eats_style %}{{ block.super }}
+<link rel="stylesheet" href="{{ MEDIA_URL }}eats/css/screen/edit.css"
+      type="text/css" media="screen"/>
+{% endblock eats_style %}
+{% block eats_js %}{{ block.super }}
+<script type="application/javascript"
+	src="{{ MEDIA_URL }}eats/js/edit.js"></script>
+{% endblock eats_js %}

@@ -1,0 +1,24 @@
+<doc>
+	<id>{{ doc.id }}</id>
+	<start>{{ doc.coverage_start }}</start>
+	<end>{{ doc.coverage_end }}</end>
+	<description>{{ doc.description }}</description>
+	<statements>
+		{% for st in doc.document_statements.all %}
+		<statement type="{{ st.get_statement_type_display }}">
+			{{ st.description }}
+		  </statement>
+		{% endfor %}
+	</statements>
+	<container>
+		<name>{{ doc.container }}</name>
+		<description>{{ doc.container.description }}</description>
+		<statements>
+			{% for st in doc.container.container_statements.all %}
+			<statement type="{{ st.get_statement_type_display }}">
+				{{ st.description }}
+          </statement>
+			{% endfor %}
+		</statements>
+	</container>
+</doc>

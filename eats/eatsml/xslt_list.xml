@@ -1,0 +1,4 @@
+<xslt_list>
+  <xslt>edit/export/xslt/remove-redundant-eatsml-infrastructure-data/</xslt>
+  <xslt>edit/export/xslt/remove-redundant-eatsml-system-name-parts/</xslt>
+</xslt_list>

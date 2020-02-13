@@ -1,0 +1,217 @@
+{{ form.non_field_errors }}
+
+  <fieldset>
+    <div class="form-row">
+      {{ form.date_period.label_tag }} {{ form.date_period }} {{ form.date_period.errors }}
+    </div>
+  </fieldset>
+
+  <fieldset>
+    <h2>Start date</h2>
+
+    <table>
+      <tr>
+        <th rowspan="2">Point</th>
+        <th colspan="2">Bounded</th>
+      </tr>
+      <tr>
+        <th>Terminus post quem</th>
+        <th>Terminus ante quem</th>
+      </tr>
+      <tr>
+        <td>
+          <div class="form-row">
+            {{ form.start_date_calendar.label_tag }} {{ form.start_date_calendar }} {{ form.start_date_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_date.label_tag }} {{ form.start_date }} {{ form.start_date.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_date_normalised.label_tag }} {{ form.start_date_normalised }} {{ form.start_date_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_date_type.label_tag }} {{ form.start_date_type }} {{ form.start_date_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_date_confident.label_tag }} {{ form.start_date_confident }} {{ form.start_date_confident.errors }}
+          </div>
+        </td>
+        <td>
+          <div class="form-row">
+            {{ form.start_terminus_post_calendar.label_tag }} {{ form.start_terminus_post_calendar }} {{ form.start_terminus_post_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_terminus_post.label_tag }} {{ form.start_terminus_post }} {{ form.start_terminus_post.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_terminus_post_normalised.label_tag }} {{ form.start_terminus_post_normalised }} {{ form.start_terminus_post_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_terminus_post_type.label_tag }} {{ form.start_terminus_post_type }} {{ form.start_terminus_post_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_terminus_post_confident.label_tag }} {{ form.start_terminus_post_confident }} {{ form.start_terminus_post_confident.errors }}
+          </div>
+        </td>
+        <td>
+          <div class="form-row">
+            {{ form.start_terminus_ante_calendar.label_tag }} {{ form.start_terminus_ante_calendar }} {{ form.start_terminus_ante_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_terminus_ante.label_tag }} {{ form.start_terminus_ante }} {{ form.start_terminus_ante.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_terminus_ante_normalised.label_tag }} {{ form.start_terminus_ante_normalised }} {{ form.start_terminus_ante_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_terminus_ante_type.label_tag }} {{ form.start_terminus_ante_type }} {{ form.start_terminus_ante_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.start_terminus_ante_confident.label_tag }} {{ form.start_terminus_ante_confident }} {{ form.start_terminus_ante_confident.errors }}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <fieldset>
+    <h2>End date</h2>
+
+    <table>
+      <tr>
+        <th rowspan="2">Point</th>
+        <th colspan="2">Bounded</th>
+      </tr>
+      <tr>
+        <th>Terminus post quem</th>
+        <th>Terminus ante quem</th>
+      </tr>
+      <tr>
+        <td>
+          <div class="form-row">
+            {{ form.end_date_calendar.label_tag }} {{ form.end_date_calendar }} {{ form.end_date_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_date.label_tag }} {{ form.end_date }} {{ form.end_date.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_date_normalised.label_tag }} {{ form.end_date_normalised }} {{ form.end_date_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_date_type.label_tag }} {{ form.end_date_type }} {{ form.end_date_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_date_confident.label_tag }} {{ form.end_date_confident }} {{ form.end_date_confident.errors }}
+          </div>
+        </td>
+        <td>
+          <div class="form-row">
+            {{ form.end_terminus_post_calendar.label_tag }} {{ form.end_terminus_post_calendar }} {{ form.end_terminus_post_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_terminus_post.label_tag }} {{ form.end_terminus_post }} {{ form.end_terminus_post.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_terminus_post_normalised.label_tag }} {{ form.end_terminus_post_normalised }} {{ form.end_terminus_post_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_terminus_post_type.label_tag }} {{ form.end_terminus_post_type }} {{ form.end_terminus_post_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_terminus_post_confident.label_tag }} {{ form.end_terminus_post_confident }} {{ form.end_terminus_post_confident.errors }}
+          </div>
+        </td>
+        <td>
+          <div class="form-row">
+            {{ form.end_terminus_ante_calendar.label_tag }} {{ form.end_terminus_ante_calendar }} {{ form.end_terminus_ante_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_terminus_ante.label_tag }} {{ form.end_terminus_ante }} {{ form.end_terminus_ante.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_terminus_ante_normalised.label_tag }} {{ form.end_terminus_ante_normalised }} {{ form.end_terminus_ante_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_terminus_ante_type.label_tag }} {{ form.end_terminus_ante_type }} {{ form.end_terminus_ante_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.end_terminus_ante_confident.label_tag }} {{ form.end_terminus_ante_confident }} {{ form.end_terminus_ante_confident.errors }}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <fieldset>
+    <h2>Date</h2>
+
+    <table>
+      <tr>
+        <th rowspan="2">Point</th>
+        <th colspan="2">Bounded</th>
+      </tr>
+      <tr>
+        <th>Terminus post quem</th>
+        <th>Terminus ante quem</th>
+      </tr>
+      <tr>
+        <td>
+          <div class="form-row">
+            {{ form.point_date_calendar.label_tag }} {{ form.point_date_calendar }} {{ form.point_date_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_date.label_tag }} {{ form.point_date }} {{ form.point_date.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_date_normalised.label_tag }} {{ form.point_date_normalised }} {{ form.point_date_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_date_type.label_tag }} {{ form.point_date_type }} {{ form.point_date_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_date_confident.label_tag }} {{ form.point_date_confident }} {{ form.point_date_confident.errors }}
+          </div>
+        </td>
+        <td>
+          <div class="form-row">
+            {{ form.point_terminus_post_calendar.label_tag }} {{ form.point_terminus_post_calendar }} {{ form.point_terminus_post_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_terminus_post.label_tag }} {{ form.point_terminus_post }} {{ form.point_terminus_post.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_terminus_post_normalised.label_tag }} {{ form.point_terminus_post_normalised }} {{ form.point_terminus_post_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_terminus_post_type.label_tag }} {{ form.point_terminus_post_type }} {{ form.point_terminus_post_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_terminus_post_confident.label_tag }} {{ form.point_terminus_post_confident }} {{ form.point_terminus_post_confident.errors }}
+          </div>
+        </td>
+        <td>
+          <div class="form-row">
+            {{ form.point_terminus_ante_calendar.label_tag }} {{ form.point_terminus_ante_calendar }} {{ form.point_terminus_ante_calendar.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_terminus_ante.label_tag }} {{ form.point_terminus_ante }} {{ form.point_terminus_ante.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_terminus_ante_normalised.label_tag }} {{ form.point_terminus_ante_normalised }} {{ form.point_terminus_ante_normalised.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_terminus_ante_type.label_tag }} {{ form.point_terminus_ante_type }} {{ form.point_terminus_ante_type.errors }}
+          </div>
+          <div class="form-row">
+            {{ form.point_terminus_ante_confident.label_tag }} {{ form.point_terminus_ante_confident }} {{ form.point_terminus_ante_confident.errors }}
+          </div>
+        </td>
+      </tr>
+    </table>
+  </fieldset>
+
+  <fieldset>
+    <div class="form-row">
+      {{ form.note.label_tag }} {{ form.note }} {{ form.note.errors }}
+    </div>
+  </fieldset>

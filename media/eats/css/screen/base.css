@@ -1,0 +1,22 @@
+/* The simple search section on each page. */
+#eats-search  {
+    float: right;
+    padding: 0 0 2em 2em;
+}
+
+div#eats-psi-footer {
+    margin: 3em 1em 1em 2em;
+    padding: 1em 2em;
+    border: thin dotted;
+    color: black;
+    background: #E2FDF8;
+}
+
+div#eats-psi-footer ul {
+    list-style-type: square;
+}
+
+div#eats-psi-footer li {
+    margin: 0 0 0 1em;
+    padding: 0;
+}
