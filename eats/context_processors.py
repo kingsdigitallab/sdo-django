@@ -17,7 +17,7 @@ def user_permissions (request):
     editable_authorities = Authority.objects.none()
     if user.is_authenticated():
         try:
-            profile = user.get_profile()
+            profile = UserProfile.objects.get(user=user)
             editable_authorities = profile.editable_authorities.all()
         except UserProfile.DoesNotExist:
             pass

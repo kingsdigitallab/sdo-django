@@ -5,7 +5,7 @@
 <ul>
   {% for type in entity_types %}
     <li>
-      <a href="{% url eats.views.main.entities_by_type type.pk %}">{{ type.entity_type }}</a>
+      <a href="{% url 'entities_by_type' type.pk %}">{{ type.entity_type }}</a>
       <span> ({{ type.authority }})</span>
     </li>
   {% endfor %}

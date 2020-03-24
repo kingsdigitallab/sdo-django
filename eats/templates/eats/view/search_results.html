@@ -47,7 +47,7 @@
         <div class="eats-search-links">
           <p><a href="{{ object.get_absolute_url }}">View</a></p>
           {% if user.is_authenticated %}
-            <p><a href="{% url eats.views.edit.edit_model_object "entity",object.id %}">Edit</a></p>
+            <p><a href="{% url 'edit_model_object' "entity",object.id %}">Edit</a></p>
           {% endif %}
           {% if entity_selector %}
             <button onclick="select_entity('{{ object.id }}', '{{ single_name }}');">Select</button>

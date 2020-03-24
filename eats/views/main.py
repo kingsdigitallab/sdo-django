@@ -3,7 +3,7 @@ import os.path
 from lxml import etree
 
 from django.contrib.sites.models import Site
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, render
 from django.http import HttpResponse, Http404
 from django.template import RequestContext, Context, loader
 from django.views.generic import ListView
@@ -21,8 +21,7 @@ to_eac_xslt = etree.parse(os.path.join(app_path, 'xsl/eatsml-to-eac-individual.x
 to_eac_transform = etree.XSLT(to_eac_xslt)
 
 def index (request):
-    return render_to_response('eats/view/index.html',
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/view/index.html')
 
 def get_user_defaults ():
     """Return a dictionary of the user default objects."""
@@ -47,9 +46,9 @@ def create_default_profile (user):
 
 def get_model_preferences (user):
     """Return a dictionary of the user's preferred objects."""
-    if user.is_authenticated():
+    if user.is_authenticated:
         try:
-            profile = user.get_profile()
+            profile = UserProfile.objects.get(user=user)
         except UserProfile.DoesNotExist:
             # Create a default profile.
             profile = create_default_profile(user)
@@ -72,8 +71,7 @@ def display_entity (request, entity_id):
     # for producing EAC-CPF.
     eac_authority_records = [entity_type.assertion.get().authority_record for entity_type in entity_object.get_entity_types() if str(entity_type) in ('person', 'family', 'organisation')]
     context_data = {'entity': entity_object, 'eac_authority_records': eac_authority_records, 'site': current_site}
-    return render_to_response('eats/view/display_entity.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/view/display_entity.html', context_data)
 
 def display_entity_eatsml (request, entity_id):
     """Display entity details in EATSML."""
@@ -175,8 +173,7 @@ def search (request):
                                                 record_url)
     context_data = {'eats_full_search_form': form,
                     'eats_search_results': results}
-    return render_to_response('eats/view/search.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/view/search.html', context_data)
 
 def lookup (request):
     """View for EATSML search results."""
@@ -295,8 +292,7 @@ def entity_types(request):
     """View to display a list of all the entity types."""
     entity_types = EntityTypeList.objects.all()
     context_data = {'entity_types': entity_types}
-    return render_to_response('eats/view/entity_types.html', context_data,
-                              context_instance=RequestContext(request)) 
+    return render(request, 'eats/view/entity_types.html', context_data) 
 
 def entities_by_type(request, entity_type_id):
     """View to display a list of all the entities of a given types."""
@@ -305,6 +301,5 @@ def entities_by_type(request, entity_type_id):
     context_data = {'entities': entities,
                     'entity_count': entities.count(),
                     'entity_type': entity_type}
-    return render_to_response('eats/view/entities_by_type.html', context_data,
-                              context_instance=RequestContext(request)) 
+    return render(request, 'eats/view/entities_by_type.html', context_data) 
 

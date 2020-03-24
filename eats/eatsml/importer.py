@@ -83,7 +83,7 @@ class Importer (object):
         """
         self._user = user
         if not self._user.is_superuser:
-            user_profile = user.get_profile()
+            user_profile = UserProfile.objects.get(user=user)
             authorities = user_profile.editable_authorities.all()
             self._user_authority_ids = [authority.id for authority in
                                         authorities]                                    

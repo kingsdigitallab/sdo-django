@@ -801,24 +801,24 @@ class PropertyAssertion (models.Model):
                                          related_name='assertions', on_delete=models.CASCADE)
     authority_record_checked = models.DateField(default=datetime.now,
                                                 null=True, blank=True)
-    existence = models.ForeignKey(Existence, null=True, blank=True,
-                                  unique=True, related_name='assertion', on_delete=models.CASCADE)
-    entity_type = models.ForeignKey(EntityType, null=True, blank=True,
-                                    unique=True, related_name='assertion', on_delete=models.CASCADE)
-    name = models.ForeignKey(Name, null=True, blank=True, unique=True,
+    existence = models.OneToOneField(Existence, null=True, blank=True,
+                                   related_name='assertion', on_delete=models.CASCADE)
+    entity_type = models.OneToOneField(EntityType, null=True, blank=True,
+                                       related_name='assertion', on_delete=models.CASCADE)
+    name = models.OneToOneField(Name, null=True, blank=True,
                              related_name='assertion', on_delete=models.CASCADE)
-    entity_relationship = models.ForeignKey(EntityRelationship, null=True,
-                                            blank=True, unique=True,
+    entity_relationship = models.OneToOneField(EntityRelationship, null=True,
+                                            blank=True,
                                             related_name='assertion', on_delete=models.CASCADE)
-    name_relationship = models.ForeignKey(NameRelationship, null=True,
-                                          blank=True, unique=True,
+    name_relationship = models.OneToOneField(NameRelationship, null=True,
+                                          blank=True,
                                           related_name='assertion', on_delete=models.CASCADE)
-    note = models.ForeignKey(EntityNote, null=True, blank=True, unique=True,
+    note = models.OneToOneField(EntityNote, null=True, blank=True,
                              related_name='assertion', on_delete=models.CASCADE)
-    reference = models.ForeignKey(EntityReference, null=True, blank=True,
-                                  unique=True, related_name='assertion', on_delete=models.CASCADE)
-    generic_property = models.ForeignKey(GenericProperty, null=True,
-                                         blank=True, unique=True,
+    reference = models.OneToOneField(EntityReference, null=True, blank=True,
+                                  related_name='assertion', on_delete=models.CASCADE)
+    generic_property = models.OneToOneField(GenericProperty, null=True,
+                                         blank=True,
                                          related_name='assertion', on_delete=models.CASCADE)
     # is_preferred indicates that a property is a preferred one of its
     # type by the authority. Multiple properties of the same type may
@@ -1114,7 +1114,7 @@ class UserProfile (models.Model):
     # Authority assertions user has permission to
     # create/update/delete.
     editable_authorities = models.ManyToManyField(
-        Authority, blank=True, null=True, related_name='editors')
+        Authority, blank=True, related_name='editors')
     # Preferences for display.
     authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
     language = models.ForeignKey(Language, on_delete=models.CASCADE)

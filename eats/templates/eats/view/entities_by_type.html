@@ -12,7 +12,7 @@
       
       <a href="{{ entity.get_absolute_url }}">View</a>
       {% if user.is_authenticated %}
-        <a href="{% url eats.views.edit.edit_model_object "entity", entity.id %}">Edit</a>
+        <a href="{% url 'edit_model_object' "entity", entity.id %}">Edit</a>
       {% endif %}
       
       <ul>

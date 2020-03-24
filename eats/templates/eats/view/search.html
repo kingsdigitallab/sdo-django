@@ -12,7 +12,7 @@ Search entities
 {% block eats_content %}
 <h1>Search entities</h1>
 
-<form method="get" action="{% url eats.views.main.search %}">
+<form method="get" action="{% url 'search' %}">
   <table>
     <tbody>
       {{ eats_full_search_form }}

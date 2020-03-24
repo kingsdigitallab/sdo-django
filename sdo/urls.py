@@ -6,12 +6,13 @@ from kdl_ldap.signal_handlers import \
 
 kdl_ldap_register_signal_hadlers()
 
+
 admin.autodiscover()
 
 urlpatterns = [
-    (r'^', include('archives.urls')),
-    (r'^eats/', include('eats.urls')),
-    path('accounts/', include('django.contrib.auth.urls')),
+    re_path('', include('archives.urls')),
+    re_path('eats/', include('eats.urls')),
+    re_path('accounts/', include('django.contrib.auth.urls')),
     path('admin/', admin.site.urls),
 
 ]

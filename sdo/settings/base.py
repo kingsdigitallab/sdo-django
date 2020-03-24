@@ -31,6 +31,8 @@ MANAGERS = ADMINS
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_PROFILE = 'eats.UserProfile'
+
 # https://docs.djangoproject.com/en/dev/ref/settings/#caches
 # https://docs.djangoproject.com/en/dev/topics/cache/
 # http://redis.io/topics/lru-cache

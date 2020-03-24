@@ -103,7 +103,7 @@ class Exporter (object):
         """
         self._user = user
         if user.is_authenticated():
-            self._user_profile = user.get_profile()
+            self._user_profile = UserProfile.objects.get(user=user)
 
     def export_entities (self, entity_objects, annotated=False,
                          full_details=False):

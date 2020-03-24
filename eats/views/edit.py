@@ -10,6 +10,7 @@ from django.template import RequestContext
 from django.urls import reverse
 from django.db import models, transaction
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
+from django.shortcuts import render
 
 from eats.settings import app_name, app_path
 from eats.models import *
@@ -39,7 +40,7 @@ def get_editable_authorities (user, authority=None):
 
     """
     try:
-        profile = user.get_profile()
+        profile = UserProfile.objects.get(user=user)
     except UserProfile.DoesNotExist:
         # QAZ: send the user to a 'permission denied' page.
         raise EATSAuthenticationException('/')
@@ -131,8 +132,7 @@ def create_date (request, assertion_id):
     else:
         form = DateForm(initial=initial_data)
     context_data = {'form': form}
-    return render_to_response('eats/edit/add_date.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/add_date.html', context_data)
 
 @login_required()
 def create_name (request, entity_id):
@@ -255,8 +255,7 @@ def create_name (request, entity_id):
     context_data['name_form'] = name_form
     context_data['name_part_forms'] = name_part_forms
     context_data['name_note_forms'] = name_note_forms
-    return render_to_response('eats/edit/add_name.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/add_name.html', context_data)
 
 def map_by_authority (model_objects):
     """Return a dictionary keying model_objects by each object's
@@ -331,8 +330,7 @@ def select_authority_record (request):
     context_data['search_form'] = search_form
     context_data['create_form'] = create_form
     context_data['authorities'] = editable_authorities
-    return render_to_response('eats/edit/authority_record.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/authority_record.html', context_data)
 
 @login_required()
 def select_entity (request):
@@ -362,8 +360,7 @@ def select_entity (request):
     context_data['form'] = form
     context_data['entity_selector'] = True
     context_data['eats_search_results'] = results
-    return render_to_response('eats/edit/select_entity.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/select_entity.html', context_data)
 
 def get_authority_records (entity, authorities):
     """Return a QuerySet of authority records available to entity
@@ -394,8 +391,7 @@ def delete_entity (request, entity_id):
             'object_type': model_name,
             'object_value': entity_object,
             }
-        return render_to_response('eats/edit/confirm_delete.html', context_data,
-                                  context_instance=RequestContext(request))
+        return render(request, 'eats/edit/confirm_delete.html', context_data)
 
 @login_required()
 def delete_object (request, model_name, object_id):
@@ -449,8 +445,7 @@ def delete_object (request, model_name, object_id):
             'object_type': model_name,
             'object_value': eats_object,
             }
-        return render_to_response('eats/edit/confirm_delete.html', context_data,
-                                  context_instance=RequestContext(request))
+        return render(request, 'eats/edit/confirm_delete.html', context_data)
 
 def edit_date (request, date, editable_authorities):
     """View to edit an existing Date object."""
@@ -485,8 +480,7 @@ def edit_date (request, date, editable_authorities):
     else:
         form = DateForm(instance=date)
     context_data['form'] = form
-    return render_to_response('eats/edit/edit_date.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/edit_date.html', context_data)
 
 def edit_entity (request, entity, editable_authorities):
     """View to edit an existing Entity object."""
@@ -653,8 +647,7 @@ def edit_entity (request, entity, editable_authorities):
     # of the current entity.
     reverse_entity_relationships = entity.get_reverse_relationships()
     context_data['reverse_entity_relationships'] = reverse_entity_relationships
-    return render_to_response('eats/edit/edit_entity.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/edit_entity.html', context_data)
 
 def edit_name (request, name, editable_authorities):
     """View to edit an existing Name object."""
@@ -794,8 +787,7 @@ def edit_name (request, name, editable_authorities):
     context_data['name_note_forms'] = name_note_forms
     context_data['dates'] = assertion.dates.all()
     context_data['edit_form'] = True
-    return render_to_response('eats/edit/edit_name.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/edit_name.html', context_data)
 
 @login_required()
 def edit_model_object (request, model_name, object_id):
@@ -833,8 +825,7 @@ def display_import (request, import_id):
     """Display the details of an import."""
     import_object = get_object_or_404(RegisteredImport, pk=import_id)
     context_data = {'import': import_object}
-    return render_to_response('eats/edit/display_import.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/display_import.html', context_data)
 
 @login_required()
 def display_import_raw (request, import_id):
@@ -864,9 +855,8 @@ def import_eatsml (request):
                     eatsml_file)
             except Exception as e:
                 transaction.rollback()
-                response = render_to_response(
-                    '500.html', {'message': e},
-                    context_instance=RequestContext(request))
+                response = render(request, 
+                    '500.html', {'message': e})
                 response.status_code = 500
                 return response
             description = import_form.cleaned_data['description']
@@ -896,8 +886,7 @@ def import_eatsml (request):
     except (EmptyPage, InvalidPage):
         imports = paginator.page(paginator.num_pages)
     context_data = {'form': import_form, 'imports': imports}
-    return render_to_response('eats/edit/import.html', context_data,
-                              context_instance=RequestContext(request))
+    return render(request, 'eats/edit/import.html', context_data)
 
 def export_eatsml (request, authority_id=None):
     if authority_id is None:
@@ -907,8 +896,7 @@ def export_eatsml (request, authority_id=None):
     try:
         eatsml_root = Exporter().export_entities(entity_objects)
     except Exception as e:
-        response = render_to_response('500.html', {'message': unicode(e)},
-                                      context_instance=RequestContext(request))
+        response = render(request, '500.html', {'message': unicode(e)})
         response.status_code = 500
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8', pretty_print=True)
@@ -923,8 +911,7 @@ def export_base_eatsml (request):
         eatsml_root = exporter.export_infrastructure(limited=True,
                                                      annotated=True)
     except Exception as e:
-        response = render_to_response('500.html', {'message': unicode(e)},
-                                      context_instance=RequestContext(request))
+        response = render(request, '500.html', {'message': unicode(e)})
         response.status_code = 500
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8', pretty_print=True)
@@ -955,5 +942,5 @@ def update_name_search_forms (request):
     for name in names:
         name.save()
     context_data = {'count': names.count()}
-    return render_to_response('eats/edit/name_search_form_update.html',
-                              context_data, context_instance=RequestContext(request))
+    return render(request, 'eats/edit/name_search_form_update.html',
+                              context_data)
