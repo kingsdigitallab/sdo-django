@@ -6,7 +6,7 @@ from functools import wraps
 from django.conf import settings as django_settings
 from django.core.management.utils import get_random_secret_key
 from fabric.api import (
-  cd, env, prompt, put, quiet, require, run, settings, sudo, task
+    cd, env, prompt, put, quiet, require, run, settings, sudo, task
 )
 from fabric.colors import green, yellow
 from fabric.contrib import django
@@ -174,10 +174,10 @@ def clone_repo():
 
     git_path = os.path.join(env.path, '.git')
     if remote_path_exists(git_path):
-        print(green(('repository at [{}] exists').format(env.path)))
+        print((green(('repository at [{}] exists').format(env.path))))
         return
 
-    print(yellow('cloning repository to [{}]'.format(env.path)))
+    print((yellow('cloning repository to [{}]'.format(env.path))))
     run('git clone {} {}'.format(REPOSITORY, env.path))
 
 
@@ -212,9 +212,9 @@ def create_virtualenv():
     with cd(env.path):
         venv_path = get_virtual_env_path()
         if venv_path is not None:
-            print(green('virtual environment already exists'))
+            print((green('virtual environment already exists')))
         else:
-            print(yellow('setting up virtual environment'))
+            print((yellow('setting up virtual environment')))
 
             dev_flag = ''
             if is_vagrant():

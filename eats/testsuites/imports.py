@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from os.path import abspath, dirname, join
-import StringIO
+import io
 import unittest
 
 from lxml import etree
@@ -13,16 +13,18 @@ import eats.eatsml.exporter as exporter
 # Full path to this directory.
 PATH = abspath(dirname(__file__))
 
-def suite ():
+
+def suite():
     suite = unittest.TestSuite()
     suite.addTest(KnownValuesTestCase('test_import_export'))
     suite.addTest(KnownValuesTestCase('test_import_results'))
     suite.addTest(BadInputTestCase('test_missing_existence'))
     return suite
 
+
 class KnownValuesTestCase (unittest.TestCase):
 
-    def setUp (self):
+    def setUp(self):
         # It is not sufficient just to delete the data in the test
         # database, as the sequences for the IDs will be modified, and
         # they need to be reset. Therefore flush the test database.
@@ -35,12 +37,12 @@ class KnownValuesTestCase (unittest.TestCase):
         self._exporter = exporter.Exporter()
 
     @staticmethod
-    def get_c14n_string (tree):
-        f = StringIO.StringIO()
+    def get_c14n_string(tree):
+        f = io.StringIO()
         tree.write_c14n(f)
         return f.getvalue()
 
-    def test_import_export (self):
+    def test_import_export(self):
         # Import base data into empty database.
         self._importer.import_file(join(PATH, 'import1.xml'))
         # Import data (both new and modifications to existing objects).
@@ -56,7 +58,7 @@ class KnownValuesTestCase (unittest.TestCase):
         expected_result = self.get_c14n_string(base_tree)
         self.assertEqual(expected_result, result)
 
-    def test_import_results (self):
+    def test_import_results(self):
         import_filepath = join(PATH, 'import1.xml')
         import_result_filepath = join(PATH, 'import-result.xml')
         result_raw_root, result_processed_root = self._importer.import_file(
@@ -73,9 +75,10 @@ class KnownValuesTestCase (unittest.TestCase):
         self.assertEqual((result_raw, result_processed),
                          (base_raw, base_processed))
 
+
 class BadInputTestCase (unittest.TestCase):
 
-    def setUp (self):
+    def setUp(self):
         # It is not sufficient just to delete the data in the test
         # database, as the sequences for the IDs will be modified, and
         # they need to be reset. Therefore flush the test database.
@@ -86,7 +89,7 @@ class BadInputTestCase (unittest.TestCase):
         user.save()
         self._importer = importer.Importer(user)
 
-    def test_missing_existence (self):
+    def test_missing_existence(self):
         import_filepath = join(PATH, 'import-missing-existence.xml')
         self.assertRaises(importer.EATSImportError, self._importer.import_file,
                           import_filepath)

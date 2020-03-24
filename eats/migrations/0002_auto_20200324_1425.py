@@ -14,46 +14,55 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='propertyassertion',
             name='entity_relationship',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityRelationship'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                       related_name='assertion', to='eats.EntityRelationship'),
         ),
         migrations.AlterField(
             model_name='propertyassertion',
             name='entity_type',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityType'),
+            field=models.OneToOneField(
+                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityType'),
         ),
         migrations.AlterField(
             model_name='propertyassertion',
             name='existence',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.Existence'),
+            field=models.OneToOneField(
+                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.Existence'),
         ),
         migrations.AlterField(
             model_name='propertyassertion',
             name='generic_property',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.GenericProperty'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                       related_name='assertion', to='eats.GenericProperty'),
         ),
         migrations.AlterField(
             model_name='propertyassertion',
             name='name',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.Name'),
+            field=models.OneToOneField(
+                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.Name'),
         ),
         migrations.AlterField(
             model_name='propertyassertion',
             name='name_relationship',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.NameRelationship'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                       related_name='assertion', to='eats.NameRelationship'),
         ),
         migrations.AlterField(
             model_name='propertyassertion',
             name='note',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityNote'),
+            field=models.OneToOneField(
+                blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityNote'),
         ),
         migrations.AlterField(
             model_name='propertyassertion',
             name='reference',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityReference'),
+            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                       related_name='assertion', to='eats.EntityReference'),
         ),
         migrations.AlterField(
             model_name='userprofile',
             name='editable_authorities',
-            field=models.ManyToManyField(blank=True, related_name='editors', to='eats.Authority'),
+            field=models.ManyToManyField(
+                blank=True, related_name='editors', to='eats.Authority'),
         ),
     ]

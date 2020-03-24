@@ -34,6 +34,7 @@ EATS_NAMESPACE = 'http://hdl.handle.net/10063/234'
 EATS = '{%s}' % (EATS_NAMESPACE)
 NSMAP = {'e': EATS_NAMESPACE}
 
+
 class EATSImportError (Exception):
 
     """Class for identified errors in the import."""
@@ -44,7 +45,7 @@ class Importer (object):
 
     """Class implementing an import of an EATSML XML document into EATS."""
 
-    def __init__ (self, user):
+    def __init__(self, user):
         try:
             logging.basicConfig(level=LOG_LEVEL,
                                 filename=FILE_LOG,
@@ -68,13 +69,13 @@ class Importer (object):
             'name type': {},
             'script': {},
             'system name part type': {},
-            }
+        }
         self._user = None
         self._has_add_infrastructure_permission = False
         self._user_authority_ids = []
         self._set_user(user)
 
-    def _set_user (self, user):
+    def _set_user(self, user):
         """Set the user for this import.
 
         Arguments:
@@ -86,10 +87,10 @@ class Importer (object):
             user_profile = UserProfile.objects.get(user=user)
             authorities = user_profile.editable_authorities.all()
             self._user_authority_ids = [authority.id for authority in
-                                        authorities]                                    
+                                        authorities]
         self._has_add_infrastructure_permission = self._user.is_superuser
 
-    def import_file (self, eatsml):
+    def import_file(self, eatsml):
         """Import XML data from eatsml into EATS, returning the
         the parsed XML document and that same document annotated with
         the EATS IDs for the elements imported (both lxml "root"
@@ -111,7 +112,7 @@ class Importer (object):
         self._import_entity_relationships(processed_tree)
         return raw_tree.getroot(), processed_tree.getroot()
 
-    def _import_infrastructure (self, tree):
+    def _import_infrastructure(self, tree):
         """Import the non-entity information from XML tree."""
         self._import_system_name_part_types(tree)
         self._import_calendars(tree)
@@ -127,7 +128,7 @@ class Importer (object):
         self._import_name_relationship_types(tree)
         self._import_authority_records(tree)
 
-    def _import_authorities (self, tree):
+    def _import_authorities(self, tree):
         """Import the authority records from XML tree."""
         item_name = 'authority'
         model = Authority
@@ -173,7 +174,7 @@ class Importer (object):
                 self._add_eats_id(authority_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_entity_types_list (self, tree):
+    def _import_entity_types_list(self, tree):
         """Import entity types list from XML tree."""
         item_name = 'entity type'
         model = EntityTypeList
@@ -198,7 +199,7 @@ class Importer (object):
                 self._add_eats_id(type_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_entity_relationship_types (self, tree):
+    def _import_entity_relationship_types(self, tree):
         """Import entity relationship types from XML tree."""
         item_name = 'entity relationship type'
         model = EntityRelationshipType
@@ -225,7 +226,7 @@ class Importer (object):
                 self._add_eats_id(type_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_name_types (self, tree):
+    def _import_name_types(self, tree):
         """Import name types from XML tree."""
         item_name = 'name type'
         model = NameType
@@ -252,7 +253,7 @@ class Importer (object):
                 self._add_eats_id(type_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_system_name_part_types (self, tree):
+    def _import_system_name_part_types(self, tree):
         """Import system name part types from XML tree."""
         item_name = 'system name part type'
         model = SystemNamePartType
@@ -268,7 +269,8 @@ class Importer (object):
                 self._check_object_exists(model, eats_id, xml_id)
             else:
                 self._check_add_infrastructure_permission()
-                name_part_type = self._get_text_from_XML(type_element, 'e:name')
+                name_part_type = self._get_text_from_XML(
+                    type_element, 'e:name')
                 description = self._get_text_from_XML(type_element,
                                                       'e:description')
                 type_object = model(name_part_type=name_part_type,
@@ -278,7 +280,7 @@ class Importer (object):
                 self._add_eats_id(type_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_name_part_types (self, tree):
+    def _import_name_part_types(self, tree):
         """Import name part types from XML tree."""
         item_name = 'name part type'
         model = NamePartType
@@ -307,7 +309,7 @@ class Importer (object):
                 self._add_eats_id(type_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_languages (self, tree):
+    def _import_languages(self, tree):
         """Import languages from XML tree."""
         item_name = 'language'
         model = Language
@@ -346,7 +348,7 @@ class Importer (object):
                     language_object.system_name_part_types.add(type_object)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_scripts (self, tree):
+    def _import_scripts(self, tree):
         """Import scripts from XML tree."""
         item_name = 'script'
         model = Script
@@ -369,7 +371,7 @@ class Importer (object):
                 self._add_eats_id(script_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_name_relationship_types (self, tree):
+    def _import_name_relationship_types(self, tree):
         """Import name relationship types from XML tree."""
         item_name = 'name relationship type'
         model = NameRelationshipType
@@ -396,7 +398,7 @@ class Importer (object):
                 self._add_eats_id(type_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_date_periods (self, tree):
+    def _import_date_periods(self, tree):
         """Import date periods from XML tree."""
         item_name = 'date period'
         model = DatePeriod
@@ -419,7 +421,7 @@ class Importer (object):
                 self._add_eats_id(period_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_date_types (self, tree):
+    def _import_date_types(self, tree):
         """Import date types from XML tree."""
         item_name = 'date type'
         model = DateType
@@ -441,7 +443,7 @@ class Importer (object):
                 self._add_eats_id(type_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_calendars (self, tree):
+    def _import_calendars(self, tree):
         """Import calendars from XML tree."""
         item_name = 'calendar'
         model = Calendar
@@ -463,7 +465,7 @@ class Importer (object):
                 self._add_eats_id(calendar_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_authority_records (self, tree):
+    def _import_authority_records(self, tree):
         """Import authority records from XML tree."""
         item_name = 'authority record'
         model = AuthorityRecord
@@ -521,7 +523,7 @@ class Importer (object):
                 self._add_eats_id(record_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_entities (self, tree):
+    def _import_entities(self, tree):
         """Import entities from XML tree."""
         item_name = 'entity'
         model = Entity
@@ -548,7 +550,7 @@ class Importer (object):
             self._import_name_relationships(entity_element, eats_id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_existences (self, entity_element, entity_id):
+    def _import_existences(self, entity_element, entity_id):
         """Import existences for entity from XML element."""
         item_name = 'existence'
         model = PropertyAssertion
@@ -578,7 +580,7 @@ class Importer (object):
                 self._add_eats_id(existence_element, assertion_object.id)
             self._import_dates(existence_element, assertion_object.id)
 
-    def _import_entity_types (self, entity_element, entity_id):
+    def _import_entity_types(self, entity_element, entity_id):
         """Import entity types for entity from XML element."""
         item_name = 'entity type'
         model = PropertyAssertion
@@ -610,11 +612,12 @@ class Importer (object):
                 try:
                     assertion_object.save()
                 except Exception:
-                    raise EATSImportError('Could not save entity type assertion %s' % xml_id)
+                    raise EATSImportError(
+                        'Could not save entity type assertion %s' % xml_id)
                 self._add_eats_id(type_element, assertion_object.id)
             self._import_dates(type_element, assertion_object.id)
 
-    def _import_entity_notes (self, entity_element, entity_id):
+    def _import_entity_notes(self, entity_element, entity_id):
         """Import entity notes for entity from XML element."""
         item_name = 'entity note'
         model = PropertyAssertion
@@ -645,11 +648,12 @@ class Importer (object):
                 try:
                     assertion_object.save()
                 except Exception:
-                    raise EATSImportError('Could not save entity note assertion %s' % xml_id)
+                    raise EATSImportError(
+                        'Could not save entity note assertion %s' % xml_id)
                 self._add_eats_id(note_element, assertion_object.id)
             self._import_dates(note_element, assertion_object.id)
 
-    def _import_entity_references (self, entity_element, entity_id):
+    def _import_entity_references(self, entity_element, entity_id):
         """Import entity references for entity from XML element."""
         item_name = 'entity reference'
         model = PropertyAssertion
@@ -682,11 +686,12 @@ class Importer (object):
                 try:
                     assertion_object.save()
                 except Exception:
-                    raise EATSImportError('Could not save entity reference assertion %s' % xml_id)
+                    raise EATSImportError(
+                        'Could not save entity reference assertion %s' % xml_id)
                 self._add_eats_id(reference_element, assertion_object.id)
             self._import_dates(reference_element, assertion_object.id)
 
-    def _import_names (self, entity_element, entity_id):
+    def _import_names(self, entity_element, entity_id):
         """Import names for entity from XML element."""
         item_name = 'name'
         model = PropertyAssertion
@@ -706,7 +711,8 @@ class Importer (object):
                 is_preferred = self._get_boolean(name_element, 'is_preferred')
                 language_id = self._get_referenced_eats_id(name_element,
                                                            'language')
-                script_id = self._get_referenced_eats_id(name_element, 'script')
+                script_id = self._get_referenced_eats_id(
+                    name_element, 'script')
                 name_type_id = self._get_referenced_eats_id(
                     name_element, 'type', 'name type')
                 self._check_type_authority(name_type_id, NameType,
@@ -725,7 +731,8 @@ class Importer (object):
                 try:
                     assertion_object.save()
                 except Exception:
-                    raise EATSImportError('Could not save name assertion %s' % xml_id)
+                    raise EATSImportError(
+                        'Could not save name assertion %s' % xml_id)
                 # Save the name again to generate the search names.
                 name_object.save()
                 eats_id = assertion_object.id
@@ -735,7 +742,7 @@ class Importer (object):
             self._import_dates(name_element, assertion_object.id)
             self._create_mapping(item_name, xml_id, eats_id)
 
-    def _import_name_parts (self, name_element, name_id, authority_record_id):
+    def _import_name_parts(self, name_element, name_id, authority_record_id):
         """Import name parts for entity from XML element."""
         item_name = 'name part'
         part_elements = name_element.xpath('e:name_parts/e:name_part',
@@ -746,7 +753,8 @@ class Importer (object):
                                                    'name part type')
             self._check_type_authority(type_id, NamePartType,
                                        authority_record_id, '')
-            language_id = self._get_referenced_eats_id(part_element, 'language')
+            language_id = self._get_referenced_eats_id(
+                part_element, 'language')
             script_id = self._get_referenced_eats_id(part_element, 'script')
             name_part = self._get_text_from_XML(part_element, '.')
             part_object = NamePart(
@@ -755,7 +763,7 @@ class Importer (object):
                 name_part=name_part)
             part_object.save()
 
-    def _import_entity_relationships (self, tree):
+    def _import_entity_relationships(self, tree):
         """Import entity relationships from XML tree."""
         item_name = 'entity relationship'
         model = PropertyAssertion
@@ -797,14 +805,15 @@ class Importer (object):
                 try:
                     assertion_object.save()
                 except Exception:
-                    raise EATSImportError('Could not save entity relationship assertion %s' % xml_id)
+                    raise EATSImportError(
+                        'Could not save entity relationship assertion %s' % xml_id)
                 self._add_eats_id(relationship_element, assertion_object.id)
                 self._import_entity_relationship_notes(relationship_element,
                                                        relationship_object.id)
             self._import_dates(relationship_element, assertion_object.id)
 
-    def _import_entity_relationship_notes (self, relationship_element,
-                                           relationship_id):
+    def _import_entity_relationship_notes(self, relationship_element,
+                                          relationship_id):
         """Import entity relationship notes for relationship from XML
         element."""
         item_name = 'entity relationship note'
@@ -819,7 +828,7 @@ class Importer (object):
             note_object = EntityRelationshipNote(**note_data)
             note_object.save()
 
-    def _import_name_relationships (self, entity_element, entity_id):
+    def _import_name_relationships(self, entity_element, entity_id):
         """Import name relationships for entity from XML element."""
         item_name = 'name relationship'
         model = PropertyAssertion
@@ -846,7 +855,8 @@ class Importer (object):
                                            authority_record_id, xml_id)
                 name_assertion_id = self._get_referenced_eats_id(
                     relationship_element, 'name')
-                name_id = self._get_name_id_from_assertion_id(name_assertion_id)
+                name_id = self._get_name_id_from_assertion_id(
+                    name_assertion_id)
                 related_name_assertion_id = self._get_referenced_eats_id(
                     relationship_element, 'related_name', 'name')
                 related_name_id = self._get_name_id_from_assertion_id(
@@ -863,11 +873,12 @@ class Importer (object):
                 try:
                     assertion_object.save()
                 except Exception:
-                    raise EATSImportError('Could not save name relationship assertion %s' % xml_id)
+                    raise EATSImportError(
+                        'Could not save name relationship assertion %s' % xml_id)
                 self._add_eats_id(relationship_element, assertion_object.id)
             self._import_dates(relationship_element, assertion_object.id)
 
-    def _import_dates (self, assertion_element, assertion_id):
+    def _import_dates(self, assertion_element, assertion_id):
         """Import dates for assertion from XML element."""
         item_name = 'date'
         model = Date
@@ -887,8 +898,10 @@ class Importer (object):
                     if child.tag == EATS + 'assembled_form':
                         continue
                     date_type = child.get('type')
-                    date_data[date_type] = child.xpath('e:raw', namespaces=NSMAP)[0].text
-                    date_data[date_type + '_normalised'] = child.xpath('e:normalised', namespaces=NSMAP)[0].text
+                    date_data[date_type] = child.xpath(
+                        'e:raw', namespaces=NSMAP)[0].text
+                    date_data[date_type + '_normalised'] = child.xpath(
+                        'e:normalised', namespaces=NSMAP)[0].text
                     date_data[date_type + '_calendar_id'] = self._get_referenced_eats_id(
                         child, 'calendar')
                     date_data[date_type + '_type_id'] = self._get_referenced_eats_id(
@@ -899,7 +912,7 @@ class Importer (object):
                 date_object.save()
                 self._add_eats_id(date_element, date_object.id)
 
-    def _get_referenced_eats_id (self, element, attribute_name, map_key=None):
+    def _get_referenced_eats_id(self, element, attribute_name, map_key=None):
         """Return the EATS ID for the object referenced in
         attribute_name on element."""
         # Due to the mapping, we are assured that the reference is to the
@@ -912,7 +925,7 @@ class Importer (object):
         eats_id = self._xml_object_map[map_key].get(import_id)
         return eats_id
 
-    def _create_mapping (self, map_name, xml_id, object_id):
+    def _create_mapping(self, map_name, xml_id, object_id):
         """Add a mapping in map_name between xml_id and
         object_id. This allows for resolving references within the
         import file which are done via XML IDs."""
@@ -920,14 +933,14 @@ class Importer (object):
         logging.debug('Mapped %s XML ID %s to database ID %d'
                       % (map_name, xml_id, object_id))
 
-    def _check_add_infrastructure_permission (self):
+    def _check_add_infrastructure_permission(self):
         """Raise an exception if the user does not have permission to
         add a new infrastructure object."""
         if not self._has_add_infrastructure_permission:
             message = 'The user performing the import does not have permission to add infrastructural data, as the import file demands'
             raise EATSImportError(message)
 
-    def _check_add_permission (self, authority=None, record=None):
+    def _check_add_permission(self, authority=None, record=None):
         """Raise an exception if the user does not have permission to
         add a new object associated with a particular authority.
 
@@ -941,12 +954,12 @@ class Importer (object):
                 AuthorityRecord.objects.get(pk=record).authority_id
             if authority_id not in self._user_authority_ids:
                 authority = Authority.objects.get(pk=authority_id)
-                message = u'The user performing the import does not have permission to add data associated with %s, as the import file demands' \
-                    % (unicode(authority))
+                message = 'The user performing the import does not have permission to add data associated with %s, as the import file demands' \
+                    % (str(authority))
                 raise EATSImportError(message)
 
     @staticmethod
-    def _validate (tree):
+    def _validate(tree):
         """Validate the XML document against the RelaxNG schema."""
         logging.debug('Parsing RelaxNG schema')
         relaxng_doc = etree.parse(RNG_PATH)
@@ -956,15 +969,15 @@ class Importer (object):
             message = 'RelaxNG validation of the import document failed: %s' % \
                 (relaxng.error_log.last_error)
             logging.error(message)
-            raise EATSImportError(message)        
+            raise EATSImportError(message)
 
     @staticmethod
-    def _get_element_id (element):
+    def _get_element_id(element):
         """Return the string ID of element."""
         return element.get(XML + 'id')
 
     @staticmethod
-    def _get_element_eats_id (element):
+    def _get_element_eats_id(element):
         """Return the integer EATS ID of element."""
         eats_id = element.get('eats_id')
         if eats_id:
@@ -972,8 +985,8 @@ class Importer (object):
         return eats_id
 
     @staticmethod
-    def _check_object_exists (model, eats_id, xml_id, entity_id=None,
-                              relating_field=None):
+    def _check_object_exists(model, eats_id, xml_id, entity_id=None,
+                             relating_field=None):
         """Return object with eats_id in model. Raises an exception if
         that object does not exist. If entity_id and property_model
         are supplied, checks also that the object links to both.
@@ -1008,18 +1021,18 @@ class Importer (object):
         return model_object
 
     @staticmethod
-    def _get_text_from_XML (element, xpath):
+    def _get_text_from_XML(element, xpath):
         """Return the string value of the result of performing xpath query on
         element."""
         container = element.xpath(xpath + '/text()', namespaces=NSMAP)
         if container:
-            text = unicode(container[0]).strip()
+            text = str(container[0]).strip()
         else:
             text = ''
         return text
 
     @staticmethod
-    def _check_type_authority (object_id, model, authority_record_id, xml_id):
+    def _check_type_authority(object_id, model, authority_record_id, xml_id):
         """Raise an error if the ID of the Authority object associated
         with model object with object_id does not match the authority
         referenced by the AuthorityRecord object with authority_id."""
@@ -1033,7 +1046,7 @@ class Importer (object):
         return
 
     @staticmethod
-    def _get_boolean (element, attribute=None):
+    def _get_boolean(element, attribute=None):
         """Return Python boolean for text value of element's attribute, or
         element's text content is attribute is None."""
         if attribute:
@@ -1045,30 +1058,30 @@ class Importer (object):
         return False
 
     @staticmethod
-    def _get_XML_boolean (boolean):
+    def _get_XML_boolean(boolean):
         """Return boolean (a Python boolean) in a format suitable for use in
         an XML document using the XML Schema boolean datatype."""
         return str(boolean).lower()
 
     @staticmethod
-    def _get_name_id_from_assertion_id (assertion_id):
+    def _get_name_id_from_assertion_id(assertion_id):
         """Return the ID of the Name object associated with the
         PropertyAssertion with id assertion_id)."""
         assertion = PropertyAssertion.objects.get(pk=assertion_id)
         return assertion.name_id
 
     @staticmethod
-    def _add_eats_id (element, eats_id):
+    def _add_eats_id(element, eats_id):
         """Add an eats_id attribute with value eats_id to element."""
         element.set('eats_id', str(eats_id))
 
     @staticmethod
-    def _log_start_items (item_name):
+    def _log_start_items(item_name):
         """Log the start of importing item_name items."""
         logging.debug('Importing %s items' % (item_name))
 
     @staticmethod
-    def _log_xml (item_name, element):
+    def _log_xml(item_name, element):
         """Log the importing of item_name XML from element."""
         logging.debug('Importing %s from XML: %s'
                       % (item_name, etree.tostring(element)))

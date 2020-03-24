@@ -54,7 +54,7 @@ class Exporter (object):
 
     """Class implementing an export of EATS data into EATSML XML."""
 
-    def __init__ (self):
+    def __init__(self):
         try:
             logging.basicConfig(level=LOG_LEVEL,
                                 filename=FILE_LOG,
@@ -87,14 +87,14 @@ class Exporter (object):
             'NameType': set(),
             'Script': set(),
             'SystemNamePartType': set(),
-            }
+        }
         self._user = None
         self._user_profile = None
         self._XML_true = self._get_XML_boolean(True)
         self._annotated = False
         self._full_details = False
 
-    def set_user (self, user):
+    def set_user(self, user):
         """Set the user for this export.
 
         Arguments:
@@ -105,8 +105,8 @@ class Exporter (object):
         if user.is_authenticated():
             self._user_profile = UserProfile.objects.get(user=user)
 
-    def export_entities (self, entity_objects, annotated=False,
-                         full_details=False):
+    def export_entities(self, entity_objects, annotated=False,
+                        full_details=False):
         """Return the root element of an XML tree containing the
         exported entities.
 
@@ -137,12 +137,12 @@ class Exporter (object):
         logging.info('Finished export')
         return root
 
-    def export_infrastructure (self, limited=False, annotated=False):
+    def export_infrastructure(self, limited=False, annotated=False):
         """Return the root element of an XML tree containing the
         export of infrastructure elements.
 
         Arguments:
-        limited -- optional Boolean indicating if the data exported should be 
+        limited -- optional Boolean indicating if the data exported should be
                    limited to those related to authorities the user can edit
         annotated -- optional Boolean indicating if the data exported
                      should be annotated with the user's preferences
@@ -173,7 +173,7 @@ class Exporter (object):
             (NameRelationshipType, True),
             (NameType, True),
             (Script, False),
-            ]
+        ]
         for object_type in object_types:
             key = object_type[0]._meta.object_name
             if object_type[1]:
@@ -187,7 +187,7 @@ class Exporter (object):
         self._validate(root)
         return root
 
-    def _export_entities (self, entity_objects, parent_element):
+    def _export_entities(self, entity_objects, parent_element):
         """Export entity objects, attaching their XML nodes to parent."""
         # It is too memory expensive to deal with all entities at
         # once, if there are many of them, so do them in batches.
@@ -199,8 +199,8 @@ class Exporter (object):
         entities_element = etree.SubElement(parent_element, EATS + 'entities')
         for lower_bound in range(0, count, BATCH_NUMBER):
             upper_bound = lower_bound + BATCH_NUMBER
-            logging.info('Exporting entities %d to %d' \
-                             % (lower_bound, upper_bound))
+            logging.info('Exporting entities %d to %d'
+                         % (lower_bound, upper_bound))
             for entity_object in entity_objects[lower_bound:upper_bound]:
                 self._primary_entity_ids.append(entity_object.id)
                 self._export_entity(entity_object, entities_element)
@@ -212,14 +212,14 @@ class Exporter (object):
         logging.info('Exporting potentially %d new entities' % (count))
         for lower_bound in range(0, count, BATCH_NUMBER):
             upper_bound = lower_bound + BATCH_NUMBER
-            logging.info('Exporting potentially new entities %d to %d' \
-                             % (lower_bound, upper_bound))
+            logging.info('Exporting potentially new entities %d to %d'
+                         % (lower_bound, upper_bound))
             for entity_object in new_entity_objects[lower_bound:upper_bound]:
                 if entity_object not in entity_objects:
                     self._export_entity(entity_object, entities_element, False)
         return
 
-    def _export_entity (self, entity_object, parent_element, is_primary=True):
+    def _export_entity(self, entity_object, parent_element, is_primary=True):
         """Export Entity object.
 
         Arguments:
@@ -243,11 +243,11 @@ class Exporter (object):
         self._export_entity_references(entity_object, entity_element)
         self._export_names(entity_object, entity_element)
         self._export_entity_relationships(entity_object, entity_element,
-                                         is_primary)
+                                          is_primary)
         self._export_name_relationships(entity_object, entity_element)
         return
 
-    def _export_existences (self, entity_object, parent_element):
+    def _export_existences(self, entity_object, parent_element):
         """Export Existence property assertions for entity_object."""
         model_name = 'Existence'
         self._log_start_objects(model_name)
@@ -261,9 +261,9 @@ class Exporter (object):
             existence_element = etree.SubElement(existences_element,
                                                  EATS + 'existence_assertion')
             self._add_ids(assertion_object, existence_element,
-                         'existence_assertion')
+                          'existence_assertion')
             self._export_assertion_properties(assertion_object,
-                                             existence_element)
+                                              existence_element)
             self._object_list['Authority'].add(
                 assertion_object.authority_record.authority_id)
             self._object_list['AuthorityRecord'].add(
@@ -271,7 +271,7 @@ class Exporter (object):
             self._export_dates(assertion_object, existence_element)
         return
 
-    def _export_entity_types (self, entity_object, parent_element):
+    def _export_entity_types(self, entity_object, parent_element):
         """Export EntityType property assertions for entity_object."""
         model_name = 'EntityType'
         self._log_start_objects(model_name)
@@ -285,7 +285,7 @@ class Exporter (object):
             type_element = etree.SubElement(types_element,
                                             EATS + 'entity_type_assertion')
             self._add_ids(assertion_object, type_element,
-                         'entity_type_assertion')
+                          'entity_type_assertion')
             self._export_assertion_properties(assertion_object, type_element)
             entity_type_id = assertion_object.entity_type.entity_type_id
             type_element.set('entity_type', 'entity_type-%d'
@@ -294,7 +294,7 @@ class Exporter (object):
             self._export_dates(assertion_object, type_element)
         return
 
-    def _export_entity_notes (self, entity_object, parent_element):
+    def _export_entity_notes(self, entity_object, parent_element):
         """Export EntityNote property assertions for entity_object."""
         model_name = 'EntityNote'
         self._log_start_objects(model_name)
@@ -310,13 +310,13 @@ class Exporter (object):
             self._add_ids(assertion_object, note_element, 'note_assertion')
             self._export_assertion_properties(assertion_object, note_element)
             note_element.set('is_internal', self._get_XML_boolean(
-                    assertion_object.note.is_internal))
+                assertion_object.note.is_internal))
             note_text_element = etree.SubElement(note_element, EATS + 'note')
             note_text_element.text = assertion_object.note.note
             self._export_dates(assertion_object, note_element)
         return
 
-    def _export_entity_references (self, entity_object, parent_element):
+    def _export_entity_references(self, entity_object, parent_element):
         """Export EntityReference property assertions for entity_object."""
         model_name = 'EntityReference'
         self._log_start_objects(model_name)
@@ -330,9 +330,9 @@ class Exporter (object):
             reference_element = etree.SubElement(references_element, EATS +
                                                  'entity_reference_assertion')
             self._add_ids(assertion_object, reference_element,
-                         'reference_assertion')
+                          'reference_assertion')
             self._export_assertion_properties(assertion_object,
-                                             reference_element)
+                                              reference_element)
             label_element = etree.SubElement(reference_element, EATS + 'label')
             label_element.text = assertion_object.reference.label
             url_element = etree.SubElement(reference_element, EATS + 'url')
@@ -340,7 +340,7 @@ class Exporter (object):
             self._export_dates(assertion_object, reference_element)
         return
 
-    def _export_names (self, entity_object, parent_element):
+    def _export_names(self, entity_object, parent_element):
         """Export Name property assertions for entity_object."""
         model_name = 'Name'
         self._log_start_objects(model_name)
@@ -383,7 +383,7 @@ class Exporter (object):
             self._export_name_notes(name_object, name_element)
         return
 
-    def _export_name_parts (self, name_object, parent_element):
+    def _export_name_parts(self, name_object, parent_element):
         """Export NamePart objects for name_object."""
         model_name = 'NamePart'
         self._log_start_objects(model_name)
@@ -412,7 +412,7 @@ class Exporter (object):
         return
 
     @staticmethod
-    def _export_name_variants (name_object, parent_element):
+    def _export_name_variants(name_object, parent_element):
         """Export variant name forms for name_object."""
         variants_element = etree.SubElement(parent_element,
                                             EATS + 'variant_forms')
@@ -422,7 +422,7 @@ class Exporter (object):
                                                EATS + 'variant_form')
             variant_element.text = variant
 
-    def _export_name_notes (self, name_object, parent_element):
+    def _export_name_notes(self, name_object, parent_element):
         """Export NameNote objects for name_object."""
         model_name = 'NameNote'
         self._log_start_objects(model_name)
@@ -438,8 +438,8 @@ class Exporter (object):
             note_element.text = note_object.note
         return
 
-    def _export_entity_relationships (self, entity_object, parent_element,
-                                      is_primary):
+    def _export_entity_relationships(self, entity_object, parent_element,
+                                     is_primary):
         """Export EntityRelationship property assertions for entity_object."""
         model_name = 'EntityRelationship'
         self._log_start_objects(model_name)
@@ -457,7 +457,7 @@ class Exporter (object):
                     relationships_element,
                     EATS + 'entity_relationship_assertion')
                 self._add_ids(assertion_object, relationship_element,
-                        'entity_relationship_assertion')
+                              'entity_relationship_assertion')
                 self._export_assertion_properties(assertion_object,
                                                   relationship_element)
                 relationship_object = assertion_object.entity_relationship
@@ -477,12 +477,13 @@ class Exporter (object):
             # Find all entities that have this entity as a related
             # entity, and add them to the list of entities to be
             # exported.
-            for entity in Entity.objects.filter(assertions__entity_relationship__related_entity=entity_object):
+            for entity in Entity.objects.filter(
+                    assertions__entity_relationship__related_entity=entity_object):
                 self._object_list['Entity'].add(entity.id)
         return
 
-    def _export_entity_relationship_notes (self, relationship_object,
-                                           parent_element):
+    def _export_entity_relationship_notes(self, relationship_object,
+                                          parent_element):
         """Export EntityRelationshipNote objects for relationship_object."""
         model_name = 'EntityRelationshipNote'
         self._log_start_objects(model_name)
@@ -499,7 +500,7 @@ class Exporter (object):
             note_element.text = note_object.note
         return
 
-    def _export_name_relationships (self, entity_object, parent_element):
+    def _export_name_relationships(self, entity_object, parent_element):
         """Export NameRelationship property assertions for entity_object."""
         model_name = 'NameRelationship'
         self._log_start_objects(model_name)
@@ -528,7 +529,7 @@ class Exporter (object):
                                      (related_name_assertion.id))
         return
 
-    def _export_dates (self, assertion_object, parent_element):
+    def _export_dates(self, assertion_object, parent_element):
         """Export Date objects associated with assertion_object."""
         model_name = 'Date'
         self._log_start_objects(model_name)
@@ -544,16 +545,18 @@ class Exporter (object):
                                  % (date_period_id))
                 self._object_list['DatePeriod'].add(date_period_id)
                 for date_part in DATE_PARTS:
-                    self._export_date_part(date_object, date_part, date_element)
+                    self._export_date_part(
+                        date_object, date_part, date_element)
                 if date_object.note:
-                    note_element = etree.SubElement(date_element, EATS + 'note')
+                    note_element = etree.SubElement(
+                        date_element, EATS + 'note')
                     note_element.text = date_object.note
                 assembled_form_element = etree.SubElement(
                     date_element, EATS + 'assembled_form')
-                assembled_form_element.text = unicode(date_object)
+                assembled_form_element.text = str(date_object)
         return
 
-    def _export_date_part (self, date_object, date_part, parent_element):
+    def _export_date_part(self, date_object, date_part, parent_element):
         """Export the date_part set of fields for date_object."""
         date_part_value = getattr(date_object, date_part)
         if not date_part_value:
@@ -567,8 +570,8 @@ class Exporter (object):
                                          date_element)
         return
 
-    def _export_date_part_field (self, date_object, date_part, suffix,
-                                 parent_element):
+    def _export_date_part_field(self, date_object, date_part, suffix,
+                                parent_element):
         """Export the particular field for date_part of date_object."""
         field_name = date_part + suffix
         value = getattr(date_object, field_name)
@@ -586,7 +589,7 @@ class Exporter (object):
             self._object_list['DateType'].add(value.id)
         return
 
-    def _export_assertion_properties (self, assertion_object, parent_element):
+    def _export_assertion_properties(self, assertion_object, parent_element):
         """Export the common PropertyAssertion data from assertion_object."""
         parent_element.set('authority_record', 'authority_record-%d'
                            % (assertion_object.authority_record_id))
@@ -594,7 +597,7 @@ class Exporter (object):
                            self._get_XML_boolean(assertion_object.is_preferred))
         return
 
-    def _export_infrastructure (self, parent_element):
+    def _export_infrastructure(self, parent_element):
         """Export those types of objects that serve as 'static' material
         referenced by the entities. Only referenced objects of each type
         are exported."""
@@ -622,7 +625,7 @@ class Exporter (object):
             parent_element.append(parent_element[0])
         return
 
-    def _export_authorities (self, parent_element):
+    def _export_authorities(self, parent_element):
         """Export referenced Authority objects."""
         model_name = 'Authority'
         self._log_start_objects(model_name)
@@ -639,16 +642,26 @@ class Exporter (object):
             self._export_last_modified(authority_object, authority_element)
             self._annotate_with_user_prefs(authority_object, authority_element,
                                            'authority')
-            authority_element.set('is_default', self._get_XML_boolean(authority_object.is_default))
-            authority_element.set('default_calendar', 'calendar-%s' % authority_object.default_calendar_id)
-            self._object_list['Calendar'].add(authority_object.default_calendar_id)
-            authority_element.set('default_date_period', 'date_period-%s' % authority_object.default_date_period_id)
-            self._object_list['DatePeriod'].add(authority_object.default_date_period_id)
-            authority_element.set('default_date_type', 'date_type-%s' % authority_object.default_date_type_id)
-            self._object_list['DateType'].add(authority_object.default_date_type_id)
-            authority_element.set('default_language', 'language-%s' % authority_object.default_calendar_id)
-            self._object_list['Language'].add(authority_object.default_calendar_id)
-            authority_element.set('default_script', 'script-%s' % authority_object.default_script_id)
+            authority_element.set('is_default', self._get_XML_boolean(
+                authority_object.is_default))
+            authority_element.set('default_calendar', 'calendar-%s' %
+                                  authority_object.default_calendar_id)
+            self._object_list['Calendar'].add(
+                authority_object.default_calendar_id)
+            authority_element.set('default_date_period', 'date_period-%s' %
+                                  authority_object.default_date_period_id)
+            self._object_list['DatePeriod'].add(
+                authority_object.default_date_period_id)
+            authority_element.set('default_date_type', 'date_type-%s' %
+                                  authority_object.default_date_type_id)
+            self._object_list['DateType'].add(
+                authority_object.default_date_type_id)
+            authority_element.set('default_language', 'language-%s' %
+                                  authority_object.default_calendar_id)
+            self._object_list['Language'].add(
+                authority_object.default_calendar_id)
+            authority_element.set('default_script', 'script-%s' %
+                                  authority_object.default_script_id)
             self._object_list['Script'].add(authority_object.default_script_id)
             name_element = etree.SubElement(authority_element, EATS + 'name')
             name_element.text = authority_object.authority
@@ -663,7 +676,7 @@ class Exporter (object):
             base_url_element.text = authority_object.base_url
         return
 
-    def _export_entity_types_list (self, parent_element):
+    def _export_entity_types_list(self, parent_element):
         """Export referenced EntityTypeList objects."""
         model_name = 'EntityTypeList'
         self._log_start_objects(model_name)
@@ -674,7 +687,8 @@ class Exporter (object):
                                              EATS + 'entity_types')
         for type_object in type_objects:
             self._log_object(model_name, type_object)
-            type_element = etree.SubElement(types_element, EATS + 'entity_type')
+            type_element = etree.SubElement(
+                types_element, EATS + 'entity_type')
             self._add_ids(type_object, type_element, 'entity_type')
             type_element.set('authority', 'authority-%d'
                              % (type_object.authority_id))
@@ -682,7 +696,7 @@ class Exporter (object):
             type_element.text = type_object.entity_type
         return
 
-    def _export_entity_relationship_types (self, parent_element):
+    def _export_entity_relationship_types(self, parent_element):
         """Export referenced EntityRelationshipType objects."""
         model_name = 'EntityRelationshipType'
         self._log_start_objects(model_name)
@@ -695,14 +709,15 @@ class Exporter (object):
             self._log_object(model_name, type_object)
             type_element = etree.SubElement(types_element,
                                             EATS + 'entity_relationship_type')
-            self._add_ids(type_object, type_element, 'entity_relationship_type')
+            self._add_ids(type_object, type_element,
+                          'entity_relationship_type')
             type_element.set('authority', 'authority-%d'
                              % (type_object.authority_id))
             self._export_last_modified(type_object, type_element)
             type_element.text = type_object.entity_relationship_type
         return
 
-    def _export_name_types (self, parent_element):
+    def _export_name_types(self, parent_element):
         """Export reference NameType objects."""
         model_name = 'NameType'
         self._log_start_objects(model_name)
@@ -720,11 +735,12 @@ class Exporter (object):
             self._export_last_modified(type_object, type_element)
             self._annotate_with_user_prefs(type_object, type_element,
                                            'name_type')
-            type_element.set('is_default', self._get_XML_boolean(type_object.is_default))
+            type_element.set('is_default', self._get_XML_boolean(
+                type_object.is_default))
             type_element.text = type_object.name_type
         return
 
-    def _export_name_part_types (self, parent_element):
+    def _export_name_part_types(self, parent_element):
         """Export referenced NamePartType objects."""
         model_name = 'NamePartType'
         self._log_start_objects(model_name)
@@ -750,7 +766,7 @@ class Exporter (object):
                 type_object.system_name_part_type_id)
         return types_element
 
-    def _export_languages (self, parent_element):
+    def _export_languages(self, parent_element):
         """Export referenced Language objects."""
         model_name = 'Language'
         self._log_start_objects(model_name)
@@ -782,7 +798,7 @@ class Exporter (object):
                 self._object_list['SystemNamePartType'].add(type_object.id)
         return languages_element
 
-    def _export_system_name_part_types (self, parent_element):
+    def _export_system_name_part_types(self, parent_element):
         """Export referenced SystemNamePartType objects."""
         model_name = 'SystemNamePartType'
         self._log_start_objects(model_name)
@@ -803,14 +819,15 @@ class Exporter (object):
             description_element.text = type_object.description
         return
 
-    def _export_scripts (self, parent_element):
+    def _export_scripts(self, parent_element):
         """Export referenced Script objects."""
         model_name = 'Script'
         self._log_start_objects(model_name)
         ids = tuple(self._object_list[model_name])
         script_objects = Script.objects.filter(pk__in=ids)
         if len(script_objects):
-            scripts_element = etree.SubElement(parent_element, EATS + 'scripts')
+            scripts_element = etree.SubElement(
+                parent_element, EATS + 'scripts')
         for script_object in script_objects:
             self._log_object(model_name, script_object)
             script_element = etree.SubElement(scripts_element, EATS + 'script')
@@ -824,7 +841,7 @@ class Exporter (object):
             code_element.text = script_object.script_code
         return
 
-    def _export_name_relationship_types (self, parent_element):
+    def _export_name_relationship_types(self, parent_element):
         """Export referenced NameRelationshipType objects."""
         model_name = 'NameRelationshipType'
         self._log_start_objects(model_name)
@@ -844,7 +861,7 @@ class Exporter (object):
             type_element.text = type_object.name_relationship_type
         return
 
-    def _export_calendars (self, parent_element):
+    def _export_calendars(self, parent_element):
         """Export referenced Calendar objects."""
         model_name = 'Calendar'
         self._log_start_objects(model_name)
@@ -864,7 +881,7 @@ class Exporter (object):
             calendar_element.text = calendar_object.calendar
         return
 
-    def _export_date_types (self, parent_element):
+    def _export_date_types(self, parent_element):
         """Export referenced DateType objects."""
         model_name = 'DateType'
         self._log_start_objects(model_name)
@@ -883,7 +900,7 @@ class Exporter (object):
             type_element.text = type_object.date_type
         return
 
-    def _export_date_periods (self, parent_element):
+    def _export_date_periods(self, parent_element):
         """Export referenced DatePeriod objects."""
         model_name = 'DatePeriod'
         self._log_start_objects(model_name)
@@ -903,7 +920,7 @@ class Exporter (object):
             period_element.text = period_object.date_period
         return
 
-    def _export_authority_records (self, parent_element):
+    def _export_authority_records(self, parent_element):
         """Export reference AuthorityRecord objects."""
         model_name = 'AuthorityRecord'
         self._log_start_objects(model_name)
@@ -924,32 +941,33 @@ class Exporter (object):
             for record_object in record_objects:
                 record_element = etree.SubElement(records_element,
                                                   EATS + 'authority_record')
-                self._add_ids(record_object, record_element, 'authority_record')
+                self._add_ids(record_object, record_element,
+                              'authority_record')
                 record_element.set('authority', 'authority-%d'
                                    % (record_object.authority_id))
                 self._export_last_modified(record_object, record_element)
                 id_element = etree.SubElement(record_element,
                                               EATS + 'authority_system_id')
                 id_element.set('is_complete', self._get_XML_boolean(
-                        record_object.is_complete_id))
+                    record_object.is_complete_id))
                 id_element.text = record_object.authority_system_id
                 url_element = etree.SubElement(record_element,
                                                EATS + 'authority_system_url')
                 url_element.set('is_complete', self._get_XML_boolean(
-                        record_object.is_complete_url))
+                    record_object.is_complete_url))
                 url_element.text = record_object.authority_system_url
         return
 
     ###
-    ### Helper methods
+    # Helper methods
     ###
 
-    def _add_ids (self, model_object, element, prefix):
+    def _add_ids(self, model_object, element, prefix):
         """Add XML and EATS IDs to element."""
         self._add_xml_id(model_object, element, prefix)
         self._add_eats_id(model_object, element)
 
-    def _annotate_with_user_prefs (self, model_object, element, object_type):
+    def _annotate_with_user_prefs(self, model_object, element, object_type):
         """Check whether model_object is the user's default for this
         object_type; if so, add an attribute to this effect to
         element.
@@ -966,14 +984,14 @@ class Exporter (object):
             if preferred_object == model_object:
                 element.set('user_default', self._XML_true)
 
-    def _log_assertion_object (self, model_name, property_assertion_object):
+    def _log_assertion_object(self, model_name, property_assertion_object):
         """Log the handling of the property_assertion_object for a model_name
         assertion."""
         assertion_name = '%s property assertion' % (model_name)
         self._log_object(assertion_name, property_assertion_object)
 
     @staticmethod
-    def _validate (root):
+    def _validate(root):
         """Validate the XML document against the RelaxNG schema."""
         logging.debug('Parsing RelaxNG schema')
         relaxng_doc = etree.parse(RNG_PATH)
@@ -990,31 +1008,32 @@ class Exporter (object):
                            xml_declaration=True)
                 xml_file.close()
             except Exception as exception:
-                save_message = 'Could not save the invalid document to %s due to the following error: %s' % (INVALID_FILE_PATH, exception)
+                save_message = 'Could not save the invalid document to %s due to the following error: %s' % (
+                    INVALID_FILE_PATH, exception)
                 logging.error(save_message)
             raise EATSExportError(message)
         logging.debug('Finished validating export file')
 
     @staticmethod
-    def _get_XML_boolean (boolean):
+    def _get_XML_boolean(boolean):
         """Return boolean (a Python boolean) in a format suitable for use in
         an XML document using the XML Schema boolean datatype."""
         return str(boolean).lower()
 
     @staticmethod
-    def _add_xml_id (model_object, element, prefix):
+    def _add_xml_id(model_object, element, prefix):
         """Add an XML ID with value taken from model_object to element
         appended to prefix."""
         element.set(XML + 'id', '%s-%d' % (prefix, model_object.id))
 
     @staticmethod
-    def _add_eats_id (model_object, element):
+    def _add_eats_id(model_object, element):
         """Add an eats_id attribute with value taken from model_object to
         element."""
         element.set('eats_id', str(model_object.id))
 
     @staticmethod
-    def _export_last_modified (model_object, parent_element):
+    def _export_last_modified(model_object, parent_element):
         """Export the last_modified field of model_object as an attribute on
         parent_element."""
         parent_element.set('last_modified',
@@ -1022,12 +1041,12 @@ class Exporter (object):
         return
 
     @staticmethod
-    def _log_start_objects (model_name):
+    def _log_start_objects(model_name):
         """Log the handling of model_name objects."""
         logging.debug('Exporting %s objects' % (model_name))
 
     @staticmethod
-    def _log_object (model_name, model_object):
+    def _log_object(model_name, model_object):
         """Log the handling of model_name model_object."""
         logging.debug('Exporting %s object with id %d'
                       % (model_name, model_object.id))

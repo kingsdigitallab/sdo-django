@@ -20,17 +20,19 @@ from eats.views.main import get_model_preferences, \
 from eats.eatsml.exporter import Exporter
 from eats.eatsml.importer import Importer
 
+
 class EATSAuthenticationException (Exception):
     """Exception class for authentication failures."""
-    def __init__ (self, url):
+
+    def __init__(self, url):
         # url is a URL to redirect to.
         self.url = url
 
-    def get_url (self):
+    def get_url(self):
         return self.url
 
 
-def get_editable_authorities (user, authority=None):
+def get_editable_authorities(user, authority=None):
     """Return a profile and QuerySet of editable authorities. Raise an
     EATSAuthenticationException if there is no user profile or no
     editable authorities.
@@ -53,8 +55,9 @@ def get_editable_authorities (user, authority=None):
         raise EATSAuthenticationException('/')
     return profile, editable_authorities
 
+
 @login_required()
-def create_entity (request):
+def create_entity(request):
     """View to create a new entity with an existence assertion, using
     details from the logged in user's defaults. On successful
     creation, redirect to the edit page for the new entity."""
@@ -76,8 +79,9 @@ def create_entity (request):
     kw_args = {'model_name': 'entity', 'object_id': entity.id}
     return HttpResponseRedirect(reverse(edit_model_object, kwargs=kw_args))
 
+
 @login_required()
-def create_date (request, assertion_id):
+def create_date(request, assertion_id):
     """View to create a date for an assertion."""
     assertion = get_object_or_404(PropertyAssertion, pk=assertion_id)
     authority = assertion.authority_record.authority
@@ -134,8 +138,9 @@ def create_date (request, assertion_id):
     context_data = {'form': form}
     return render(request, 'eats/edit/add_date.html', context_data)
 
+
 @login_required()
-def create_name (request, entity_id):
+def create_name(request, entity_id):
     """View to create a Name and associate it with an entity."""
     entity = get_object_or_404(Entity, pk=entity_id)
     try:
@@ -147,11 +152,12 @@ def create_name (request, entity_id):
     name_part_forms = []
     name_note_forms = []
     authority_records = get_authority_records(entity, editable_authorities)
-    # select the first NameType with 'is_default' set as True (EATS allows multiple defaults, because...?)
+    # select the first NameType with 'is_default' set as True (EATS allows
+    # multiple defaults, because...?)
     default_name_type = NameType.objects.order_by('-is_default')[0]
     initial_data = {'language': profile.language.id,
                     'script': profile.script.id,
-                    'name_type': default_name_type.pk }
+                    'name_type': default_name_type.pk}
     extra_data = {}
     context_data = {}
     extra_data['name_types'] = NameType.objects.filter(
@@ -195,18 +201,19 @@ def create_name (request, entity_id):
     extra_data['name_part_types'] = name_part_types
     # Name part inline forms.
     name_part_type_select_ids = []
-    for i in range(1, number_name_part_forms+1):
+    for i in range(1, number_name_part_forms + 1):
         prefix = 'name_part_%d' % (i)
         if name_id is not None:
             post_data['%s-name' % (prefix)] = name_id
-        name_part_form = NamePartForm(extra_data, data=post_data, prefix=prefix)
+        name_part_form = NamePartForm(
+            extra_data, data=post_data, prefix=prefix)
         name_part_form.is_new_form = True
         name_part_forms.append(name_part_form)
         # This is a gross hack. There really ought to be a way to get
         # the ID of the widget.
         name_part_type_select_ids.append(
             'id_%s' % (name_part_form.add_prefix('name_part_type')))
-    for i in range(1, number_name_note_forms+1):
+    for i in range(1, number_name_note_forms + 1):
         prefix = 'name_note_%d' % (i)
         if name_id is not None:
             post_data['%s-name' % (prefix)] = name_id
@@ -257,20 +264,22 @@ def create_name (request, entity_id):
     context_data['name_note_forms'] = name_note_forms
     return render(request, 'eats/edit/add_name.html', context_data)
 
-def map_by_authority (model_objects):
+
+def map_by_authority(model_objects):
     """Return a dictionary keying model_objects by each object's
     authority_id."""
     object_map = {}
     for model_object in model_objects:
         authority_id = model_object.authority_id
-        if object_map.has_key(authority_id):
+        if authority_id in object_map:
             object_map[authority_id].append(model_object)
         else:
             object_map[authority_id] = [model_object]
-    return object_map    
+    return object_map
+
 
 @login_required()
-def select_authority_record (request):
+def select_authority_record(request):
     """View for selecting or creating an authority record for an
     Existence property assertion."""
     # QAZ: Ensure that the user has permission to assign a record from
@@ -284,7 +293,8 @@ def select_authority_record (request):
     create_form = AuthorityRecordCreateForm(editable_authorities)
     if request.method == 'POST':
         if request.POST.get('submit_search'):
-            search_form = AuthorityRecordSearchForm(editable_authorities, data=request.POST)
+            search_form = AuthorityRecordSearchForm(
+                editable_authorities, data=request.POST)
             if search_form.is_valid():
                 authority_id = search_form.cleaned_data['search_authority']
                 authority = Authority.objects.get(pk=authority_id)
@@ -298,32 +308,38 @@ def select_authority_record (request):
                 # the authority) and a record-specific element.
                 if record_id:
                     queries.append(Q(authority_system_id=record_id))
-                    queries.append(Q(authority_system_id=base_id+record_id))
+                    queries.append(Q(authority_system_id=base_id + record_id))
                     if record_id.startswith(base_id):
                         index = len(base_id)
-                        queries.append(Q(authority_system_id=record_id[index:]))
+                        queries.append(
+                            Q(authority_system_id=record_id[index:]))
                 if record_url:
                     queries.append(Q(authority_system_url=record_url))
-                    queries.append(Q(authority_system_url=base_url+record_url))
+                    queries.append(
+                        Q(authority_system_url=base_url + record_url))
                     if record_url.startswith(base_url):
                         index = len(base_url)
-                        queries.append(Q(authority_system_url=record_url[index:]))
+                        queries.append(
+                            Q(authority_system_url=record_url[index:]))
                 Qs = None
                 for query in queries:
                     if Qs:
                         Qs = Qs | query
                     else:
                         Qs = query
-                records = AuthorityRecord.objects.filter(authority=authority).filter(Qs)
+                records = AuthorityRecord.objects.filter(
+                    authority=authority).filter(Qs)
                 context_data['search_results'] = records
         elif request.POST.get('submit_create'):
             context_data['show_search'] = False
-            create_form = AuthorityRecordCreateForm(editable_authorities, data=request.POST)
+            create_form = AuthorityRecordCreateForm(
+                editable_authorities, data=request.POST)
             # Populate the search form only with the hidden fields for
             # tracking the link to the opening window's widgets.
             data = {'authority_record_id_widget_id': request.POST.get('authority_record_id_widget_id'),
                     'authority_record_name_widget_id': request.POST.get('authority_record_name_widget_id')}
-            search_form = AuthorityRecordSearchForm(editable_authorities, data=data)
+            search_form = AuthorityRecordSearchForm(
+                editable_authorities, data=data)
             if create_form.is_valid():
                 authority_record = create_form.save()
                 context_data['create_result'] = authority_record
@@ -332,8 +348,9 @@ def select_authority_record (request):
     context_data['authorities'] = editable_authorities
     return render(request, 'eats/edit/authority_record.html', context_data)
 
+
 @login_required()
-def select_entity (request):
+def select_entity(request):
     """View for searching for and selecting an entity to be supplied to an
     entity relationship form."""
     try:
@@ -362,13 +379,15 @@ def select_entity (request):
     context_data['eats_search_results'] = results
     return render(request, 'eats/edit/select_entity.html', context_data)
 
-def get_authority_records (entity, authorities):
+
+def get_authority_records(entity, authorities):
     """Return a QuerySet of authority records available to entity
     and which are associated with one of the authorities."""
     return entity.get_authority_records().filter(authority__in=authorities)
 
+
 @login_required()
-def delete_entity (request, entity_id):
+def delete_entity(request, entity_id):
     """View to confirm the deletion of an entity."""
     # QAZ: This must be disabled once the site is edited by multiple
     # organisations.
@@ -383,23 +402,25 @@ def delete_entity (request, entity_id):
         else:
             kw_args['model_name'] = model_name
             kw_args['object_id'] = entity_id
-            return HttpResponseRedirect(reverse(edit_model_object, kwargs=kw_args))
+            return HttpResponseRedirect(
+                reverse(edit_model_object, kwargs=kw_args))
     else:
         # Assemble some context to aid in helping the user determine
         # whether this object should be deleted.
         context_data = {
             'object_type': model_name,
             'object_value': entity_object,
-            }
+        }
         return render(request, 'eats/edit/confirm_delete.html', context_data)
 
+
 @login_required()
-def delete_object (request, model_name, object_id):
+def delete_object(request, model_name, object_id):
     """View to confirm the deletion of an object."""
     try:
         model = models.get_model(app_name, model_name)
         eats_object = model.objects.get(pk=object_id)
-    except:
+    except BaseException:
         raise Http404
     if model == Date:
         assertion = eats_object.assertion
@@ -444,10 +465,11 @@ def delete_object (request, model_name, object_id):
         context_data = {
             'object_type': model_name,
             'object_value': eats_object,
-            }
+        }
         return render(request, 'eats/edit/confirm_delete.html', context_data)
 
-def edit_date (request, date, editable_authorities):
+
+def edit_date(request, date, editable_authorities):
     """View to edit an existing Date object."""
     # QAZ: display errors on the template.
     context_data = {'date': date, 'entity': date.assertion.entity}
@@ -482,14 +504,15 @@ def edit_date (request, date, editable_authorities):
     context_data['form'] = form
     return render(request, 'eats/edit/edit_date.html', context_data)
 
-def edit_entity (request, entity, editable_authorities):
+
+def edit_entity(request, entity, editable_authorities):
     """View to edit an existing Entity object."""
     context_data = {'entity': entity}
     authority_records = get_authority_records(entity, editable_authorities)
     usable_entity_types = EntityTypeList.objects.filter(
-            authority__in=editable_authorities)
+        authority__in=editable_authorities)
     usable_entity_relationship_types = EntityRelationshipType.objects.filter(
-            authority__in=editable_authorities)
+        authority__in=editable_authorities)
     usable_name_relationship_types = NameRelationshipType.objects.filter(
         authority__in=editable_authorities)
     usable_names = Name.objects.filter(assertion__entity=entity).filter(
@@ -514,7 +537,7 @@ def edit_entity (request, entity, editable_authorities):
             'form_class': EntityRelationshipForm,
             'new_forms': 2,
             'data': {'entity_relationship_types':
-                         usable_entity_relationship_types,
+                     usable_entity_relationship_types,
                      'user_prefs': user_prefs},
             'inline': {'related_name': 'notes',
                        'new_forms': 1,
@@ -523,8 +546,8 @@ def edit_entity (request, entity, editable_authorities):
                  'form_class': EntityNoteForm, 'new_forms': 1},
         'reference': {'query': Q(reference__isnull=False),
                       'form_class': ReferenceForm, 'new_forms': 2},
-        #'generic_property': [Q(generic_property__isnull=False), GenericForm]
-        }
+        # 'generic_property': [Q(generic_property__isnull=False), GenericForm]
+    }
     editable_lookup = Q(authority_record__authority__in=editable_authorities)
     form_data = {'errors': False, 'creations': [], 'saves': [], 'deletions': [],
                  'inline_saves': [], 'inline_deletions': [],
@@ -536,7 +559,7 @@ def edit_entity (request, entity, editable_authorities):
     else:
         post_data = None
     # Create the lists of forms and assertions.
-    for assertion_type, assertion_data in assertion_type_data.items():
+    for assertion_type, assertion_data in list(assertion_type_data.items()):
         assertions = PropertyAssertion.objects\
             .filter(assertion_data['query'])\
             .filter(Q(entity=entity))
@@ -556,7 +579,8 @@ def edit_entity (request, entity, editable_authorities):
             (bound_instance_forms, bound_new_forms) = form_set.get_bound_forms()
             form_data['bound_instance_forms'].extend(bound_instance_forms)
             form_data['bound_new_forms'].extend(bound_new_forms)
-            (bound_inline_instance_forms, bound_inline_new_forms) = form_set.get_bound_inline_forms()
+            (bound_inline_instance_forms,
+             bound_inline_new_forms) = form_set.get_bound_inline_forms()
             form_data['bound_inline_instance_forms'].extend(
                 bound_inline_instance_forms)
             form_data['bound_inline_new_forms'].extend(bound_inline_new_forms)
@@ -564,7 +588,8 @@ def edit_entity (request, entity, editable_authorities):
         else:
             # No form, just a list of assertions.
             context_data[assertion_type + '_editable'] = editable_assertions
-        context_data[assertion_type + '_non_editable'] = non_editable_assertions
+        context_data[assertion_type +
+                     '_non_editable'] = non_editable_assertions
     # Validate the forms.
     if post_data is not None:
         if request.POST.get('submit_delete'):
@@ -632,7 +657,7 @@ def edit_entity (request, entity, editable_authorities):
                 assertions = PropertyAssertion.objects\
                     .filter(entity=assertion.entity,
                             authority_record=assertion.authority_record)\
-                            .exclude(pk=assertion.id)
+                    .exclude(pk=assertion.id)
                 for non_existence_assertion in assertions:
                     non_existence_assertion.authority_record = authority_record
                     non_existence_assertion.save()
@@ -649,7 +674,8 @@ def edit_entity (request, entity, editable_authorities):
     context_data['reverse_entity_relationships'] = reverse_entity_relationships
     return render(request, 'eats/edit/edit_entity.html', context_data)
 
-def edit_name (request, name, editable_authorities):
+
+def edit_name(request, name, editable_authorities):
     """View to edit an existing Name object."""
     # Much of the code here is a duplicate or close copy of the code
     # in create_name.
@@ -711,11 +737,12 @@ def edit_name (request, name, editable_authorities):
         name_part_type_select_ids.append(
             'id_%s' % (name_part_form.add_prefix('name_part_type')))
     # New name part inline forms.
-    for i in range(1, number_name_part_forms+1):
+    for i in range(1, number_name_part_forms + 1):
         prefix = 'name_part_new_%d' % (i)
         if post_data is not None:
             post_data['%s-name' % (prefix)] = name.id
-        name_part_form = NamePartForm(extra_data, prefix=prefix, data=post_data)
+        name_part_form = NamePartForm(
+            extra_data, prefix=prefix, data=post_data)
         name_part_form.is_new_form = True
         name_part_forms.append(name_part_form)
         # This is a gross hack. There really ought to be a way to get
@@ -729,7 +756,7 @@ def edit_name (request, name, editable_authorities):
                                       data=post_data)
         name_note_forms.append(name_note_form)
     # New name note inline forms.
-    for i in range(1, number_name_note_forms+1):
+    for i in range(1, number_name_note_forms + 1):
         prefix = 'name_note_new_%d' % (i)
         if post_data is not None:
             post_data['%s-name' % (prefix)] = name.id
@@ -763,7 +790,8 @@ def edit_name (request, name, editable_authorities):
                 form.instance.delete()
             # Save changes to the PropertyAssertion.
             assertion.is_preferred = name_form.cleaned_data.get('is_preferred')
-            assertion.authority_record = name_form.cleaned_data.get('authority_record')
+            assertion.authority_record = name_form.cleaned_data.get(
+                'authority_record')
             assertion.save()
             kw_args = {}
             if request.POST.get('submit_continue'):
@@ -789,8 +817,9 @@ def edit_name (request, name, editable_authorities):
     context_data['edit_form'] = True
     return render(request, 'eats/edit/edit_name.html', context_data)
 
+
 @login_required()
-def edit_model_object (request, model_name, object_id):
+def edit_model_object(request, model_name, object_id):
     """Return a template for editing the object with object_id in the
     model with model_name.
 
@@ -809,39 +838,43 @@ def edit_model_object (request, model_name, object_id):
         'date': edit_date,
         'entity': edit_entity,
         'name': edit_name,
-        }
+    }
     view_function = edit_views.get(model_name)
     if view_function is None:
         raise Http404
     try:
         model = models.get_model(app_name, model_name)
         eats_object = model.objects.get(pk=object_id)
-    except:
+    except BaseException:
         raise Http404
     return view_function(request, eats_object, editable_authorities)
 
+
 @login_required()
-def display_import (request, import_id):
+def display_import(request, import_id):
     """Display the details of an import."""
     import_object = get_object_or_404(RegisteredImport, pk=import_id)
     context_data = {'import': import_object}
     return render(request, 'eats/edit/display_import.html', context_data)
 
+
 @login_required()
-def display_import_raw (request, import_id):
+def display_import_raw(request, import_id):
     """Display the XML of the imported document."""
     import_object = get_object_or_404(RegisteredImport, pk=import_id)
     return HttpResponse(import_object.raw_xml, mimetype='text/xml')
 
+
 @login_required()
-def display_import_processed (request, import_id):
+def display_import_processed(request, import_id):
     """Display the XML of the imported document, annotated with the
     IDs of the created objects."""
     import_object = get_object_or_404(RegisteredImport, pk=import_id)
     return HttpResponse(import_object.processed_xml, mimetype='text/xml')
 
+
 @login_required()
-def import_eatsml (request):
+def import_eatsml(request):
     """Import POSTed EATSML file."""
     if request.method == 'POST':
         import_form = ImportForm(request.POST, request.FILES)
@@ -855,8 +888,8 @@ def import_eatsml (request):
                     eatsml_file)
             except Exception as e:
                 transaction.rollback()
-                response = render(request, 
-                    '500.html', {'message': e})
+                response = render(request,
+                                  '500.html', {'message': e})
                 response.status_code = 500
                 return response
             description = import_form.cleaned_data['description']
@@ -871,11 +904,11 @@ def import_eatsml (request):
             registered_import.save()
             transaction.commit()
             return HttpResponseRedirect(reverse(
-                    display_import, kwargs={'import_id': registered_import.id}))
+                display_import, kwargs={'import_id': registered_import.id}))
     else:
         import_form = ImportForm()
     import_list = RegisteredImport.objects.values(
-            'id', 'importer__username', 'description', 'import_date')
+        'id', 'importer__username', 'description', 'import_date')
     paginator = Paginator(import_list, 100)
     try:
         page = int(request.GET.get('page', '1'))
@@ -888,22 +921,25 @@ def import_eatsml (request):
     context_data = {'form': import_form, 'imports': imports}
     return render(request, 'eats/edit/import.html', context_data)
 
-def export_eatsml (request, authority_id=None):
+
+def export_eatsml(request, authority_id=None):
     if authority_id is None:
         entity_objects = Entity.objects.all()
     else:
-        entity_objects = Entity.objects.filter(assertions__authority_record__authority=authority_id).distinct()
+        entity_objects = Entity.objects.filter(
+            assertions__authority_record__authority=authority_id).distinct()
     try:
         eatsml_root = Exporter().export_entities(entity_objects)
     except Exception as e:
-        response = render(request, '500.html', {'message': unicode(e)})
+        response = render(request, '500.html', {'message': str(e)})
         response.status_code = 500
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8', pretty_print=True)
     return HttpResponse(xml, mimetype='text/xml')
 
+
 @login_required()
-def export_base_eatsml (request):
+def export_base_eatsml(request):
     """Export the infrastructure elements of the EATS server."""
     exporter = Exporter()
     exporter.set_user(request.user)
@@ -911,14 +947,15 @@ def export_base_eatsml (request):
         eatsml_root = exporter.export_infrastructure(limited=True,
                                                      annotated=True)
     except Exception as e:
-        response = render(request, '500.html', {'message': unicode(e)})
+        response = render(request, '500.html', {'message': str(e)})
         response.status_code = 500
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8', pretty_print=True)
     return HttpResponse(xml, mimetype='text/xml')
 
+
 @login_required()
-def export_xslt_list (request):
+def export_xslt_list(request):
     """Export the list of XSLTs required for the EATSML client interface."""
     try:
         xml = open(os.path.join(app_path, 'eatsml/xslt_list.xml'))
@@ -926,8 +963,9 @@ def export_xslt_list (request):
         raise Http404
     return HttpResponse(xml, mimetype='text/xml')
 
+
 @login_required()
-def export_xslt (request, xslt):
+def export_xslt(request, xslt):
     """Export the XSLT xslt."""
     try:
         xml = open(os.path.join(app_path, 'eatsml/%s.xsl' % xslt))
@@ -935,12 +973,13 @@ def export_xslt (request, xslt):
         raise Http404
     return HttpResponse(xml, mimetype='text/xml')
 
+
 @user_passes_test(lambda u: u.is_superuser)
-def update_name_search_forms (request):
+def update_name_search_forms(request):
     """Update the search forms for all of the names in the system."""
     names = Name.objects.all()
     for name in names:
         name.save()
     context_data = {'count': names.count()}
     return render(request, 'eats/edit/name_search_form_update.html',
-                              context_data)
+                  context_data)

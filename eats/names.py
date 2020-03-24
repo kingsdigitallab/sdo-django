@@ -7,9 +7,10 @@ import unicodedata
 preceding_char = r'[\w,;.?!)}\]]'
 right_apos_pattern = re.compile("(%s)'" % preceding_char, re.UNICODE)
 right_quote_pattern = re.compile('(%s)"' % preceding_char, re.UNICODE)
-macron_pattern = re.compile(u'([aeiou])\N{COMBINING MACRON}', re.UNICODE)
+macron_pattern = re.compile('([aeiou])\N{COMBINING MACRON}', re.UNICODE)
 
-def clean_name (name):
+
+def clean_name(name):
     """Return name cleaned up.
 
     Change ASCII apostrophes and quotation marks into Unicode
@@ -21,16 +22,17 @@ def clean_name (name):
     Further, put the name into a normalised Unicode form (NFC).
 
     """
-    name = right_apos_pattern.sub(r'\1' + u'\N{RIGHT SINGLE QUOTATION MARK}',
+    name = right_apos_pattern.sub(r'\1' + '\N{RIGHT SINGLE QUOTATION MARK}',
                                   name)
-    name = name.replace("'", u'\N{LEFT SINGLE QUOTATION MARK}')
-    name = right_quote_pattern.sub(r'\1' + u'\N{RIGHT DOUBLE QUOTATION MARK}',
+    name = name.replace("'", '\N{LEFT SINGLE QUOTATION MARK}')
+    name = right_quote_pattern.sub(r'\1' + '\N{RIGHT DOUBLE QUOTATION MARK}',
                                    name)
-    name = name.replace('"', u'\N{LEFT DOUBLE QUOTATION MARK}')
+    name = name.replace('"', '\N{LEFT DOUBLE QUOTATION MARK}')
     name = unicodedata.normalize('NFC', name)
     return name
 
-def create_search_forms (name, language_code, script_code):
+
+def create_search_forms(name, language_code, script_code):
     """Return a list of names suitable for searching.
 
     Arguments:
@@ -44,7 +46,7 @@ def create_search_forms (name, language_code, script_code):
     # assembled without spaces between the parts (eg, Chinese), since
     # this means that whatever part(s) come after the first will not
     # be found in a search.
-    name = unicode(name)
+    name = str(name)
     search_forms = [name]
     if script_code == 'Latn':
         ascii_form = asciify_name(name)
@@ -61,7 +63,8 @@ def create_search_forms (name, language_code, script_code):
         search_forms.append(unpunctuated_form)
     return search_forms
 
-def asciify_name (name):
+
+def asciify_name(name):
     """Return name converted to ASCII.
 
     Arguments:
@@ -70,33 +73,37 @@ def asciify_name (name):
     """
     substituted_form = substitute_ascii(name)
     normalised_form = unicodedata.normalize('NFD', substituted_form)
-    ascii_form = unicode(normalised_form.encode('ascii', 'ignore'))
+    ascii_form = str(normalised_form.encode('ascii', 'ignore'))
     return ascii_form
 
-def substitute_ascii (name):
+
+def substitute_ascii(name):
     """Return name with various non-ASCII characters replaced with ASCII
     equivalents."""
-    substitutions = [(u'Æ', u'AE'), (u'æ', u'ae'), (u'Œ', u'OE'),
-                     (u'œ', u'oe'), (u'ß', u'ss'), (u'ſ', u's'),
-                     (u'‘', u"'")]
+    substitutions = [('Æ', 'AE'), ('æ', 'ae'), ('Œ', 'OE'),
+                     ('œ', 'oe'), ('ß', 'ss'), ('ſ', 's'),
+                     ('‘', "'")]
     for original, substitute in substitutions:
         name = name.replace(original, substitute)
     return name
 
-def demacronise_name (name):
+
+def demacronise_name(name):
     """Return name with macronised vowels changed into double vowels."""
     substituted_form = substitute_ascii(name)
     normalised_form = unicodedata.normalize('NFD', substituted_form)
     demacronised_form = macron_pattern.sub(r'\1\1', normalised_form)
     return demacronised_form
 
-def abbreviate_name (name, language_code, script_code):
+
+def abbreviate_name(name, language_code, script_code):
     """Return name with full elements abbreviated."""
     if language_code == 'en':
         name = name.replace(' and ', ' & ')
     return name
 
-def unpunctuate_name (name):
+
+def unpunctuate_name(name):
     """Return name with punctuation removed."""
     # QAZ: This does not work well in some cases, such as "On Self
     # Misery.—An Epigram", where "An" ends up joined to "Misery".
@@ -106,9 +113,10 @@ def unpunctuate_name (name):
         # Punctuation categories start with 'P'.
         if category[0] != 'P':
             char_array.append(character)
-    return u''.join(char_array)
+    return ''.join(char_array)
 
-def compile_variants (name_obj):
+
+def compile_variants(name_obj):
     """Return a list of variant names derived from name.
 
     Arguments:
@@ -148,7 +156,8 @@ def compile_variants (name_obj):
                 toa = name_part.name_part
         if toa:
             toa = '%s ' % (toa)
-        given_components = [(given_name, '%s.' % (given_name[0])) for given_name in given.split()]
+        given_components = [(given_name, '%s.' % (given_name[0]))
+                            for given_name in given.split()]
         if given_components:
             given_forms = assemble_given_components(given_components, 0)
             for given_form in given_forms:
@@ -161,18 +170,20 @@ def compile_variants (name_obj):
             names.add('%s%s' % (toa, family))
     return list(names)
 
-def assemble_given_components (components, index):
+
+def assemble_given_components(components, index):
     forms = []
     later_forms = []
-    if len(components) - 1 > index: 
-        later_forms = assemble_given_components(components, index+1)
+    if len(components) - 1 > index:
+        later_forms = assemble_given_components(components, index + 1)
     for component in components[index]:
         forms.append(component)
         for part in later_forms:
             forms.append('%s %s' % (component, part))
-    return forms        
+    return forms
 
-def assemble_name (name_obj):
+
+def assemble_name(name_obj):
     """Return a name assembled from its parts.
 
     Arguments:
@@ -191,10 +202,10 @@ def assemble_name (name_obj):
     # Add punctuation between parts based on script of name.
     return script.separator.join(name_parts) or ''
 
-def my_import (name):
+
+def my_import(name):
     module = __import__(name)
     components = name.split('.')
     for component in components[1:]:
         module = getattr(module, component)
     return module
-

@@ -11,7 +11,7 @@ from django.conf import settings
 import eats.names as namehandler
 
 
-def get_default_object (model, authority=None):
+def get_default_object(model, authority=None):
     """Return the system-wide default object for the model.
 
     Arguments:
@@ -21,7 +21,7 @@ def get_default_object (model, authority=None):
     Each authority has its own set of defaults; if `authority` is not
     provided and `model` is not Authority, the default authority will
     be found and then used to get the default for `model`.
-    
+
     """
     if model == Authority:
         try:
@@ -30,7 +30,8 @@ def get_default_object (model, authority=None):
             try:
                 default = Authority.objects.all()[0]
             except IndexError:
-                raise Authority.DoesNotExist('No authority exists in the system, making it impossible to proceed.')
+                raise Authority.DoesNotExist(
+                    'No authority exists in the system, making it impossible to proceed.')
         except Authority.MultipleObjectsReturned:
             # This should only occur if the database data has been
             # changed outside of this app. Separating this case out
@@ -44,7 +45,8 @@ def get_default_object (model, authority=None):
         default = authority.get_default_object(model)
     return default
 
-def get_new_authority_record_details (authority):
+
+def get_new_authority_record_details(authority):
     """Return a dictionary of ID and URL details (the actual values and
     whether they are complete or not) for a new authority record
     linked to authority.
@@ -59,7 +61,7 @@ def get_new_authority_record_details (authority):
     try:
         functions = getattr(settings, 'EATS_AUTHORITY_RECORD_FUNCTIONS')
         function_name = functions[authority.authority]
-        if type(function_name) in (type(''), type(u'')):
+        if type(function_name) in (type(''), type('')):
             function = _import_function(function_name)
         else:
             function = function_name
@@ -67,17 +69,19 @@ def get_new_authority_record_details (authority):
         function = default_get_new_authority_record_details
     return function(AuthorityRecord, authority)
 
-def _import_function (function_name):
+
+def _import_function(function_name):
     """Import a function by name."""
     # QAZ: deal with the possible problems here, if there is no '.',
     # or no such module/function.
     split_index = function_name.rindex('.')
     module = function_name[:split_index]
-    function = function_name[split_index+1:]
+    function = function_name[split_index + 1:]
     temp = __import__(module, globals(), locals(), [function], -1)
     return getattr(temp, function)
 
-def default_get_new_authority_record_details (model, authority):
+
+def default_get_new_authority_record_details(model, authority):
     """Return a tuple of id and URL for a new authority record. This
     function provides a default implementation.
 
@@ -88,7 +92,8 @@ def default_get_new_authority_record_details (model, authority):
     """
     prefix = 'entity-'
     try:
-        last_id = model.objects.filter(authority=authority).order_by('-authority_system_id')[0].authority_system_id
+        last_id = model.objects.filter(authority=authority).order_by(
+            '-authority_system_id')[0].authority_system_id
     except IndexError:
         last_id = '%s000000' % prefix
     number = int(last_id[-6:]) + 1
@@ -118,7 +123,8 @@ class Authority (models.Model):
     base_url = models.CharField(max_length=255, blank=True)
     is_default = models.BooleanField()
     default_calendar = models.ForeignKey('Calendar', on_delete=models.CASCADE)
-    default_date_period = models.ForeignKey('DatePeriod', on_delete=models.CASCADE)
+    default_date_period = models.ForeignKey(
+        'DatePeriod', on_delete=models.CASCADE)
     default_date_type = models.ForeignKey('DateType', on_delete=models.CASCADE)
     default_language = models.ForeignKey('Language', on_delete=models.CASCADE)
     default_script = models.ForeignKey('Script', on_delete=models.CASCADE)
@@ -126,11 +132,11 @@ class Authority (models.Model):
     #entity = models.ForeignKey(Entity, null=True, blank=True, unique=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def get_short_name (self):
+    def get_short_name(self):
         """Return the short name of self."""
         return self.abbreviated_name or self.authority
 
-    def get_default_object (self, model):
+    def get_default_object(self, model):
         """Return this authority's default `model` object."""
         if model == Calendar:
             default = self.default_calendar
@@ -147,7 +153,8 @@ class Authority (models.Model):
                 try:
                     default = self.nametype_set.all()[0]
                 except IndexError:
-                    raise NameType.DoesNotExist('No name types exist in the system, making it impossible to proceed.')
+                    raise NameType.DoesNotExist(
+                        'No name types exist in the system, making it impossible to proceed.')
             except NameType.MultipleObjectsReturned:
                 # This should only occur if the database data has been
                 # changed outside of this app. Separating this case
@@ -162,8 +169,8 @@ class Authority (models.Model):
             raise Exception('Authority objects have no default %s object.'
                             % model._meta.object_name)
         return default
-    
-    def __unicode__ (self):
+
+    def __unicode__(self):
         return self.authority
 
     class Meta:
@@ -174,23 +181,25 @@ class AuthorityRecord (models.Model):
     """A record associated with an authority that identifies a
     resource in that authority's system."""
     authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
-    authority_system_id = models.CharField(max_length=100, blank=True, verbose_name='record ID')
+    authority_system_id = models.CharField(
+        max_length=100, blank=True, verbose_name='record ID')
     is_complete_id = models.BooleanField('Is complete ID?', default=False)
-    authority_system_url = models.CharField(max_length=255, blank=True, verbose_name='record URL')
+    authority_system_url = models.CharField(
+        max_length=255, blank=True, verbose_name='record URL')
     is_complete_url = models.BooleanField('Is complete URL?', default=False)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def get_id (self):
+    def get_id(self):
         """Return a full ID for this authority record."""
-        prefix = u''
+        prefix = ''
         if not(self.is_complete_id):
             prefix = self.authority.base_id
-        system_id = u'%s%s' % (prefix, self.authority_system_id)
+        system_id = '%s%s' % (prefix, self.authority_system_id)
         return system_id
 
-    def get_url (self):
+    def get_url(self):
         """Return a full URL for this authority record."""
-        prefix = u''
+        prefix = ''
         if not(self.is_complete_url):
             # QAZ: does there need to be escaping of this at some
             # point? Can't do it here, since we don't know where it
@@ -200,19 +209,20 @@ class AuthorityRecord (models.Model):
         # This doesn't use a proper URL joining library because the
         # parts are not guaranteed to be complete units (eg,
         # http://www.example.com/prefix- + part).
-        return u'%s%s' % (prefix, self.authority_system_url)
+        return '%s%s' % (prefix, self.authority_system_url)
 
-    def get_entities (self):
+    def get_entities(self):
         """Return a list of entities that have at least one property
         authorised by this record."""
-        entities = Entity.objects.filter(assertions__authority_record=self).distinct()
+        entities = Entity.objects.filter(
+            assertions__authority_record=self).distinct()
         return entities
 
-    def __unicode__ (self):
+    def __unicode__(self):
         id = self.get_id()
         if not id:
             id = self.get_url()
-        return u'%s: %s' % (self.authority.get_short_name(), id)
+        return '%s: %s' % (self.authority.get_short_name(), id)
 
     class Meta:
         unique_together = (('authority', 'authority_system_id',
@@ -224,10 +234,10 @@ class Entity (models.Model):
     asserted by an authority."""
     last_modified = models.DateTimeField(auto_now=True)
 
-    def get_absolute_url (self):
+    def get_absolute_url(self):
         return ('eats.views.main.display_entity', [str(self.id)])
 
-    def delete (self):
+    def delete(self):
         """Override the default delete method to handle the deletion of all of
         the properties associated with the entity."""
         properties = []
@@ -238,18 +248,18 @@ class Entity (models.Model):
         # Also delete those properties that are associated with other
         # entities but refer to self.
         properties.append(EntityRelationship.objects.filter(
-                related_entity=self))
+            related_entity=self))
         # QAZ: This should not be necessary, since name relationship
         # are within names of the same entity.
         properties.append(NameRelationship.objects.filter(
-                related_name__assertion__entity=self))
+            related_name__assertion__entity=self))
         # Delete Existences last, since other properties depend on them.
         properties.append(Existence.objects.filter(assertion__entity=self))
         for object_property in properties:
             object_property.delete()
         super(Entity, self).delete()
 
-    def save (self, authority=None, create_existence=True, *args, **kwargs):
+    def save(self, authority=None, create_existence=True, *args, **kwargs):
         """Override the default save method to allow for the automatic
         creation of auxiliary information when a new entity is added."""
         if self.id is None and create_existence:
@@ -272,14 +282,14 @@ class Entity (models.Model):
         else:
             super(Entity, self).save(*args, **kwargs)
 
-    def get_authority_records (self):
+    def get_authority_records(self):
         """Return a QuerySet of AuthorityRecord objects for the Existence
         records of the entity."""
         records = AuthorityRecord.objects.filter(assertions__entity=self)\
             .filter(assertions__existence__isnull=False).distinct()
         return records
 
-    def get_preferred_authority_records (self, user_prefs=None):
+    def get_preferred_authority_records(self, user_prefs=None):
         """Return a QuerySet of AuthorityRecord objects for the existence
         records of the entity that match the user preferences. The
         system default is used if a parameter is not supplied."""
@@ -288,11 +298,11 @@ class Entity (models.Model):
         records = self.get_authority_records().filter(authority=authority)
         return records
 
-    def get_entity_types (self):
+    def get_entity_types(self):
         """Return a QuerySet of EntityType objects for the entity."""
         return EntityType.objects.filter(assertion__entity=self)
 
-    def get_preferred_entity_types (self, user_prefs=None):
+    def get_preferred_entity_types(self, user_prefs=None):
         """Return a QuerySet of EntityType objects for the entity that match
         the user preferences."""
         user_prefs = user_prefs or {}
@@ -302,7 +312,7 @@ class Entity (models.Model):
             .filter(assertion__entity=self)\
             .order_by('-assertion__is_preferred')
 
-    def get_notes (self, note_filter=None):
+    def get_notes(self, note_filter=None):
         """Return a QuerySet of EntityNote objects for this entity, optionally
         filtered by note_filter."""
         notes = EntityNote.objects.filter(assertion__entity=self)
@@ -310,34 +320,34 @@ class Entity (models.Model):
             notes = notes.filter(note_filter)
         return notes
 
-    def get_internal_notes (self):
+    def get_internal_notes(self):
         """Return a QuerySet of EntityNote objects for the entity that are
         internal."""
         note_filter = Q(is_internal=True)
         return self.get_notes(note_filter)
 
-    def get_external_notes (self):
+    def get_external_notes(self):
         """Return a QuerySet of EntityNote objects for the entity that are
         external."""
         note_filter = Q(is_internal=False)
         return self.get_notes(note_filter)
 
-    def get_references (self):
+    def get_references(self):
         """Return a QuerySet of EntityReference objects for the entity."""
         return EntityReference.objects.filter(assertion__entity=self)
 
-    def get_dates (self):
+    def get_dates(self):
         """Return a QuerySet of Existence Date objects for the entity."""
         return Date.objects.filter(assertion__entity=self)\
             .filter(assertion__existence__isnull=False)
 
-    def get_names (self):
+    def get_names(self):
         """Return a QuerySet of all of the names of this entity."""
         return Name.objects.select_related(depth=3)\
             .filter(assertion__entity=self)\
             .order_by('-assertion__is_preferred')
 
-    def get_preferred_authority_names (self, user_prefs=None):
+    def get_preferred_authority_names(self, user_prefs=None):
         """Return a QuerySet of Name objects for the entity that match the
         user's preferred authority. The system default is used if a
         parameter is not supplied.
@@ -351,7 +361,7 @@ class Entity (models.Model):
         authority_filter = Q(assertion__authority_record__authority=authority)
         return self.get_names().filter(authority_filter)
 
-    def get_non_preferred_authority_names (self, user_prefs=None):
+    def get_non_preferred_authority_names(self, user_prefs=None):
         """Return a QuerySet of Name objects for the entity that do not match
         the user's preferred authority.
 
@@ -366,7 +376,7 @@ class Entity (models.Model):
         return names.exclude(authority_filter)\
             .order_by('assertion__authority_record__authority__authority')
 
-    def get_single_name_object (self, user_prefs=None):
+    def get_single_name_object(self, user_prefs=None):
         """Return a name object, trying to accomodate user_prefs but
         falling back where necessary. Returns None if no names are
         found.
@@ -406,7 +416,7 @@ class Entity (models.Model):
         except IndexError:
             return None
 
-    def get_single_name (self, user_prefs=None):
+    def get_single_name(self, user_prefs=None):
         """Return a single name string, trying to accomodate user_prefs but
         falling back where necessary.
 
@@ -416,22 +426,22 @@ class Entity (models.Model):
         """
         preferred_name = self.get_single_name_object(user_prefs)
         if preferred_name is None:
-            name_string = u'[No name defined]'
+            name_string = '[No name defined]'
         else:
-            name_string = unicode(preferred_name)
+            name_string = str(preferred_name)
         return name_string
 
-    def get_relationships (self):
+    def get_relationships(self):
         """Return a QuerySet of EntityRelationships for this entity."""
         return EntityRelationship.objects.filter(assertion__entity=self)
 
-    def get_reverse_relationships (self):
+    def get_reverse_relationships(self):
         """Return a QuerySet of EntityRelationships for this entity where the
         entity is the related entity."""
         return EntityRelationship.objects.filter(related_entity=self)
 
-    def __unicode__ (self):
-        return unicode(self.get_single_name())
+    def __unicode__(self):
+        return str(self.get_single_name())
 
     class Meta:
         verbose_name_plural = 'Entities'
@@ -445,7 +455,7 @@ class EntityTypeList (models.Model):
     class Meta:
         unique_together = (('entity_type', 'authority'),)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return '%s (%s)' % (self.entity_type, self.authority.get_short_name())
 
 
@@ -456,7 +466,7 @@ class EntityType (models.Model):
     # this table may be referenced only once.
     entity_type = models.ForeignKey(EntityTypeList, on_delete=models.CASCADE)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.entity_type.entity_type
 
 
@@ -464,19 +474,19 @@ class EntityNote (models.Model):
     note = models.TextField()
     is_internal = models.BooleanField('Internal?')
 
-    def __unicode__ (self):
+    def __unicode__(self):
         audience = 'external'
         if self.is_internal:
             audience = 'internal'
-        return u'[%s] %s' % (audience, self.note)
+        return '[%s] %s' % (audience, self.note)
 
 
 class EntityReference (models.Model):
     url = models.URLField()
     label = models.CharField(max_length=200)
 
-    def __unicode__ (self):
-        return u'%s at %s' % (self.label, self.url)
+    def __unicode__(self):
+        return '%s at %s' % (self.label, self.url)
 
 
 class EntityRelationshipType (models.Model):
@@ -484,7 +494,7 @@ class EntityRelationshipType (models.Model):
     authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return '%s (%s)' % (self.entity_relationship_type,
                             self.authority.get_short_name())
 
@@ -496,15 +506,16 @@ class EntityRelationshipTypeRelationship (models.Model):
         EntityRelationshipType,
         related_name='entityrelationshiptype_parent_set', on_delete=models.CASCADE)
     last_modified = models.DateTimeField(auto_now=True)
-    
+
 
 class EntityRelationship (models.Model):
     related_entity = models.ForeignKey(Entity,
                                        related_name='entity_relationships', on_delete=models.CASCADE)
-    entity_relationship_type = models.ForeignKey(EntityRelationshipType, on_delete=models.CASCADE)
+    entity_relationship_type = models.ForeignKey(
+        EntityRelationshipType, on_delete=models.CASCADE)
 
-    def __unicode__ (self):
-        return u'This entity %s %s' % (self.entity_relationship_type,
+    def __unicode__(self):
+        return 'This entity %s %s' % (self.entity_relationship_type,
                                       self.related_entity)
 
 
@@ -514,11 +525,12 @@ class EntityRelationshipNote (models.Model):
     note = models.TextField()
     is_internal = models.BooleanField('Internal?')
 
-    def __unicode__ (self):
+    def __unicode__(self):
         audience = 'external'
         if self.is_internal:
             audience = 'internal'
         return '[%s] %s' % (audience, self.note)
+
 
 class Existence (models.Model):
 
@@ -535,26 +547,26 @@ class Existence (models.Model):
     # with the entity via an Existence property in any of the drop
     # downs.
 
-    def authority (self):
+    def authority(self):
         """Return the authority associated with this existence."""
         return self.assertion.authority_record.authority
 
-    def save (self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         # Only one Existence is allowed per Entity and AuthorityRecord
         # combination.
         # QAZ: Implement this.
         super(Existence, self).save(*args, **kwargs)
 
-    def delete (self):
+    def delete(self):
         # An existence may not be deleted if the associated
         # AuthorityRecord is associated with another property for the
         # entity.
         # QAZ: implement this.
         super(Existence, self).delete()
 
-    def __unicode__ (self):
-        return u'%s' % (self.assertion.get().entity)
-    
+    def __unicode__(self):
+        return '%s' % (self.assertion.get().entity)
+
 
 class SystemNamePartType (models.Model):
     """Name part types that are used by the system in its code for
@@ -563,8 +575,8 @@ class SystemNamePartType (models.Model):
     name_part_type = models.CharField(max_length=200, unique=True)
     description = models.TextField()
 
-    def __unicode__ (self):
-        return u'%s' % (self.name_part_type)
+    def __unicode__(self):
+        return '%s' % (self.name_part_type)
 
 
 class Language (models.Model):
@@ -575,7 +587,7 @@ class Language (models.Model):
                                                     related_name='languages')
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return '%s' % (self.language_name)
 
     class Meta:
@@ -587,7 +599,7 @@ class Script (models.Model):
     script_name = models.CharField(max_length=30, unique=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return '%s' % (self.script_name)
 
     class Meta:
@@ -603,7 +615,7 @@ class NameType (models.Model):
     class Meta:
         unique_together = (('name_type', 'authority'),)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.name_type
 
 
@@ -613,17 +625,17 @@ class Name (models.Model):
     script = models.ForeignKey(Script, on_delete=models.CASCADE)
     display_form = models.CharField(max_length=800, blank=True)
 
-    def save (self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         self.display_form = namehandler.clean_name(self.display_form)
         super(Name, self).save(*args, **kwargs)
         self.update_search_names()
 
-    def is_preferred (self):
+    def is_preferred(self):
         """Return Boolean of whether this name is preferred by the
         authority."""
         return self.assertion.get().is_preferred
 
-    def get_display_form (self):
+    def get_display_form(self):
         """Return the display form of name."""
         if self.display_form:
             return self.display_form
@@ -632,21 +644,21 @@ class Name (models.Model):
             name = self.get_assembled_form() or 'No derivable name exists'
             return name
 
-    def get_assembled_form (self):
+    def get_assembled_form(self):
         """Return the assembled form of name. This is the form taken
         from automatically assembling the name parts, and is empty if
         there are none such."""
         return namehandler.assemble_name(self)
 
-    def get_authority_record (self):
+    def get_authority_record(self):
         """Return the AuthorityRecord object for name."""
         return self.assertion.get().authority_record
 
-    def get_authority (self):
+    def get_authority(self):
         """Return the Authority object for name."""
         return self.get_authority_record().authority
 
-    def update_search_names (self):
+    def update_search_names(self):
         """Update the search names for name."""
         # If we are creating the name, we may not have a property
         # assertion yet, so do not update the search names.
@@ -672,16 +684,17 @@ class Name (models.Model):
                                      name_form=search_form)
             search_name.save()
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.get_display_form()
 
 
 class NameNote (models.Model):
-    name = models.ForeignKey(Name, related_name='notes', on_delete=models.CASCADE)
+    name = models.ForeignKey(Name, related_name='notes',
+                             on_delete=models.CASCADE)
     note = models.TextField()
     is_internal = models.BooleanField('Internal?')
 
-    def __unicode__ (self):
+    def __unicode__(self):
         audience = 'external'
         if self.is_internal:
             audience = 'internal'
@@ -691,10 +704,11 @@ class NameNote (models.Model):
 class NamePartType (models.Model):
     name_part_type = models.CharField(max_length=200)
     authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
-    system_name_part_type = models.ForeignKey(SystemNamePartType, on_delete=models.CASCADE)
+    system_name_part_type = models.ForeignKey(
+        SystemNamePartType, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.name_part_type
 
     class Meta:
@@ -703,28 +717,31 @@ class NamePartType (models.Model):
 
 
 class NamePart (models.Model):
-    name = models.ForeignKey(Name, related_name='name_parts', on_delete=models.CASCADE)
+    name = models.ForeignKey(
+        Name, related_name='name_parts', on_delete=models.CASCADE)
     name_part_type = models.ForeignKey(NamePartType, on_delete=models.CASCADE)
-    language = models.ForeignKey(Language, null=True, blank=True, on_delete=models.CASCADE)
-    script = models.ForeignKey(Script, null=True, blank=True, on_delete=models.CASCADE)
+    language = models.ForeignKey(
+        Language, null=True, blank=True, on_delete=models.CASCADE)
+    script = models.ForeignKey(
+        Script, null=True, blank=True, on_delete=models.CASCADE)
     name_part = models.CharField(max_length=100)
 
     class Meta:
         unique_together = (('name', 'name_part_type'),)
 
-    def save (self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         self.name_part = namehandler.clean_name(self.name_part)
         super(NamePart, self).save(*args, **kwargs)
         self.name.update_search_names()
 
-    def delete (self):
+    def delete(self):
         """Override delete method to regenerate the search names for this
         part's name."""
         name = self.name
         super(NamePart, self).delete()
-        name.update_search_names()        
+        name.update_search_names()
 
-    def to_dict (self):
+    def to_dict(self):
         """Return a dictionary of name part details."""
         # Language and script are optional on name parts, so fall back
         # if they are not set. This should surely be done by Django...
@@ -741,8 +758,8 @@ class NamePart (models.Model):
                 'script_code': script,
                 'name_part': self.name_part}
 
-    def __unicode__ (self):
-        return u'%s (%s)' % (self.name_part,
+    def __unicode__(self):
+        return '%s (%s)' % (self.name_part,
                             self.name_part_type.name_part_type)
 
 
@@ -753,23 +770,25 @@ class NameRelationshipType (models.Model):
 
     class Meta:
         unique_together = (('name_relationship_type', 'authority'),)
-    
-    def __unicode__ (self):
+
+    def __unicode__(self):
         return '%s (%s)' % (self.name_relationship_type,
                             self.authority.get_short_name())
 
 
 class NameRelationship (models.Model):
-    name = models.ForeignKey(Name, related_name='name_start_relationships', on_delete=models.CASCADE)
+    name = models.ForeignKey(
+        Name, related_name='name_start_relationships', on_delete=models.CASCADE)
     related_name = models.ForeignKey(Name,
                                      related_name='name_end_relationships', on_delete=models.CASCADE)
-    name_relationship_type = models.ForeignKey(NameRelationshipType, on_delete=models.CASCADE)
+    name_relationship_type = models.ForeignKey(
+        NameRelationshipType, on_delete=models.CASCADE)
 
 
 class UserDefinedProperty (models.Model):
     name = models.CharField(max_length=100, unique=True)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.name
 
     class Meta:
@@ -780,7 +799,7 @@ class UserDefinedPropertyConstrainedValue (models.Model):
     property = models.ForeignKey(UserDefinedProperty, on_delete=models.CASCADE)
     value = models.CharField(max_length=100)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.value
 
 
@@ -788,7 +807,8 @@ class GenericProperty (models.Model):
     property = models.ForeignKey(UserDefinedProperty, on_delete=models.CASCADE)
     # QAZ: needs to be constrained to those values which have a
     # property_id matching property here.
-    constrained_value = models.ForeignKey(UserDefinedPropertyConstrainedValue, on_delete=models.CASCADE)
+    constrained_value = models.ForeignKey(
+        UserDefinedPropertyConstrainedValue, on_delete=models.CASCADE)
     free_value = models.CharField(max_length=100)
 
     class Meta:
@@ -796,30 +816,31 @@ class GenericProperty (models.Model):
 
 
 class PropertyAssertion (models.Model):
-    entity = models.ForeignKey(Entity, related_name='assertions', on_delete=models.CASCADE)
+    entity = models.ForeignKey(
+        Entity, related_name='assertions', on_delete=models.CASCADE)
     authority_record = models.ForeignKey(AuthorityRecord,
                                          related_name='assertions', on_delete=models.CASCADE)
     authority_record_checked = models.DateField(default=datetime.now,
                                                 null=True, blank=True)
     existence = models.OneToOneField(Existence, null=True, blank=True,
-                                   related_name='assertion', on_delete=models.CASCADE)
+                                     related_name='assertion', on_delete=models.CASCADE)
     entity_type = models.OneToOneField(EntityType, null=True, blank=True,
                                        related_name='assertion', on_delete=models.CASCADE)
     name = models.OneToOneField(Name, null=True, blank=True,
-                             related_name='assertion', on_delete=models.CASCADE)
+                                related_name='assertion', on_delete=models.CASCADE)
     entity_relationship = models.OneToOneField(EntityRelationship, null=True,
+                                               blank=True,
+                                               related_name='assertion', on_delete=models.CASCADE)
+    name_relationship = models.OneToOneField(NameRelationship, null=True,
+                                             blank=True,
+                                             related_name='assertion', on_delete=models.CASCADE)
+    note = models.OneToOneField(EntityNote, null=True, blank=True,
+                                related_name='assertion', on_delete=models.CASCADE)
+    reference = models.OneToOneField(EntityReference, null=True, blank=True,
+                                     related_name='assertion', on_delete=models.CASCADE)
+    generic_property = models.OneToOneField(GenericProperty, null=True,
                                             blank=True,
                                             related_name='assertion', on_delete=models.CASCADE)
-    name_relationship = models.OneToOneField(NameRelationship, null=True,
-                                          blank=True,
-                                          related_name='assertion', on_delete=models.CASCADE)
-    note = models.OneToOneField(EntityNote, null=True, blank=True,
-                             related_name='assertion', on_delete=models.CASCADE)
-    reference = models.OneToOneField(EntityReference, null=True, blank=True,
-                                  related_name='assertion', on_delete=models.CASCADE)
-    generic_property = models.OneToOneField(GenericProperty, null=True,
-                                         blank=True,
-                                         related_name='assertion', on_delete=models.CASCADE)
     # is_preferred indicates that a property is a preferred one of its
     # type by the authority. Multiple properties of the same type may
     # be preferred. What this means is left to the client - for
@@ -827,7 +848,7 @@ class PropertyAssertion (models.Model):
     # linguistic context.
     is_preferred = models.BooleanField('Is preferred property?')
 
-    def get_type (self):
+    def get_type(self):
         """Return the name of the type of property being asserted."""
         if self.existence:
             klass = Existence
@@ -847,11 +868,12 @@ class PropertyAssertion (models.Model):
             klass = GenericProperty
         return klass._meta.verbose_name
 
-    def is_valid (self):
-        validity_check = PropertyAssertionValidationForm(forms.model_to_dict(self))
+    def is_valid(self):
+        validity_check = PropertyAssertionValidationForm(
+            forms.model_to_dict(self))
         return validity_check.is_valid()
 
-    def save (self, *args, **kwargs):
+    def save(self, *args, **kwargs):
         # QAZ: Only one Existence is allowed per Entity and AuthorityRecord
         # combination - implement this.
         #
@@ -863,8 +885,8 @@ class PropertyAssertion (models.Model):
             raise Exception('Attempting to save an invalid model.')
         return super(PropertyAssertion, self).save(*args, **kwargs)
 
-    def __unicode__ (self):
-        return u'assertion that entity %s has %s property authorised in %s' \
+    def __unicode__(self):
+        return 'assertion that entity %s has %s property authorised in %s' \
             % (self.entity, self.get_type(), self.authority_record)
 
 
@@ -877,19 +899,23 @@ class PropertyAssertionValidationForm (forms.ModelForm):
         model = PropertyAssertion
         fields = '__all__'
 
-    def clean (self):
+    def clean(self):
         authority_record = self.cleaned_data.get('authority_record')
         entity = self.cleaned_data.get('entity')
         if not self.cleaned_data.get('existence'):
-            existences = Existence.objects.filter(assertion__entity=entity, assertion__authority_record=authority_record)
+            existences = Existence.objects.filter(
+                assertion__entity=entity, assertion__authority_record=authority_record)
             if not existences.count():
-                raise forms.ValidationError('an existence property assertion associated with this authority record must already exist')
+                raise forms.ValidationError(
+                    'an existence property assertion associated with this authority record must already exist')
+
 
 class DatePeriod (models.Model):
-    date_period = models.CharField(max_length=40, verbose_name='Period covered')
+    date_period = models.CharField(
+        max_length=40, verbose_name='Period covered')
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.date_period
 
 
@@ -897,7 +923,7 @@ class Calendar (models.Model):
     calendar = models.CharField(max_length=100)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.calendar
 
 
@@ -905,12 +931,13 @@ class DateType (models.Model):
     date_type = models.CharField(max_length=100)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__ (self):
+    def __unicode__(self):
         return self.date_type
 
-    
+
 class Date (models.Model):
-    assertion = models.ForeignKey(PropertyAssertion, related_name='dates', on_delete=models.CASCADE)
+    assertion = models.ForeignKey(
+        PropertyAssertion, related_name='dates', on_delete=models.CASCADE)
     date_period = models.ForeignKey(DatePeriod, on_delete=models.CASCADE)
     start_terminus_post = models.CharField('Date', max_length=100, blank=True)
     start_terminus_post_calendar = models.ForeignKey(
@@ -1006,20 +1033,21 @@ class Date (models.Model):
     end_terminus_ante_type = models.ForeignKey(
         DateType, verbose_name='Type',
         related_name='end_terminus_ante_type_set', null=True, on_delete=models.CASCADE)
-    end_terminus_ante_confident = models.BooleanField('Confident', default=True)
+    end_terminus_ante_confident = models.BooleanField(
+        'Confident', default=True)
     note = models.TextField(blank=True)
 
     @staticmethod
-    def _get_type_affix (date_type):
+    def _get_type_affix(date_type):
         """Return a date affix based on the date type."""
-        date_type = unicode(date_type)
+        date_type = str(date_type)
         affix = ''
-        if date_type == u'circa':
+        if date_type == 'circa':
             affix = 'c. '
         return affix
 
     @staticmethod
-    def _get_confidence_affix (confident):
+    def _get_confidence_affix(confident):
         """Return a date affix based on the date confidence."""
         affix = ''
         if not confident:
@@ -1027,7 +1055,7 @@ class Date (models.Model):
         return affix
 
     @staticmethod
-    def _get_calendar_affix (calendar):
+    def _get_calendar_affix(calendar):
         """Return a date affix based on the calendar."""
         affix = ''
         default_calendar = get_default_object(Calendar)
@@ -1035,14 +1063,14 @@ class Date (models.Model):
             affix = ' (%s calendar)' % (calendar)
         return affix
 
-    def _get_period_affix (self):
+    def _get_period_affix(self):
         """Return a date affix based on the date period."""
         affix = ''
-        if unicode(self.date_period) == u'floruit':
+        if str(self.date_period) == 'floruit':
             affix = 'fl. '
         return affix
 
-    def _assemble_date_part (self, date_part):
+    def _assemble_date_part(self, date_part):
         """Return a string form of a date part (point date, end
         terminus post, etc).
 
@@ -1053,14 +1081,17 @@ class Date (models.Model):
         assembled_date_part = ''
         date = getattr(self, date_part)
         if date:
-            type_affix = self._get_type_affix(getattr(self, date_part + '_type'))
+            type_affix = self._get_type_affix(
+                getattr(self, date_part + '_type'))
             confidence_affix = self._get_confidence_affix(
                 getattr(self, date_part + '_confident'))
-            calendar_affix = self._get_calendar_affix(getattr(self, date_part + '_calendar'))
-            assembled_date_part = u'%s%s%s%s' % (type_affix, date, confidence_affix, calendar_affix)
+            calendar_affix = self._get_calendar_affix(
+                getattr(self, date_part + '_calendar'))
+            assembled_date_part = '%s%s%s%s' % (
+                type_affix, date, confidence_affix, calendar_affix)
         return assembled_date_part
 
-    def _assemble_date_segment (self, date_segment):
+    def _assemble_date_segment(self, date_segment):
         """Return a string form of a date segment (start, end, or point).
 
         Arguments:
@@ -1069,32 +1100,34 @@ class Date (models.Model):
         """
         date = self._assemble_date_part(date_segment + '_date')
         if not date:
-            post_date = self._assemble_date_part(date_segment + '_terminus_post')
-            ante_date = self._assemble_date_part(date_segment + '_terminus_ante')
+            post_date = self._assemble_date_part(
+                date_segment + '_terminus_post')
+            ante_date = self._assemble_date_part(
+                date_segment + '_terminus_ante')
             if post_date:
-                date = u'at or after %s' % post_date
+                date = 'at or after %s' % post_date
                 if ante_date:
-                    date = u'%s and ' % date
+                    date = '%s and ' % date
             if ante_date:
-                date = u'%sat or before %s' % (date, ante_date)
+                date = '%sat or before %s' % (date, ante_date)
         return date
 
-    def __unicode__ (self):
+    def __unicode__(self):
         if self.point_date or self.point_terminus_post or self.point_terminus_ante:
             date = self._assemble_date_segment('point')
         else:
             start_date = self._assemble_date_segment('start')
             end_date = self._assemble_date_segment('end')
-            date = u'%s \N{EN DASH} %s' % (start_date, end_date)
+            date = '%s \N{EN DASH} %s' % (start_date, end_date)
         if date:
             period_prefix = self._get_period_affix()
-            date = u'%s %s' % (period_prefix, date)
+            date = '%s %s' % (period_prefix, date)
             date = date.strip()
         else:
             date = '[unspecified]'
         return date
-    
-    
+
+
 class Source (models.Model):
     assertion = models.ForeignKey(PropertyAssertion, on_delete=models.CASCADE)
     source_title = models.CharField(max_length=200)
@@ -1104,13 +1137,16 @@ class Source (models.Model):
 class SearchName (models.Model):
     """Model for the searchable names for an entity, derived from a
     name."""
-    entity = models.ForeignKey(Entity, related_name='search_names', on_delete=models.CASCADE)
-    name = models.ForeignKey(Name, related_name='search_names', on_delete=models.CASCADE)
+    entity = models.ForeignKey(
+        Entity, related_name='search_names', on_delete=models.CASCADE)
+    name = models.ForeignKey(
+        Name, related_name='search_names', on_delete=models.CASCADE)
     name_form = models.CharField(max_length=800)
 
 
 class UserProfile (models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE) # Required by Django
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE)  # Required by Django
     # Authority assertions user has permission to
     # create/update/delete.
     editable_authorities = models.ManyToManyField(
@@ -1124,8 +1160,8 @@ class UserProfile (models.Model):
     date_period = models.ForeignKey(DatePeriod, on_delete=models.CASCADE)
     name_type = models.ForeignKey(NameType, on_delete=models.CASCADE)
 
-    def __unicode__ (self):
-        return unicode(self.user)
+    def __unicode__(self):
+        return str(self.user)
 
 
 class RegisteredImport (models.Model):

@@ -18,7 +18,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Authority',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('authority', models.CharField(max_length=100, unique=True)),
                 ('abbreviated_name', models.CharField(blank=True, max_length=15)),
                 ('base_id', models.CharField(blank=True, max_length=255)),
@@ -33,13 +34,19 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='AuthorityRecord',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('authority_system_id', models.CharField(blank=True, max_length=100, verbose_name='record ID')),
-                ('is_complete_id', models.BooleanField(default=False, verbose_name='Is complete ID?')),
-                ('authority_system_url', models.CharField(blank=True, max_length=255, verbose_name='record URL')),
-                ('is_complete_url', models.BooleanField(default=False, verbose_name='Is complete URL?')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('authority_system_id', models.CharField(
+                    blank=True, max_length=100, verbose_name='record ID')),
+                ('is_complete_id', models.BooleanField(
+                    default=False, verbose_name='Is complete ID?')),
+                ('authority_system_url', models.CharField(
+                    blank=True, max_length=255, verbose_name='record URL')),
+                ('is_complete_url', models.BooleanField(
+                    default=False, verbose_name='Is complete URL?')),
                 ('last_modified', models.DateTimeField(auto_now=True)),
-                ('authority', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
+                ('authority', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
             ],
             options={
                 'unique_together': {('authority', 'authority_system_id', 'authority_system_url')},
@@ -48,7 +55,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Calendar',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('calendar', models.CharField(max_length=100)),
                 ('last_modified', models.DateTimeField(auto_now=True)),
             ],
@@ -56,15 +64,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='DatePeriod',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('date_period', models.CharField(max_length=40, verbose_name='Period covered')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('date_period', models.CharField(
+                    max_length=40, verbose_name='Period covered')),
                 ('last_modified', models.DateTimeField(auto_now=True)),
             ],
         ),
         migrations.CreateModel(
             name='DateType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('date_type', models.CharField(max_length=100)),
                 ('last_modified', models.DateTimeField(auto_now=True)),
             ],
@@ -72,7 +83,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Entity',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('last_modified', models.DateTimeField(auto_now=True)),
             ],
             options={
@@ -82,7 +94,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EntityNote',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('note', models.TextField()),
                 ('is_internal', models.BooleanField(verbose_name='Internal?')),
             ],
@@ -90,7 +103,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EntityReference',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('url', models.URLField()),
                 ('label', models.CharField(max_length=200)),
             ],
@@ -98,34 +112,41 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='EntityRelationship',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='EntityRelationshipType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('entity_relationship_type', models.CharField(max_length=100, unique=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('entity_relationship_type', models.CharField(
+                    max_length=100, unique=True)),
                 ('last_modified', models.DateTimeField(auto_now=True)),
-                ('authority', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
+                ('authority', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
             ],
         ),
         migrations.CreateModel(
             name='EntityType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='Existence',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
             ],
         ),
         migrations.CreateModel(
             name='GenericProperty',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('free_value', models.CharField(max_length=100)),
             ],
             options={
@@ -135,7 +156,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Language',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('language_code', models.CharField(max_length=3, unique=True)),
                 ('language_name', models.CharField(max_length=30, unique=True)),
                 ('last_modified', models.DateTimeField(auto_now=True)),
@@ -147,26 +169,32 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Name',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('display_form', models.CharField(blank=True, max_length=800)),
-                ('language', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Language')),
+                ('language', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Language')),
             ],
         ),
         migrations.CreateModel(
             name='NameRelationship',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='name_start_relationships', to='eats.Name')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('name', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                           related_name='name_start_relationships', to='eats.Name')),
             ],
         ),
         migrations.CreateModel(
             name='NameType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name_type', models.CharField(max_length=30)),
                 ('is_default', models.BooleanField()),
                 ('last_modified', models.DateTimeField(auto_now=True)),
-                ('authority', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
+                ('authority', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
             ],
             options={
                 'unique_together': {('name_type', 'authority')},
@@ -175,25 +203,39 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='PropertyAssertion',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('authority_record_checked', models.DateField(blank=True, default=datetime.datetime.now, null=True)),
-                ('is_preferred', models.BooleanField(verbose_name='Is preferred property?')),
-                ('authority_record', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assertions', to='eats.AuthorityRecord')),
-                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='assertions', to='eats.Entity')),
-                ('entity_relationship', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityRelationship', unique=True)),
-                ('entity_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityType', unique=True)),
-                ('existence', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.Existence', unique=True)),
-                ('generic_property', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.GenericProperty', unique=True)),
-                ('name', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.Name', unique=True)),
-                ('name_relationship', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.NameRelationship', unique=True)),
-                ('note', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityNote', unique=True)),
-                ('reference', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='assertion', to='eats.EntityReference', unique=True)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('authority_record_checked', models.DateField(
+                    blank=True, default=datetime.datetime.now, null=True)),
+                ('is_preferred', models.BooleanField(
+                    verbose_name='Is preferred property?')),
+                ('authority_record', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                                       related_name='assertions', to='eats.AuthorityRecord')),
+                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                             related_name='assertions', to='eats.Entity')),
+                ('entity_relationship', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                          related_name='assertion', to='eats.EntityRelationship', unique=True)),
+                ('entity_type', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                  related_name='assertion', to='eats.EntityType', unique=True)),
+                ('existence', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                related_name='assertion', to='eats.Existence', unique=True)),
+                ('generic_property', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                       related_name='assertion', to='eats.GenericProperty', unique=True)),
+                ('name', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                           related_name='assertion', to='eats.Name', unique=True)),
+                ('name_relationship', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                        related_name='assertion', to='eats.NameRelationship', unique=True)),
+                ('note', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                           related_name='assertion', to='eats.EntityNote', unique=True)),
+                ('reference', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                related_name='assertion', to='eats.EntityReference', unique=True)),
             ],
         ),
         migrations.CreateModel(
             name='Script',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('script_code', models.CharField(max_length=4, unique=True)),
                 ('script_name', models.CharField(max_length=30, unique=True)),
                 ('last_modified', models.DateTimeField(auto_now=True)),
@@ -205,7 +247,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='SystemNamePartType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name_part_type', models.CharField(max_length=200, unique=True)),
                 ('description', models.TextField()),
             ],
@@ -213,7 +256,8 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserDefinedProperty',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name', models.CharField(max_length=100, unique=True)),
             ],
             options={
@@ -223,62 +267,83 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserProfile',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('authority', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
-                ('calendar', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Calendar')),
-                ('date_period', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.DatePeriod')),
-                ('date_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.DateType')),
-                ('editable_authorities', models.ManyToManyField(blank=True, null=True, related_name='editors', to='eats.Authority')),
-                ('language', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Language')),
-                ('name_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.NameType')),
-                ('script', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Script')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('authority', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
+                ('calendar', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Calendar')),
+                ('date_period', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.DatePeriod')),
+                ('date_type', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.DateType')),
+                ('editable_authorities', models.ManyToManyField(blank=True,
+                                                                null=True, related_name='editors', to='eats.Authority')),
+                ('language', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Language')),
+                ('name_type', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.NameType')),
+                ('script', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Script')),
+                ('user', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='UserDefinedPropertyConstrainedValue',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('value', models.CharField(max_length=100)),
-                ('property', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.UserDefinedProperty')),
+                ('property', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.UserDefinedProperty')),
             ],
         ),
         migrations.CreateModel(
             name='Source',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('source_title', models.CharField(max_length=200)),
                 ('source_reference', models.CharField(max_length=200)),
-                ('assertion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.PropertyAssertion')),
+                ('assertion', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.PropertyAssertion')),
             ],
         ),
         migrations.CreateModel(
             name='SearchName',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name_form', models.CharField(max_length=800)),
-                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='search_names', to='eats.Entity')),
-                ('name', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='search_names', to='eats.Name')),
+                ('entity', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                             related_name='search_names', to='eats.Entity')),
+                ('name', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                           related_name='search_names', to='eats.Name')),
             ],
         ),
         migrations.CreateModel(
             name='RegisteredImport',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('description', models.CharField(max_length=200)),
                 ('raw_xml', models.TextField()),
                 ('processed_xml', models.TextField()),
                 ('import_date', models.DateTimeField(auto_now_add=True)),
-                ('importer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('importer', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.CreateModel(
             name='NameRelationshipType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name_relationship_type', models.CharField(max_length=30)),
                 ('last_modified', models.DateTimeField(auto_now=True)),
-                ('authority', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
+                ('authority', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
             ],
             options={
                 'unique_together': {('name_relationship_type', 'authority')},
@@ -287,21 +352,26 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='namerelationship',
             name='name_relationship_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.NameRelationshipType'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.NameRelationshipType'),
         ),
         migrations.AddField(
             model_name='namerelationship',
             name='related_name',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='name_end_relationships', to='eats.Name'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='name_end_relationships', to='eats.Name'),
         ),
         migrations.CreateModel(
             name='NamePartType',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name_part_type', models.CharField(max_length=200)),
                 ('last_modified', models.DateTimeField(auto_now=True)),
-                ('authority', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
-                ('system_name_part_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.SystemNamePartType')),
+                ('authority', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
+                ('system_name_part_type', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.SystemNamePartType')),
             ],
             options={
                 'ordering': ['name_part_type'],
@@ -311,44 +381,53 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='NameNote',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('note', models.TextField()),
                 ('is_internal', models.BooleanField(verbose_name='Internal?')),
-                ('name', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='notes', to='eats.Name')),
+                ('name', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name='notes', to='eats.Name')),
             ],
         ),
         migrations.AddField(
             model_name='name',
             name='name_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.NameType'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.NameType'),
         ),
         migrations.AddField(
             model_name='name',
             name='script',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Script'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.Script'),
         ),
         migrations.AddField(
             model_name='language',
             name='system_name_part_types',
-            field=models.ManyToManyField(related_name='languages', to='eats.SystemNamePartType'),
+            field=models.ManyToManyField(
+                related_name='languages', to='eats.SystemNamePartType'),
         ),
         migrations.AddField(
             model_name='genericproperty',
             name='constrained_value',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.UserDefinedPropertyConstrainedValue'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    to='eats.UserDefinedPropertyConstrainedValue'),
         ),
         migrations.AddField(
             model_name='genericproperty',
             name='property',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.UserDefinedProperty'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.UserDefinedProperty'),
         ),
         migrations.CreateModel(
             name='EntityTypeList',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('entity_type', models.CharField(max_length=30)),
                 ('last_modified', models.DateTimeField(auto_now=True)),
-                ('authority', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
+                ('authority', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.Authority')),
             ],
             options={
                 'unique_together': {('entity_type', 'authority')},
@@ -357,124 +436,190 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='entitytype',
             name='entity_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.EntityTypeList'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.EntityTypeList'),
         ),
         migrations.CreateModel(
             name='EntityRelationshipTypeRelationship',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('last_modified', models.DateTimeField(auto_now=True)),
-                ('child_entity_relationship_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entityrelationshiptype_child_set', to='eats.EntityRelationshipType')),
-                ('parent_entity_relationship_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entityrelationshiptype_parent_set', to='eats.EntityRelationshipType')),
+                ('child_entity_relationship_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                                                     related_name='entityrelationshiptype_child_set', to='eats.EntityRelationshipType')),
+                ('parent_entity_relationship_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                                                      related_name='entityrelationshiptype_parent_set', to='eats.EntityRelationshipType')),
             ],
         ),
         migrations.CreateModel(
             name='EntityRelationshipNote',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('note', models.TextField()),
                 ('is_internal', models.BooleanField(verbose_name='Internal?')),
-                ('entity_relationship', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='notes', to='eats.EntityRelationship')),
+                ('entity_relationship', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name='notes', to='eats.EntityRelationship')),
             ],
         ),
         migrations.AddField(
             model_name='entityrelationship',
             name='entity_relationship_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.EntityRelationshipType'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.EntityRelationshipType'),
         ),
         migrations.AddField(
             model_name='entityrelationship',
             name='related_entity',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='entity_relationships', to='eats.Entity'),
+            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                    related_name='entity_relationships', to='eats.Entity'),
         ),
         migrations.CreateModel(
             name='Date',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('start_terminus_post', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('start_terminus_post_normalised', models.CharField(blank=True, max_length=100, verbose_name='Normalised form')),
-                ('start_terminus_post_confident', models.BooleanField(default=True, verbose_name='Confident')),
-                ('start_date', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('start_date_normalised', models.CharField(blank=True, max_length=100, verbose_name='Normalised form')),
-                ('start_date_confident', models.BooleanField(default=True, verbose_name='Confident')),
-                ('start_terminus_ante', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('start_terminus_ante_normalised', models.CharField(blank=True, max_length=100, null=True, verbose_name='Normalised form')),
-                ('start_terminus_ante_confident', models.BooleanField(default=True, verbose_name='Confident')),
-                ('point_terminus_post', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('point_terminus_post_normalised', models.CharField(blank=True, max_length=100, verbose_name='Normalised form')),
-                ('point_terminus_post_confident', models.BooleanField(default=True, verbose_name='Confident')),
-                ('point_date', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('point_date_normalised', models.CharField(blank=True, max_length=100, verbose_name='Normalised form')),
-                ('point_date_confident', models.BooleanField(default=True, verbose_name='Confident')),
-                ('point_terminus_ante', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('point_terminus_ante_normalised', models.CharField(blank=True, max_length=100, null=True, verbose_name='Normalised form')),
-                ('point_terminus_ante_confident', models.BooleanField(default=True, verbose_name='Confident')),
-                ('end_terminus_post', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('end_terminus_post_normalised', models.CharField(blank=True, max_length=100, verbose_name='Normalised form')),
-                ('end_terminus_post_confident', models.BooleanField(default=True, verbose_name='Confident')),
-                ('end_date', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('end_date_normalised', models.CharField(blank=True, max_length=100, verbose_name='Normalised form')),
-                ('end_date_confident', models.BooleanField(default=True, verbose_name='Confident')),
-                ('end_terminus_ante', models.CharField(blank=True, max_length=100, verbose_name='Date')),
-                ('end_terminus_ante_normalised', models.CharField(blank=True, max_length=100, null=True, verbose_name='Normalised form')),
-                ('end_terminus_ante_confident', models.BooleanField(default=True, verbose_name='Confident')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
+                ('start_terminus_post', models.CharField(
+                    blank=True, max_length=100, verbose_name='Date')),
+                ('start_terminus_post_normalised', models.CharField(
+                    blank=True, max_length=100, verbose_name='Normalised form')),
+                ('start_terminus_post_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
+                ('start_date', models.CharField(
+                    blank=True, max_length=100, verbose_name='Date')),
+                ('start_date_normalised', models.CharField(
+                    blank=True, max_length=100, verbose_name='Normalised form')),
+                ('start_date_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
+                ('start_terminus_ante', models.CharField(
+                    blank=True, max_length=100, verbose_name='Date')),
+                ('start_terminus_ante_normalised', models.CharField(
+                    blank=True, max_length=100, null=True, verbose_name='Normalised form')),
+                ('start_terminus_ante_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
+                ('point_terminus_post', models.CharField(
+                    blank=True, max_length=100, verbose_name='Date')),
+                ('point_terminus_post_normalised', models.CharField(
+                    blank=True, max_length=100, verbose_name='Normalised form')),
+                ('point_terminus_post_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
+                ('point_date', models.CharField(
+                    blank=True, max_length=100, verbose_name='Date')),
+                ('point_date_normalised', models.CharField(
+                    blank=True, max_length=100, verbose_name='Normalised form')),
+                ('point_date_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
+                ('point_terminus_ante', models.CharField(
+                    blank=True, max_length=100, verbose_name='Date')),
+                ('point_terminus_ante_normalised', models.CharField(
+                    blank=True, max_length=100, null=True, verbose_name='Normalised form')),
+                ('point_terminus_ante_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
+                ('end_terminus_post', models.CharField(
+                    blank=True, max_length=100, verbose_name='Date')),
+                ('end_terminus_post_normalised', models.CharField(
+                    blank=True, max_length=100, verbose_name='Normalised form')),
+                ('end_terminus_post_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
+                ('end_date', models.CharField(blank=True,
+                                              max_length=100, verbose_name='Date')),
+                ('end_date_normalised', models.CharField(blank=True,
+                                                         max_length=100, verbose_name='Normalised form')),
+                ('end_date_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
+                ('end_terminus_ante', models.CharField(
+                    blank=True, max_length=100, verbose_name='Date')),
+                ('end_terminus_ante_normalised', models.CharField(blank=True,
+                                                                  max_length=100, null=True, verbose_name='Normalised form')),
+                ('end_terminus_ante_confident', models.BooleanField(
+                    default=True, verbose_name='Confident')),
                 ('note', models.TextField(blank=True)),
-                ('assertion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='dates', to='eats.PropertyAssertion')),
-                ('date_period', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.DatePeriod')),
-                ('end_date_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='end_date_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('end_date_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='end_date_type_set', to='eats.DateType', verbose_name='Type')),
-                ('end_terminus_ante_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='end_terminus_ante_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('end_terminus_ante_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='end_terminus_ante_type_set', to='eats.DateType', verbose_name='Type')),
-                ('end_terminus_post_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='end_terminus_post_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('end_terminus_post_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='end_terminus_post_type_set', to='eats.DateType', verbose_name='Type')),
-                ('point_date_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='point_date_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('point_date_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='point_date_type_set', to='eats.DateType', verbose_name='Type')),
-                ('point_terminus_ante_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='point_terminus_ante_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('point_terminus_ante_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='point_terminus_ante_type_set', to='eats.DateType', verbose_name='Type')),
-                ('point_terminus_post_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='point_terminus_post_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('point_terminus_post_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='point_terminus_post_type_set', to='eats.DateType', verbose_name='Type')),
-                ('start_date_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='start_date_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('start_date_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='start_date_type_set', to='eats.DateType', verbose_name='Type')),
-                ('start_terminus_ante_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='start_terminus_ante_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('start_terminus_ante_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='start_terminus_ante_type_set', to='eats.DateType', verbose_name='Type')),
-                ('start_terminus_post_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='start_terminus_post_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
-                ('start_terminus_post_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, related_name='start_terminus_post_type_set', to='eats.DateType', verbose_name='Type')),
+                ('assertion', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                                related_name='dates', to='eats.PropertyAssertion')),
+                ('date_period', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.DatePeriod')),
+                ('end_date_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                        related_name='end_date_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('end_date_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                    related_name='end_date_type_set', to='eats.DateType', verbose_name='Type')),
+                ('end_terminus_ante_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                                 related_name='end_terminus_ante_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('end_terminus_ante_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                             related_name='end_terminus_ante_type_set', to='eats.DateType', verbose_name='Type')),
+                ('end_terminus_post_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                                 related_name='end_terminus_post_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('end_terminus_post_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                             related_name='end_terminus_post_type_set', to='eats.DateType', verbose_name='Type')),
+                ('point_date_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                          related_name='point_date_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('point_date_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                      related_name='point_date_type_set', to='eats.DateType', verbose_name='Type')),
+                ('point_terminus_ante_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                                   related_name='point_terminus_ante_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('point_terminus_ante_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                               related_name='point_terminus_ante_type_set', to='eats.DateType', verbose_name='Type')),
+                ('point_terminus_post_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                                   related_name='point_terminus_post_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('point_terminus_post_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                               related_name='point_terminus_post_type_set', to='eats.DateType', verbose_name='Type')),
+                ('start_date_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                          related_name='start_date_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('start_date_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                      related_name='start_date_type_set', to='eats.DateType', verbose_name='Type')),
+                ('start_terminus_ante_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                                   related_name='start_terminus_ante_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('start_terminus_ante_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                               related_name='start_terminus_ante_type_set', to='eats.DateType', verbose_name='Type')),
+                ('start_terminus_post_calendar', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                                   related_name='start_terminus_post_calendar_set', to='eats.Calendar', verbose_name='Calendar')),
+                ('start_terminus_post_type', models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE,
+                                                               related_name='start_terminus_post_type_set', to='eats.DateType', verbose_name='Type')),
             ],
         ),
         migrations.AddField(
             model_name='authority',
             name='default_calendar',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Calendar'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.Calendar'),
         ),
         migrations.AddField(
             model_name='authority',
             name='default_date_period',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.DatePeriod'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.DatePeriod'),
         ),
         migrations.AddField(
             model_name='authority',
             name='default_date_type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.DateType'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.DateType'),
         ),
         migrations.AddField(
             model_name='authority',
             name='default_language',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Language'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.Language'),
         ),
         migrations.AddField(
             model_name='authority',
             name='default_script',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.Script'),
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to='eats.Script'),
         ),
         migrations.CreateModel(
             name='NamePart',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True,
+                                        primary_key=True, serialize=False, verbose_name='ID')),
                 ('name_part', models.CharField(max_length=100)),
-                ('language', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='eats.Language')),
-                ('name', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='name_parts', to='eats.Name')),
-                ('name_part_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='eats.NamePartType')),
-                ('script', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='eats.Script')),
+                ('language', models.ForeignKey(blank=True, null=True,
+                                               on_delete=django.db.models.deletion.CASCADE, to='eats.Language')),
+                ('name', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE,
+                                           related_name='name_parts', to='eats.Name')),
+                ('name_part_type', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE, to='eats.NamePartType')),
+                ('script', models.ForeignKey(blank=True, null=True,
+                                             on_delete=django.db.models.deletion.CASCADE, to='eats.Script')),
             ],
             options={
                 'unique_together': {('name', 'name_part_type')},
