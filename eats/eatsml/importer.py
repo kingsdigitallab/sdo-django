@@ -1085,3 +1085,4 @@ class Importer (object):
         """Log the importing of item_name XML from element."""
         logging.debug('Importing %s from XML: %s'
                       % (item_name, etree.tostring(element)))
+                                    

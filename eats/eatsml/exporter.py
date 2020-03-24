@@ -1050,3 +1050,4 @@ class Exporter (object):
         """Log the handling of model_name model_object."""
         logging.debug('Exporting %s object with id %d'
                       % (model_name, model_object.id))
+                                    
