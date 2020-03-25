@@ -11,7 +11,7 @@ ALLOWED_HOSTS = ['']
 DATABASES = {
     'default': {
         'ENGINE': db_engine,
-        'NAME': 'app_sdo3_stg',
+        'NAME': 'app_sdo3_data',
         'USER': 'app_sdo3',
         'PASSWORD': '',
         'HOST': ''
