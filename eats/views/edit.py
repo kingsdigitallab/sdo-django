@@ -863,7 +863,7 @@ def display_import(request, import_id):
 def display_import_raw(request, import_id):
     """Display the XML of the imported document."""
     import_object = get_object_or_404(RegisteredImport, pk=import_id)
-    return HttpResponse(import_object.raw_xml, mimetype='text/xml')
+    return HttpResponse(import_object.raw_xml, content_type='text/xml')
 
 
 @login_required()
@@ -871,7 +871,7 @@ def display_import_processed(request, import_id):
     """Display the XML of the imported document, annotated with the
     IDs of the created objects."""
     import_object = get_object_or_404(RegisteredImport, pk=import_id)
-    return HttpResponse(import_object.processed_xml, mimetype='text/xml')
+    return HttpResponse(import_object.processed_xml, content_type='text/xml')
 
 
 @login_required()
@@ -936,7 +936,7 @@ def export_eatsml(request, authority_id=None):
         response.status_code = 500
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8', pretty_print=True)
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 @login_required()
@@ -952,7 +952,7 @@ def export_base_eatsml(request):
         response.status_code = 500
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8', pretty_print=True)
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 @login_required()
@@ -962,7 +962,7 @@ def export_xslt_list(request):
         xml = open(os.path.join(app_path, 'eatsml/xslt_list.xml'))
     except IOError:
         raise Http404
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 @login_required()
@@ -972,7 +972,7 @@ def export_xslt(request, xslt):
         xml = open(os.path.join(app_path, 'eatsml/%s.xsl' % xslt))
     except IOError:
         raise Http404
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 @user_passes_test(lambda u: u.is_superuser)

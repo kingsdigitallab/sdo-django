@@ -36,7 +36,7 @@ class RepositoryAdmin(admin.ModelAdmin):
 
 
 class ContainerAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'get_collection_full_name',
+    list_display = ('__str__', 'get_collection_full_name',
                     'box', 'folder', 'series', 'description', 'content_type')
     list_filter = ('content_type', 'collection')
     inlines = [ContainerStatementInline]
@@ -50,7 +50,7 @@ class ContainerAdmin(admin.ModelAdmin):
 
 
 class DocumentAdmin(admin.ModelAdmin):
-    list_display = ('__unicode__', 'id_supplied', 'get_container_full_label',
+    list_display = ('__str__', 'id_supplied', 'get_container_full_label',
                     'get_container_content_type', 'coverage_start', 'coverage_end', 'description')
     list_filter = ('container',)
     inlines = [DocumentStatementInline]

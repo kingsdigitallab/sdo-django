@@ -15,7 +15,7 @@ class Repository(models.Model):
     class Meta:
         verbose_name_plural = "Repositories"
 
-    def __unicode__(self):
+    def __str__(self):
         phrase = self.name
 
         if self.identifier:
@@ -70,7 +70,7 @@ class Collection(models.Model):
     description = models.TextField(
         blank=True, help_text="As required, other descriptive information about this collection")
 
-    def __unicode__(self):
+    def __str__(self):
         phrase = self.name + ", " + self.repository.name
         return phrase
 
@@ -85,7 +85,7 @@ class CollectionStatements(models.Model):
     description = models.CharField(
         max_length=400, blank=False, help_text="Make a statement about the collection")
 
-    def __unicode__(self):
+    def __str__(self):
         phrase = self.get_statement_type_display() + ": " + self.description
         return phrase
 
@@ -133,7 +133,7 @@ class Container(models.Model):
 
     get_collection_full_name.short_description = "Collection"
 
-    def __unicode__(self):
+    def __str__(self):
         phrase = self.collection.name + " " + self.box + " " + self.folder
         return phrase
 
@@ -149,7 +149,7 @@ class ContainerStatements(models.Model):
     description = models.TextField(
         help_text="Make a statement about this container")
 
-    def __unicode__(self):
+    def __str__(self):
         phrase = self.get_statement_type_display() + ": " + self.description
         return phrase
 
@@ -181,7 +181,7 @@ class Document(models.Model):
 
     get_container_content_type.short_description = "Content Type"
 
-    def __unicode__(self):
+    def __str__(self):
         phrase = self.unitid
         return phrase
 
@@ -197,7 +197,7 @@ class DocumentStatements(models.Model):
     description = models.TextField(
         help_text="Make a statement about this document")
 
-    def __unicode__(self):
+    def __str__(self):
         phrase = self.get_statement_type_display() + ": " + self.description
         return phrase
 

@@ -98,7 +98,7 @@ def display_entity_eatsml(request, entity_id):
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8',
                          pretty_print=True)
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 def display_entity_full_eatsml(request, entity_id):
@@ -117,7 +117,7 @@ def display_entity_full_eatsml(request, entity_id):
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8',
                          pretty_print=True)
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 def display_entity_xtm(request, entity_id):
@@ -139,7 +139,7 @@ def display_entity_xtm(request, entity_id):
     xtm_tree = to_xtm_transform(eatsml_root, base_psi_url=base_psi_url)
     xml = etree.tostring(xtm_tree.getroot(), encoding='utf-8',
                          pretty_print=True)
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 def display_entity_eac(request, entity_id, authority_record_id):
@@ -162,7 +162,7 @@ def display_entity_eac(request, entity_id, authority_record_id):
                                 base_url="'%s'" % current_site.domain)
     xml = etree.tostring(eac_tree.getroot(), encoding='utf-8',
                          pretty_print=True)
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 def search(request):
@@ -215,7 +215,7 @@ def lookup(request):
         response.status_code = 500
         return response
     xml = etree.tostring(eatsml_root, encoding='utf-8', pretty_print=True)
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
 
 
 def get_name_search_results(name):
@@ -300,7 +300,7 @@ def get_names(request):
     template = loader.get_template('eats/all_names.xml')
     context = Context({'entities': compiled_names})
     return HttpResponse(template.render(context),
-                        mimetype='text/xml')
+                        content_type='text/xml')
 
 # QAZ: could probably be deleted.
 
@@ -312,7 +312,7 @@ def get_primary_authority_records(request):
     results = AuthorityRecord.objects.filter(assertions__existence__isnull=False,
                                              authority=authority)
     return ListView(request, results, template_name='eats/primary_authority_records.xml',
-                    allow_empty=True, mimetype='text/xml')
+                    allow_empty=True, content_type='text/xml')
 
 
 def entity_types(request):

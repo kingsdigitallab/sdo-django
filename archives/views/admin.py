@@ -159,4 +159,4 @@ def xsd(request, schema_type):
             annotation, XS + "documentation", nsmap=NSMAP)
         documentation.text = description
     xml += etree.tostring(schema, encoding='utf-8', pretty_print=True)
-    return HttpResponse(xml, mimetype='text/xml')
+    return HttpResponse(xml, content_type='text/xml')
