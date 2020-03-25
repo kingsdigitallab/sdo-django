@@ -278,7 +278,7 @@ GA_ID = ''
 # -----------------------------------------------------------------------------
 
 # Check which db engine to use:
-db_engine = 'django.contrib.gis.db.backends.mysql'
+db_engine = 'django.db.backends.postgresql_psycopg2'
 
 
 AUTH_LDAP_REQUIRE_GROUP = (

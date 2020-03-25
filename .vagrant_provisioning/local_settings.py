@@ -12,7 +12,7 @@ DATABASES = {
         'USER': 'sdo',
         'PASSWORD': 'sdo',
         'HOST': 'localhost',
-        'STORAGE_ENGINE': 'INNODB'
+        'ADMINUSER': 'postgres',
     },
 }
 

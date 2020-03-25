@@ -6,6 +6,7 @@ from os.path import abspath, dirname, join
 from lxml import etree
 from django.db.models import Q
 from django.db.models.query import QuerySet
+from eats.models import UserProfile
 
 from eats.models import Authority, AuthorityRecord, Calendar, \
     DatePeriod, DateType, Entity, EntityRelationshipType, EntityTypeList, \
@@ -1050,4 +1051,3 @@ class Exporter (object):
         """Log the handling of model_name model_object."""
         logging.debug('Exporting %s object with id %d'
                       % (model_name, model_object.id))
-                                    

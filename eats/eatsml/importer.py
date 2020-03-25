@@ -3,6 +3,7 @@
 import copy
 import logging
 from os.path import abspath, dirname, join
+from eats.models import UserProfile
 
 from lxml import etree
 
@@ -1085,4 +1086,3 @@ class Importer (object):
         """Log the importing of item_name XML from element."""
         logging.debug('Importing %s from XML: %s'
                       % (item_name, etree.tostring(element)))
-                                    

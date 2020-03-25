@@ -170,7 +170,7 @@ class Authority (models.Model):
                             % model._meta.object_name)
         return default
 
-    def __unicode__(self):
+    def __str__(self):
         return self.authority
 
     class Meta:
@@ -218,7 +218,7 @@ class AuthorityRecord (models.Model):
             assertions__authority_record=self).distinct()
         return entities
 
-    def __unicode__(self):
+    def __str__(self):
         id = self.get_id()
         if not id:
             id = self.get_url()
@@ -440,7 +440,7 @@ class Entity (models.Model):
         entity is the related entity."""
         return EntityRelationship.objects.filter(related_entity=self)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.get_single_name())
 
     class Meta:
@@ -455,7 +455,7 @@ class EntityTypeList (models.Model):
     class Meta:
         unique_together = (('entity_type', 'authority'),)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.entity_type, self.authority.get_short_name())
 
 
@@ -466,7 +466,7 @@ class EntityType (models.Model):
     # this table may be referenced only once.
     entity_type = models.ForeignKey(EntityTypeList, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.entity_type.entity_type
 
 
@@ -474,7 +474,7 @@ class EntityNote (models.Model):
     note = models.TextField()
     is_internal = models.BooleanField('Internal?')
 
-    def __unicode__(self):
+    def __str__(self):
         audience = 'external'
         if self.is_internal:
             audience = 'internal'
@@ -485,7 +485,7 @@ class EntityReference (models.Model):
     url = models.URLField()
     label = models.CharField(max_length=200)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s at %s' % (self.label, self.url)
 
 
@@ -494,7 +494,7 @@ class EntityRelationshipType (models.Model):
     authority = models.ForeignKey(Authority, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.entity_relationship_type,
                             self.authority.get_short_name())
 
@@ -514,7 +514,7 @@ class EntityRelationship (models.Model):
     entity_relationship_type = models.ForeignKey(
         EntityRelationshipType, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'This entity %s %s' % (self.entity_relationship_type,
                                       self.related_entity)
 
@@ -525,7 +525,7 @@ class EntityRelationshipNote (models.Model):
     note = models.TextField()
     is_internal = models.BooleanField('Internal?')
 
-    def __unicode__(self):
+    def __str__(self):
         audience = 'external'
         if self.is_internal:
             audience = 'internal'
@@ -564,7 +564,7 @@ class Existence (models.Model):
         # QAZ: implement this.
         super(Existence, self).delete()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.assertion.get().entity)
 
 
@@ -575,7 +575,7 @@ class SystemNamePartType (models.Model):
     name_part_type = models.CharField(max_length=200, unique=True)
     description = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.name_part_type)
 
 
@@ -587,7 +587,7 @@ class Language (models.Model):
                                                     related_name='languages')
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.language_name)
 
     class Meta:
@@ -599,7 +599,7 @@ class Script (models.Model):
     script_name = models.CharField(max_length=30, unique=True)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s' % (self.script_name)
 
     class Meta:
@@ -615,7 +615,7 @@ class NameType (models.Model):
     class Meta:
         unique_together = (('name_type', 'authority'),)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name_type
 
 
@@ -684,7 +684,7 @@ class Name (models.Model):
                                      name_form=search_form)
             search_name.save()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_display_form()
 
 
@@ -694,7 +694,7 @@ class NameNote (models.Model):
     note = models.TextField()
     is_internal = models.BooleanField('Internal?')
 
-    def __unicode__(self):
+    def __str__(self):
         audience = 'external'
         if self.is_internal:
             audience = 'internal'
@@ -708,7 +708,7 @@ class NamePartType (models.Model):
         SystemNamePartType, on_delete=models.CASCADE)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name_part_type
 
     class Meta:
@@ -758,7 +758,7 @@ class NamePart (models.Model):
                 'script_code': script,
                 'name_part': self.name_part}
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.name_part,
                             self.name_part_type.name_part_type)
 
@@ -771,7 +771,7 @@ class NameRelationshipType (models.Model):
     class Meta:
         unique_together = (('name_relationship_type', 'authority'),)
 
-    def __unicode__(self):
+    def __str__(self):
         return '%s (%s)' % (self.name_relationship_type,
                             self.authority.get_short_name())
 
@@ -788,7 +788,7 @@ class NameRelationship (models.Model):
 class UserDefinedProperty (models.Model):
     name = models.CharField(max_length=100, unique=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -799,7 +799,7 @@ class UserDefinedPropertyConstrainedValue (models.Model):
     property = models.ForeignKey(UserDefinedProperty, on_delete=models.CASCADE)
     value = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.value
 
 
@@ -885,7 +885,7 @@ class PropertyAssertion (models.Model):
             raise Exception('Attempting to save an invalid model.')
         return super(PropertyAssertion, self).save(*args, **kwargs)
 
-    def __unicode__(self):
+    def __str__(self):
         return 'assertion that entity %s has %s property authorised in %s' \
             % (self.entity, self.get_type(), self.authority_record)
 
@@ -915,7 +915,7 @@ class DatePeriod (models.Model):
         max_length=40, verbose_name='Period covered')
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.date_period
 
 
@@ -923,7 +923,7 @@ class Calendar (models.Model):
     calendar = models.CharField(max_length=100)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.calendar
 
 
@@ -931,7 +931,7 @@ class DateType (models.Model):
     date_type = models.CharField(max_length=100)
     last_modified = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.date_type
 
 
@@ -1112,7 +1112,7 @@ class Date (models.Model):
                 date = '%sat or before %s' % (date, ante_date)
         return date
 
-    def __unicode__(self):
+    def __str__(self):
         if self.point_date or self.point_terminus_post or self.point_terminus_ante:
             date = self._assemble_date_segment('point')
         else:
@@ -1160,7 +1160,7 @@ class UserProfile (models.Model):
     date_period = models.ForeignKey(DatePeriod, on_delete=models.CASCADE)
     name_type = models.ForeignKey(NameType, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return str(self.user)
 
 

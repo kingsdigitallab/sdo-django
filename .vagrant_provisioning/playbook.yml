@@ -138,60 +138,138 @@
     tags:
       - javascript
 
-# Database Management
-# run as root
+
 
 - hosts: all
   vars_files:
     - vars.yml
-  # gather_facts: false 
-
+  # gather_facts: false
   tasks:
-
-  - name: locale | setup gb locale
-    locale_gen:
-      name: "{{ mysql.locale }}"
-      state: present
+  - name: postgresql | setup gb locale
     become: yes
+    locale_gen:
+      name: "{{ postgresql.locale }}"
+      state: present
     tags:
       - db
 
-  - name: mysql | create user
+  - name: postgresql | get installed version
     become: yes
-    mysql_user:
-      name: '{{ mysql.user }}'
-      password: '{{ mysql.password }}'
-      priv: '*.*:ALL'
+    shell: 'ls /etc/postgresql/*/main/pg_hba.conf | cut -d / -f4'
+    register: postgresql_version
+    tags:
+      - db
+
+  - name: postgresql | ensure postgresql user can authenticate
+    become: yes
+    lineinfile:
+      path: /etc/postgresql/{{ postgresql_version.stdout }}/main/pg_hba.conf
+      backup: yes
+      regexp: "^local\\s+all\\s+{{ postgresql.admin_user }}\\s+peer$"
+      line: "local    all    {{ postgresql.admin_user }}    {{ postgresql.default_auth_method }}"
+    tags:
+      - db
+
+  - name: postgresql | ensure all users can authenticate
+    become: yes
+    lineinfile:
+      path: /etc/postgresql/{{ postgresql_version.stdout }}/main/pg_hba.conf
+      backup: yes
+      regexp: "^local\\s+all\\s+all\\s+peer$"
+      line: "local    all    all    {{ postgresql.default_auth_method }}"
+    notify:
+      - postgresql | restart postgres
+    tags:
+      - db
+
+  handlers:
+  - name: postgresql | restart postgres
+    become: yes
+    service:
+      name: postgresql
+      state: restarted
+    tags:
+      - db
+
+
+- hosts: all
+  vars_files:
+    - vars.yml
+  tasks:
+  - name: postgresql | create user
+    become_user: "{{ postgresql.admin_user }}"
+    postgresql_user:
+      user: "{{ postgresql.user }}"
+      password: "{{ app.name }}"
+      role_attr_flags: CREATEDB # NOSUPERUSER NOCREATEROLE
+    tags:
+      - db
+
+  - name: postgresql | create db
+    become_user: "{{ postgresql.admin_user }}"
+    postgresql_db:
+      name: "{{ app.name }}"
+      encoding: "{{postgresql.encoding}}"
+      lc_collate: "{{postgresql.locale}}"
+      lc_ctype: "{{postgresql.locale}}"
+      template: "template0"
       state: present
+      owner: "{{ postgresql.user }}"
+    notify:
+      - postgresql | apply privileges
     tags:
       - db
 
   - name: check if initial data file exists
     stat:
-      path: "{{ project_root }}/.vagrant_provisioning/{{ mysql.initial_data_file }}"
+      path: "{{ project_root }}/.vagrant_provisioning/{{ postgresql.initial_data_file }}"
     register: idf
     tags:
       - db
       - data
 
-  - name: mysql | create db
+  - name: posgresql | load initial data file
+    command: psql -U {{ postgresql.user }} -d {{ app.name }} -f {{ project_root }}/.vagrant_provisioning/{{ postgresql.initial_data_file }}
     when: idf.stat.exists
-    mysql_db:
-      name: "{{ app.name }}"
-      encoding: "{{mysql.encoding}}"
-      login_user: '{{ mysql.user }}'
-      login_password: '{{ mysql.password }}'
-
-    tags:
-      - db
-
-  - name: mysql | load initial data file
-    mysql_db: login_user={{ mysql.user }} login_password={{ mysql.password }} state=import encoding={{mysql.encoding}}  name={{ app.name }} target={{ project_root }}/.vagrant_provisioning/{{ mysql.initial_data_file }}
-    ignore_errors: yes # initial file may not exist
-
+    notify:
+      - postgresql | apply privileges after data import
     tags:
       - db
       - data
+
+  - name: posgresql | create postgis extension if available
+    become_user: "{{ postgresql.admin_user }}"
+    command: psql -U {{ postgresql.admin_user }} -d {{ app.name }} -c "CREATE EXTENSION IF NOT EXISTS postgis;"
+    tags:
+      - db
+      - data
+
+  handlers:
+  - name: postgresql | apply privileges
+    become_user: "{{ postgresql.admin_user }}"
+    postgresql_privs:
+      db: "{{ app.name }}"
+      privs: ALL
+      roles: "{{ postgresql.user }}"
+      state: present
+      type: database
+    tags:
+      - db
+      - data
+
+  - name: postgresql | apply privileges after data import
+    become_user: "{{ postgresql.admin_user }}"
+    postgresql_privs:
+      db: "{{ app.name }}"
+      objs: ALL_IN_SCHEMA
+      privs: ALL
+      roles: "{{ postgresql.user }}"
+      state: present
+      type: table
+    tags:
+      - db
+      - data
+
 
 # Django
 # run as vagrant

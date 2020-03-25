@@ -20,8 +20,8 @@ django-libsass = "*"
 django-model-utils = "*"
 django-redis = "*"
 redis = "*"
-mysqlclient = "*"
 lxml = "*"
+psycopg2-binary = "*"
 
 django-kdl-ldap = "*"
 
