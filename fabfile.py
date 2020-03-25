@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import os.path
+import os.path 
 import sys
 from functools import wraps
 
@@ -71,16 +71,16 @@ django.project(PROJECT_NAME)
 SERVER_NAME = getattr(django_settings, 'FABRIC_SERVER_NAME', PROJECT_NAME)
 
 # Git repository pointer
-REPOSITORY = 'https://github.com/kingsdigitallab/{}-django.git'.format(
+REPOSITORY = 'https://github.com/kingsdigitallab/sdo-django.git'.format(
     PROJECT_NAME)
 
 env.gateway = 'ssh.kdl.kcl.ac.uk'
 # Host names used as deployment targets
-env.hosts = ['{}.kdl.kcl.ac.uk'.format(SERVER_NAME)]
+env.hosts = ['sdo3.kdl.kcl.ac.uk'.format(SERVER_NAME)]
 # Absolute filesystem path to project 'webroot'
-env.root_path = '/vol/{}/webroot/'.format(SERVER_NAME)
+env.root_path = '/vol/sdo3/webroot/'.format(SERVER_NAME)
 # Absolute filesystem path to project Django root
-env.django_root_path = '/vol/{}/webroot/'.format(SERVER_NAME)
+env.django_root_path = '/vol/sdo3/webroot/'.format(SERVER_NAME)
 # Absolute filesystem path to Python virtualenv for this project
 # TODO: create symlink to .venv within project folder
 # env.envs_path = os.path.join(env.root_path, 'envs')
