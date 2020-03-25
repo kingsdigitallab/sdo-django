@@ -3,7 +3,7 @@ from .base import *  # noqa
 ALLOWED_HOSTS = ['127.0.0.1',
                  'localhost',
                  '[::1]',
-                 'sdo-dev.kdl.kcl.ac.uk']
+                 'sdo3-dev.kdl.kcl.ac.uk']
 
 CACHE_REDIS_DATABASE = '2'
 CACHES['default']['LOCATION'] = 'redis://127.0.0.1:6379/' + CACHE_REDIS_DATABASE  # noqa
@@ -15,8 +15,8 @@ INTERNAL_IPS = INTERNAL_IPS + ['']
 DATABASES = {
     'default': {
         'ENGINE': db_engine,
-        'NAME': 'app_sdo_dev',
-        'USER': 'app_sdo',
+        'NAME': 'app_sdo3_dev',
+        'USER': 'app_sdo3',
         'PASSWORD': '',
         'HOST': ''
     },
