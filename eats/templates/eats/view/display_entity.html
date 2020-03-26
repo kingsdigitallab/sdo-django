@@ -18,7 +18,7 @@
 <h1>{{ single_name }}</h1>
 
 {% if user.is_authenticated %}
-<p><a href="{% url 'edit_model_object' "entity",entity.id %}">Edit</a></p>
+<p><a href="{% url 'edit_model_object' 'entity' entity.id %}">Edit</a></p>
 {% endif %}
 
 <div id="eats-entity-record">
@@ -49,7 +49,7 @@ associated with an authority record.</p>
 
 <ul>
   {% for type in entity.get_entity_types %}
-  <li>{{ type }} <span class="authority-record">[{% eats_display_linked_authority_record type.assertion.get.authority_record 'true' %}]</span>{% eats_display_dates_for_property type %}</li>
+  <li>{{ type }} <span class="authority-record">[{% eats_display_linked_authority_record type.assertion.authority_record 'true' %}]</span>{% eats_display_dates_for_property type %}</li>
   {% endfor %}
 </ul>
 
@@ -57,7 +57,7 @@ associated with an authority record.</p>
 
 <ul>
   {% for name in entity.get_names %}
-  <li>{{ name }} <span class="authority-record">[{% eats_display_linked_authority_record name.assertion.get.authority_record 'true' %}]</span><br/>
+  <li>{{ name }} <span class="authority-record">[{% eats_display_linked_authority_record name.assertion.authority_record 'true' %}]</span><br/>
   <span class="name-details">{{ name.name_type }}, {{ name.language.language_name }}, {{ name.script.script_name }}</span>{% eats_display_dates_for_property name %}</li>
   {% endfor %}
 </ul>
@@ -67,10 +67,10 @@ associated with an authority record.</p>
 
 <ul>
   {% for relationship in entity.get_relationships %}
-  <li>This entity {{ relationship.entity_relationship_type.entity_relationship_type }} <a href="../{{ relationship.related_entity.id }}/">{{ relationship.related_entity }}</a> <span class="authority-record">[{% eats_display_linked_authority_record relationship.assertion.get.authority_record 'true' %}]</span>{% eats_display_dates_for_property relationship %}</li>
+  <li>This entity {{ relationship.entity_relationship_type.entity_relationship_type }} <a href="../{{ relationship.related_entity.id }}/">{{ relationship.related_entity }}</a> <span class="authority-record">[{% eats_display_linked_authority_record relationship.assertion.authority_record 'true' %}]</span>{% eats_display_dates_for_property relationship %}</li>
   {% endfor %}
   {% for relationship in entity.get_reverse_relationships %}
-  <li><a href="../{{ relationship.assertion.get.entity.id }}/">{{ relationship.assertion.get.entity }}</a> {{ relationship.entity_relationship_type.entity_relationship_type }} this entity <span class="authority-record">[{% eats_display_linked_authority_record relationship.assertion.get.authority_record 'true' %} — associated with related entity]</span>{% eats_display_dates_for_property relationship %}</li>
+  <li><a href="../{{ relationship.assertion.entity.id }}/">{{ relationship.assertion.entity }}</a> {{ relationship.entity_relationship_type.entity_relationship_type }} this entity <span class="authority-record">[{% eats_display_linked_authority_record relationship.assertion.authority_record 'true' %} — associated with related entity]</span>{% eats_display_dates_for_property relationship %}</li>
   {% endfor %}
 </ul>
 {% endif %}
@@ -80,7 +80,7 @@ associated with an authority record.</p>
 
 <ul>
   {% for note in entity.get_external_notes %}
-  <li>{{ note.note }} <span class="authority-record">[{% eats_display_linked_authority_record note.assertion.get.authority_record 'true' %}]</span>{% eats_display_dates_for_property note %}</li>
+  <li>{{ note.note }} <span class="authority-record">[{% eats_display_linked_authority_record note.assertion.authority_record 'true' %}]</span>{% eats_display_dates_for_property note %}</li>
   {% endfor %}
 </ul>
 {% endif %}
@@ -90,7 +90,7 @@ associated with an authority record.</p>
 
 <ul>
   {% for reference in entity.get_references %}
-  <li><a href="{{ reference.url }}">{{ reference.label }}</a> <span class="authority-record">[{% eats_display_linked_authority_record reference.assertion.get.authority_record 'true' %}]</span>{% eats_display_dates_for_property reference %}</li>
+  <li><a href="{{ reference.url }}">{{ reference.label }}</a> <span class="authority-record">[{% eats_display_linked_authority_record reference.assertion.authority_record 'true' %}]</span>{% eats_display_dates_for_property reference %}</li>
   {% endfor %}
 </ul>
 {% endif %}

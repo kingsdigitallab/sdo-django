@@ -76,7 +76,7 @@ def display_entity(request, entity_id):
     current_site = Site.objects.get_current()
     # QAZ: Hack to specify which, if any, authority records are suitable
     # for producing EAC-CPF.
-    eac_authority_records = [entity_type.assertion.get().authority_record for entity_type in entity_object.get_entity_types(
+    eac_authority_records = [entity_type.assertion.authority_record for entity_type in entity_object.get_entity_types(
     ) if str(entity_type) in ('person', 'family', 'organisation')]
     context_data = {'entity': entity_object,
                     'eac_authority_records': eac_authority_records, 'site': current_site}
@@ -288,7 +288,7 @@ def get_names(request):
     """Return an XML representation of all entity names, their primary
     authority ids, and their entity type."""
     compiled_names = {}
-    for name in Name.objects.all().select_related(depth=1):
+    for name in Name.objects.all().select_related():
         name_variants = namehandler.compile_variants(name)
         if name_variants:
             key = name.get_entity().primary_authority()

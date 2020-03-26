@@ -17,7 +17,7 @@ def user_permissions(request):
     to the context."""
     user = request.user
     editable_authorities = Authority.objects.none()
-    if user.is_authenticated():
+    if user.is_authenticated:
         try:
             profile = UserProfile.objects.get(user=user)
             editable_authorities = profile.editable_authorities.all()

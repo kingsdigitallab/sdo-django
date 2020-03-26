@@ -426,7 +426,7 @@ def delete_object(request, model_name, object_id):
     if model == Date:
         assertion = eats_object.assertion
     elif model == Name:
-        assertion = eats_object.assertion.get()
+        assertion = eats_object.assertion
     else:
         raise Http404
     authority = assertion.authority_record.authority
@@ -684,7 +684,7 @@ def edit_name(request, name, editable_authorities):
     number_name_note_forms = 1
     name_part_forms = []
     name_note_forms = []
-    assertion = name.assertion.get()
+    assertion = name.assertion
     authority_records = get_authority_records(assertion.entity,
                                               editable_authorities)
     extra_data = {}

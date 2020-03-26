@@ -235,7 +235,7 @@ class Entity (models.Model):
     last_modified = models.DateTimeField(auto_now=True)
 
     def get_absolute_url(self):
-        return ('eats.views.main.display_entity', [str(self.id)])
+        return '/eats/{}'.format(self.id)
 
     def delete(self):
         """Override the default delete method to handle the deletion of all of
@@ -343,7 +343,7 @@ class Entity (models.Model):
 
     def get_names(self):
         """Return a QuerySet of all of the names of this entity."""
-        return Name.objects.select_related(depth=3)\
+        return Name.objects.select_related()\
             .filter(assertion__entity=self)\
             .order_by('-assertion__is_preferred')
 
@@ -633,7 +633,7 @@ class Name (models.Model):
     def is_preferred(self):
         """Return Boolean of whether this name is preferred by the
         authority."""
-        return self.assertion.get().is_preferred
+        return self.assertion.is_preferred
 
     def get_display_form(self):
         """Return the display form of name."""

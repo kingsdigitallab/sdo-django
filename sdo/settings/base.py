@@ -185,6 +185,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.template.context_processors.static',
                 'django.contrib.messages.context_processors.messages',
+                'eats.context_processors.user_prefs',
+                'eats.context_processors.user_permissions'
 
 
             ],

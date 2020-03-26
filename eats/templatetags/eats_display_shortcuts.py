@@ -33,4 +33,4 @@ def eats_display_linked_authority_record(authority_record, abbreviated=False):
 
 @register.inclusion_tag('eats/view/date_display.html')
 def eats_display_dates_for_property(property):
-    return {'dates': property.assertion.get().dates.all()}
+    return {'dates': property.assertion.dates.all()}
