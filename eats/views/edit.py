@@ -12,6 +12,7 @@ from django.urls import reverse
 from django.db import models, transaction
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.shortcuts import render
+from django.apps import apps
 
 from eats.settings import app_name, app_path
 from eats.models import *
@@ -419,7 +420,7 @@ def delete_entity(request, entity_id):
 def delete_object(request, model_name, object_id):
     """View to confirm the deletion of an object."""
     try:
-        model = models.get_model(app_name, model_name)
+        model = apps.get_model('{}.{}'.format(app_name, model_name)) # models.get_model(app_name, model_name)
         eats_object = model.objects.get(pk=object_id)
     except BaseException:
         raise Http404
@@ -840,11 +841,12 @@ def edit_model_object(request, model_name, object_id):
         'entity': edit_entity,
         'name': edit_name,
     }
-    view_function = edit_views.get(model_name)
+  
+    view_function = edit_views[model_name]
     if view_function is None:
         raise Http404
     try:
-        model = models.get_model(app_name, model_name)
+        model = apps.get_model('{}.{}'.format(app_name, model_name)) # models.get_model(app_name, model_name)
         eats_object = model.objects.get(pk=object_id)
     except BaseException:
         raise Http404
