@@ -276,7 +276,7 @@ class Entity (models.Model):
                 authority_system_url=record_data['url'],
                 is_complete_url=record_data['is_complete_url'])
             authority_record.save()
-            existence.assertion.create(entity_id=self.id,
+            existence.assertion = PropertyAssertion(entity_id=self.id,
                                        authority_record_id=authority_record.id,
                                        is_preferred=True)
         else:
