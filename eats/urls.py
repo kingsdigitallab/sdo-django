@@ -29,7 +29,7 @@ urlpatterns = [
     url(r'^edit/export/eatsml/(?P<authority_id>\d+)/$', edit.export_eatsml),
     url(r'^edit/export/xslt/$', edit.export_xslt_list),
     url(r'^edit/export/xslt/(?P<xslt>[A-Za-z0-9_\-]+)/', edit.export_xslt),
-    url(r'^edit/create_entity/$', edit.create_entity),
+    url(r'^edit/create_entity/$', edit.create_entity, name='create_entity'),
     url(r'^edit/create_date/(?P<assertion_id>\d+)/$', edit.create_date),
     url(r'^edit/create_name/(?P<entity_id>\d+)/$', edit.create_name),
     url(r'^edit/select_entity/$', edit.select_entity),

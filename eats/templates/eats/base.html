@@ -44,6 +44,7 @@ block names, they only need to be changed in this template.
   <form action="{% url 'search' %}" method="get">
     <p><input type="text" name="name" size="10"/> <input type="submit" value="Search"/></p>
     <p><a href="{% url 'search' %}">Advanced Search</a></p>
+    <p><a href="{% url 'create_entity' %}">Create New Entity</a></p>
   </form>
 </div>
 {% endblock eats_search %}
