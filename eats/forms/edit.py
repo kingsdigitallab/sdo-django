@@ -388,7 +388,7 @@ class ExistenceForm (forms.ModelForm):
         if kw_args.get('instance'):
             try:
                 authority_record_name = str(
-                    self.instance.assertion.get().authority_record)
+                    self.instance.assertion.authority_record)
             except BaseException:
                 authority_record_name = '[invalid authority record]'
             self.initial['authority_record_name'] = authority_record_name

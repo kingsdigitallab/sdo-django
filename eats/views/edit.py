@@ -76,8 +76,9 @@ def create_entity(request):
         # possible to know which authority should be used for the
         # existence assertion.
         return HttpResponseRedirect('/')
+    print(authority)
     entity = Entity()
-    entity.save(authority=authority)
+    entity.save(authority = authority)
     kw_args = {'model_name': 'entity', 'object_id': entity.id}
     return HttpResponseRedirect(reverse(edit_model_object, kwargs=kw_args))
 

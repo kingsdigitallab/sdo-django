@@ -262,6 +262,8 @@ class Entity (models.Model):
     def save(self, authority=None, create_existence=True, *args, **kwargs):
         """Override the default save method to allow for the automatic
         creation of auxiliary information when a new entity is added."""
+        print(self.id)
+        print(create_existence)
         if self.id is None and create_existence:
             super(Entity, self).save(*args, **kwargs)
             # Create new PropertyAssertion, Existence and
@@ -276,6 +278,7 @@ class Entity (models.Model):
                 authority_system_url=record_data['url'],
                 is_complete_url=record_data['is_complete_url'])
             authority_record.save()
+            print(authority_record)
             existence.assertion = PropertyAssertion(entity_id=self.id,
                                        authority_record_id=authority_record.id,
                                        is_preferred=True)
