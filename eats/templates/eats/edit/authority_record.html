@@ -57,7 +57,7 @@ ul { list-style-type: disc !important;
 </ol>
 
 <form action="." method="post">
-
+  {% csrf_token %}
   <ul id="form-menu">
     <li id="form-nav-search"{% if show_search %} class="selected"{% endif %}><a href="#" onclick="switch_class('selected', 'form-nav-search', 'form-nav-create'); switch_sections('search_form', 'create_form'); return false;">Search</a></li>
     <li id="form-nav-create"{% if not show_search %} class="selected"{% endif %}><a href="#" onclick="switch_class('selected', 'form-nav-create', 'form-nav-search'); switch_sections('create_form', 'search_form'); return false;">Create</a></li>
@@ -133,7 +133,7 @@ ul { list-style-type: disc !important;
   </thead>
   <tbody>
     {% for object in search_results %}
-    <tr class="{% cycle row1,row2 %}">
+    <tr class="{% cycle 'row1' 'row2' %}">
       <td>{{ object.get_id }}{% if object.get_id %}<br/>{% endif %}<a href="{{ object.get_url }}">{{ object.get_url }}</a><br/>
         <button onclick="select_authority_record('{{ object.id }}', '{{ object }}');">Select</button></td>
       <td><ul>{% for entity in object.get_entities %}<li><a href="{{ entity.get_absolute_url }}">{{ entity.get_single_name }}</a></li>{% endfor %}</ul></td>
