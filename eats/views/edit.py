@@ -1,22 +1,29 @@
-
 import os.path
 from io import StringIO
 
 from lxml import etree
 
-from django.shortcuts import render_to_response, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponse, Http404
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.template import RequestContext
 from django.urls import reverse
-from django.db import models, transaction
+from django.db import transaction
+from django.db.models import Q
 from django.core.paginator import Paginator, InvalidPage, EmptyPage
 from django.shortcuts import render
 from django.apps import apps
 
 from eats.settings import app_name, app_path
-from eats.models import *
-from eats.forms.edit import *
+from eats.models import (
+    Authority, AuthorityRecord, Date, Entity, EntityRelationshipType,
+    EntityTypeList, Name, NamePartType, NameRelationshipType, NameType,
+    PropertyAssertion, RegisteredImport, UserProfile)
+from eats.forms.edit import (
+    AuthorityRecordCreateForm, AuthorityRecordSearchForm, DateForm,
+    EntityNoteForm, EntityRelationshipForm, EntityRelationshipNoteForm,
+    EntitySelectorForm, EntityTypeForm, ExistenceForm, GenericFormSet,
+    ImportForm, NameForm, NameNoteForm, NamePartForm, NameRelationshipForm,
+    NameRelationshipFormSet, ReferenceForm)
 from eats.views.main import get_model_preferences, \
     get_name_search_results, get_record_search_results, search
 from eats.eatsml.exporter import Exporter
@@ -76,9 +83,8 @@ def create_entity(request):
         # possible to know which authority should be used for the
         # existence assertion.
         return HttpResponseRedirect('/')
-    print(authority)
     entity = Entity()
-    entity.save(authority = authority)
+    entity.save(authority=authority)
     kw_args = {'model_name': 'entity', 'object_id': entity.id}
     return HttpResponseRedirect(reverse(edit_model_object, kwargs=kw_args))
 
@@ -339,8 +345,10 @@ def select_authority_record(request):
                 editable_authorities, data=request.POST)
             # Populate the search form only with the hidden fields for
             # tracking the link to the opening window's widgets.
-            data = {'authority_record_id_widget_id': request.POST.get('authority_record_id_widget_id'),
-                    'authority_record_name_widget_id': request.POST.get('authority_record_name_widget_id')}
+            data = {'authority_record_id_widget_id':
+                    request.POST.get('authority_record_id_widget_id'),
+                    'authority_record_name_widget_id':
+                    request.POST.get('authority_record_name_widget_id')}
             search_form = AuthorityRecordSearchForm(
                 editable_authorities, data=data)
             if create_form.is_valid():
@@ -421,7 +429,7 @@ def delete_entity(request, entity_id):
 def delete_object(request, model_name, object_id):
     """View to confirm the deletion of an object."""
     try:
-        model = apps.get_model('{}.{}'.format(app_name, model_name)) # models.get_model(app_name, model_name)
+        model = apps.get_model('{}.{}'.format(app_name, model_name))
         eats_object = model.objects.get(pk=object_id)
     except BaseException:
         raise Http404
@@ -552,11 +560,11 @@ def edit_entity(request, entity, editable_authorities):
         # 'generic_property': [Q(generic_property__isnull=False), GenericForm]
     }
     editable_lookup = Q(authority_record__authority__in=editable_authorities)
-    form_data = {'errors': False, 'creations': [], 'saves': [], 'deletions': [],
-                 'inline_saves': [], 'inline_deletions': [],
-                 'bound_instance_forms': [], 'bound_new_forms': [],
-                 'bound_inline_instance_forms': [],
-                 'bound_inline_new_forms': [], 'existence_saves': []}
+    form_data = {
+        'errors': False, 'creations': [], 'saves': [], 'deletions': [],
+        'inline_saves': [], 'inline_deletions': [], 'bound_instance_forms': [],
+        'bound_new_forms': [], 'bound_inline_instance_forms': [],
+        'bound_inline_new_forms': [], 'existence_saves': []}
     if request.method == 'POST':
         post_data = request.POST
     else:
@@ -579,7 +587,7 @@ def edit_entity(request, entity, editable_authorities):
                                       authority_records)
             form_set.create_forms(editable_assertions, extra_data, post_data,
                                   assertion_data.get('new_forms'), inline)
-            (bound_instance_forms, bound_new_forms) = form_set.get_bound_forms()
+            bound_instance_forms, bound_new_forms = form_set.get_bound_forms()
             form_data['bound_instance_forms'].extend(bound_instance_forms)
             form_data['bound_new_forms'].extend(bound_new_forms)
             (bound_inline_instance_forms,
@@ -591,13 +599,13 @@ def edit_entity(request, entity, editable_authorities):
         else:
             # No form, just a list of assertions.
             context_data[assertion_type + '_editable'] = editable_assertions
-        context_data[assertion_type +
-                     '_non_editable'] = non_editable_assertions
+        context_data[assertion_type + '_non_editable'] = \
+            non_editable_assertions
     # Validate the forms.
     if post_data is not None:
         if request.POST.get('submit_delete'):
-            return HttpResponseRedirect(reverse(delete_entity,
-                                                kwargs={'entity_id': entity.id}))
+            return HttpResponseRedirect(
+                reverse(delete_entity, kwargs={'entity_id': entity.id}))
         for form in form_data['bound_instance_forms']:
             if form.is_valid():
                 if form.cleaned_data.get('delete'):
@@ -842,12 +850,12 @@ def edit_model_object(request, model_name, object_id):
         'entity': edit_entity,
         'name': edit_name,
     }
-  
+
     view_function = edit_views[model_name]
     if view_function is None:
         raise Http404
     try:
-        model = apps.get_model('{}.{}'.format(app_name, model_name)) # models.get_model(app_name, model_name)
+        model = apps.get_model('{}.{}'.format(app_name, model_name))
         eats_object = model.objects.get(pk=object_id)
     except BaseException:
         raise Http404

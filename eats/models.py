@@ -4,7 +4,6 @@ from datetime import datetime
 from django import forms
 from django.db import models
 from django.db.models import Q
-from django.db import transaction
 from django.contrib.auth.models import User
 from django.conf import settings
 
@@ -31,7 +30,8 @@ def get_default_object(model, authority=None):
                 default = Authority.objects.all()[0]
             except IndexError:
                 raise Authority.DoesNotExist(
-                    'No authority exists in the system, making it impossible to proceed.')
+                    'No authority exists in the system, making it impossible '
+                    'to proceed.')
         except Authority.MultipleObjectsReturned:
             # This should only occur if the database data has been
             # changed outside of this app. Separating this case out
@@ -129,7 +129,7 @@ class Authority (models.Model):
     default_language = models.ForeignKey('Language', on_delete=models.CASCADE)
     default_script = models.ForeignKey('Script', on_delete=models.CASCADE)
     # Possible link to an entity representing this authority.
-    #entity = models.ForeignKey(Entity, null=True, blank=True, unique=True)
+    # entity = models.ForeignKey(Entity, null=True, blank=True, unique=True)
     last_modified = models.DateTimeField(auto_now=True)
 
     def get_short_name(self):
@@ -154,7 +154,8 @@ class Authority (models.Model):
                     default = self.nametype_set.all()[0]
                 except IndexError:
                     raise NameType.DoesNotExist(
-                        'No name types exist in the system, making it impossible to proceed.')
+                        'No name types exist in the system, making it '
+                        'impossible to proceed.')
             except NameType.MultipleObjectsReturned:
                 # This should only occur if the database data has been
                 # changed outside of this app. Separating this case
@@ -262,8 +263,6 @@ class Entity (models.Model):
     def save(self, authority=None, create_existence=True, *args, **kwargs):
         """Override the default save method to allow for the automatic
         creation of auxiliary information when a new entity is added."""
-        print(self.id)
-        print(create_existence)
         if self.id is None and create_existence:
             super(Entity, self).save(*args, **kwargs)
             # Create new PropertyAssertion, Existence and
@@ -278,10 +277,10 @@ class Entity (models.Model):
                 authority_system_url=record_data['url'],
                 is_complete_url=record_data['is_complete_url'])
             authority_record.save()
-            print(authority_record)
-            existence.assertion = PropertyAssertion(entity_id=self.id,
-                                       authority_record_id=authority_record.id,
-                                       is_preferred=True)
+            assertion = PropertyAssertion(
+                entity=self, authority_record=authority_record,
+                existence=existence, is_preferred=True)
+            assertion.save()
         else:
             super(Entity, self).save(*args, **kwargs)
 
@@ -504,16 +503,17 @@ class EntityRelationshipType (models.Model):
 
 class EntityRelationshipTypeRelationship (models.Model):
     child_entity_relationship_type = models.ForeignKey(
-        EntityRelationshipType, related_name='entityrelationshiptype_child_set', on_delete=models.CASCADE)
+        EntityRelationshipType, on_delete=models.CASCADE,
+        related_name='entityrelationshiptype_child_set')
     parent_entity_relationship_type = models.ForeignKey(
-        EntityRelationshipType,
-        related_name='entityrelationshiptype_parent_set', on_delete=models.CASCADE)
+        EntityRelationshipType, on_delete=models.CASCADE,
+        related_name='entityrelationshiptype_parent_set')
     last_modified = models.DateTimeField(auto_now=True)
 
 
 class EntityRelationship (models.Model):
-    related_entity = models.ForeignKey(Entity,
-                                       related_name='entity_relationships', on_delete=models.CASCADE)
+    related_entity = models.ForeignKey(
+        Entity, related_name='entity_relationships', on_delete=models.CASCADE)
     entity_relationship_type = models.ForeignKey(
         EntityRelationshipType, on_delete=models.CASCADE)
 
@@ -523,8 +523,8 @@ class EntityRelationship (models.Model):
 
 
 class EntityRelationshipNote (models.Model):
-    entity_relationship = models.ForeignKey(EntityRelationship,
-                                            related_name='notes', on_delete=models.CASCADE)
+    entity_relationship = models.ForeignKey(
+        EntityRelationship, related_name='notes', on_delete=models.CASCADE)
     note = models.TextField()
     is_internal = models.BooleanField('Internal?')
 
@@ -781,9 +781,10 @@ class NameRelationshipType (models.Model):
 
 class NameRelationship (models.Model):
     name = models.ForeignKey(
-        Name, related_name='name_start_relationships', on_delete=models.CASCADE)
-    related_name = models.ForeignKey(Name,
-                                     related_name='name_end_relationships', on_delete=models.CASCADE)
+        Name, related_name='name_start_relationships',
+        on_delete=models.CASCADE)
+    related_name = models.ForeignKey(
+        Name, related_name='name_end_relationships', on_delete=models.CASCADE)
     name_relationship_type = models.ForeignKey(
         NameRelationshipType, on_delete=models.CASCADE)
 
@@ -821,29 +822,34 @@ class GenericProperty (models.Model):
 class PropertyAssertion (models.Model):
     entity = models.ForeignKey(
         Entity, related_name='assertions', on_delete=models.CASCADE)
-    authority_record = models.ForeignKey(AuthorityRecord,
-                                         related_name='assertions', on_delete=models.CASCADE)
+    authority_record = models.ForeignKey(
+        AuthorityRecord, related_name='assertions', on_delete=models.CASCADE)
     authority_record_checked = models.DateField(default=datetime.now,
                                                 null=True, blank=True)
-    existence = models.OneToOneField(Existence, null=True, blank=True,
-                                     related_name='assertion', on_delete=models.CASCADE)
-    entity_type = models.OneToOneField(EntityType, null=True, blank=True,
-                                       related_name='assertion', on_delete=models.CASCADE)
-    name = models.OneToOneField(Name, null=True, blank=True,
-                                related_name='assertion', on_delete=models.CASCADE)
-    entity_relationship = models.OneToOneField(EntityRelationship, null=True,
-                                               blank=True,
-                                               related_name='assertion', on_delete=models.CASCADE)
-    name_relationship = models.OneToOneField(NameRelationship, null=True,
-                                             blank=True,
-                                             related_name='assertion', on_delete=models.CASCADE)
-    note = models.OneToOneField(EntityNote, null=True, blank=True,
-                                related_name='assertion', on_delete=models.CASCADE)
-    reference = models.OneToOneField(EntityReference, null=True, blank=True,
-                                     related_name='assertion', on_delete=models.CASCADE)
-    generic_property = models.OneToOneField(GenericProperty, null=True,
-                                            blank=True,
-                                            related_name='assertion', on_delete=models.CASCADE)
+    existence = models.OneToOneField(
+        Existence, null=True, blank=True, related_name='assertion',
+        on_delete=models.CASCADE)
+    entity_type = models.OneToOneField(
+        EntityType, null=True, blank=True, related_name='assertion',
+        on_delete=models.CASCADE)
+    name = models.OneToOneField(
+        Name, null=True, blank=True, related_name='assertion',
+        on_delete=models.CASCADE)
+    entity_relationship = models.OneToOneField(
+        EntityRelationship, null=True, blank=True, related_name='assertion',
+        on_delete=models.CASCADE)
+    name_relationship = models.OneToOneField(
+        NameRelationship, null=True, blank=True, related_name='assertion',
+        on_delete=models.CASCADE)
+    note = models.OneToOneField(
+        EntityNote, null=True, blank=True, related_name='assertion',
+        on_delete=models.CASCADE)
+    reference = models.OneToOneField(
+        EntityReference, null=True, blank=True, related_name='assertion',
+        on_delete=models.CASCADE)
+    generic_property = models.OneToOneField(
+        GenericProperty, null=True, blank=True, related_name='assertion',
+        on_delete=models.CASCADE)
     # is_preferred indicates that a property is a preferred one of its
     # type by the authority. Multiple properties of the same type may
     # be preferred. What this means is left to the client - for
@@ -881,7 +887,8 @@ class PropertyAssertion (models.Model):
         # combination - implement this.
         #
         # Model validation is what is required here; for now, fake it
-        # as per http://www.pointy-stick.com/blog/2008/10/15/django-tip-poor-mans-model-validation/
+        # as per http://www.pointy-stick.com/blog/2008/10/15/
+        # django-tip-poor-mans-model-validation/
         #
         # Note that this does break in Django 1.2.
         if not self.is_valid():
@@ -907,10 +914,12 @@ class PropertyAssertionValidationForm (forms.ModelForm):
         entity = self.cleaned_data.get('entity')
         if not self.cleaned_data.get('existence'):
             existences = Existence.objects.filter(
-                assertion__entity=entity, assertion__authority_record=authority_record)
+                assertion__entity=entity,
+                assertion__authority_record=authority_record)
             if not existences.count():
                 raise forms.ValidationError(
-                    'an existence property assertion associated with this authority record must already exist')
+                    'an existence property assertion associated with this '
+                    'authority record must already exist')
 
 
 class DatePeriod (models.Model):
@@ -945,18 +954,21 @@ class Date (models.Model):
     start_terminus_post = models.CharField('Date', max_length=100, blank=True)
     start_terminus_post_calendar = models.ForeignKey(
         Calendar, verbose_name='Calendar',
-        related_name='start_terminus_post_calendar_set', null=True, on_delete=models.CASCADE)
+        related_name='start_terminus_post_calendar_set', null=True,
+        on_delete=models.CASCADE)
     start_terminus_post_normalised = models.CharField(
         'Normalised form', max_length=100, blank=True)
     start_terminus_post_type = models.ForeignKey(
         DateType, verbose_name='Type',
-        related_name='start_terminus_post_type_set', null=True, on_delete=models.CASCADE)
+        related_name='start_terminus_post_type_set', null=True,
+        on_delete=models.CASCADE)
     start_terminus_post_confident = models.BooleanField(
         'Confident', default=True)
     start_date = models.CharField('Date', max_length=100, blank=True)
     start_date_calendar = models.ForeignKey(
         Calendar, verbose_name='Calendar',
-        related_name='start_date_calendar_set', null=True, on_delete=models.CASCADE)
+        related_name='start_date_calendar_set', null=True,
+        on_delete=models.CASCADE)
     start_date_normalised = models.CharField(
         'Normalised form', max_length=100, blank=True)
     start_date_type = models.ForeignKey(
@@ -967,29 +979,34 @@ class Date (models.Model):
     start_terminus_ante = models.CharField('Date', max_length=100, blank=True)
     start_terminus_ante_calendar = models.ForeignKey(
         Calendar, verbose_name='Calendar',
-        related_name='start_terminus_ante_calendar_set', null=True, on_delete=models.CASCADE)
+        related_name='start_terminus_ante_calendar_set', null=True,
+        on_delete=models.CASCADE)
     start_terminus_ante_normalised = models.CharField(
         'Normalised form', max_length=100, null=True, blank=True)
     start_terminus_ante_type = models.ForeignKey(
         DateType, verbose_name='Type',
-        related_name='start_terminus_ante_type_set', null=True, on_delete=models.CASCADE)
+        related_name='start_terminus_ante_type_set', null=True,
+        on_delete=models.CASCADE)
     start_terminus_ante_confident = models.BooleanField(
         'Confident', default=True)
     point_terminus_post = models.CharField('Date', max_length=100, blank=True)
     point_terminus_post_calendar = models.ForeignKey(
         Calendar, verbose_name='Calendar',
-        related_name='point_terminus_post_calendar_set', null=True, on_delete=models.CASCADE)
+        related_name='point_terminus_post_calendar_set', null=True,
+        on_delete=models.CASCADE)
     point_terminus_post_normalised = models.CharField(
         'Normalised form', max_length=100, blank=True)
     point_terminus_post_type = models.ForeignKey(
         DateType, verbose_name='Type',
-        related_name='point_terminus_post_type_set', null=True, on_delete=models.CASCADE)
+        related_name='point_terminus_post_type_set', null=True,
+        on_delete=models.CASCADE)
     point_terminus_post_confident = models.BooleanField(
         'Confident', default=True)
     point_date = models.CharField('Date', max_length=100, blank=True)
     point_date_calendar = models.ForeignKey(
         Calendar, verbose_name='Calendar',
-        related_name='point_date_calendar_set', null=True, on_delete=models.CASCADE)
+        related_name='point_date_calendar_set', null=True,
+        on_delete=models.CASCADE)
     point_date_normalised = models.CharField('Normalised form', max_length=100,
                                              blank=True)
     point_date_type = models.ForeignKey(DateType, verbose_name='Type',
@@ -999,23 +1016,27 @@ class Date (models.Model):
     point_terminus_ante = models.CharField('Date', max_length=100, blank=True)
     point_terminus_ante_calendar = models.ForeignKey(
         Calendar, verbose_name='Calendar',
-        related_name='point_terminus_ante_calendar_set', null=True, on_delete=models.CASCADE)
+        related_name='point_terminus_ante_calendar_set', null=True,
+        on_delete=models.CASCADE)
     point_terminus_ante_normalised = models.CharField(
         'Normalised form', max_length=100, null=True, blank=True)
     point_terminus_ante_type = models.ForeignKey(
         DateType, verbose_name='Type',
-        related_name='point_terminus_ante_type_set', null=True, on_delete=models.CASCADE)
+        related_name='point_terminus_ante_type_set', null=True,
+        on_delete=models.CASCADE)
     point_terminus_ante_confident = models.BooleanField(
         'Confident', default=True)
     end_terminus_post = models.CharField('Date', max_length=100, blank=True)
     end_terminus_post_calendar = models.ForeignKey(
         Calendar, verbose_name='Calendar',
-        related_name='end_terminus_post_calendar_set', null=True, on_delete=models.CASCADE)
+        related_name='end_terminus_post_calendar_set', null=True,
+        on_delete=models.CASCADE)
     end_terminus_post_normalised = models.CharField(
         'Normalised form', max_length=100, blank=True)
     end_terminus_post_type = models.ForeignKey(
         DateType, verbose_name='Type',
-        related_name='end_terminus_post_type_set', null=True, on_delete=models.CASCADE)
+        related_name='end_terminus_post_type_set', null=True,
+        on_delete=models.CASCADE)
     end_terminus_post_confident = models.BooleanField(
         'Confident', default=True)
     end_date = models.CharField('Date', max_length=100, blank=True)
@@ -1024,18 +1045,21 @@ class Date (models.Model):
                                           null=True, on_delete=models.CASCADE)
     end_date_normalised = models.CharField('Normalised form', max_length=100,
                                            blank=True)
-    end_date_type = models.ForeignKey(DateType, verbose_name='Type', null=True,
-                                      related_name='end_date_type_set', on_delete=models.CASCADE)
+    end_date_type = models.ForeignKey(
+        DateType, verbose_name='Type', null=True,
+        related_name='end_date_type_set', on_delete=models.CASCADE)
     end_date_confident = models.BooleanField('Confident', default=True)
     end_terminus_ante = models.CharField('Date', max_length=100, blank=True)
     end_terminus_ante_calendar = models.ForeignKey(
         Calendar, verbose_name='Calendar',
-        related_name='end_terminus_ante_calendar_set', null=True, on_delete=models.CASCADE)
+        related_name='end_terminus_ante_calendar_set', null=True,
+        on_delete=models.CASCADE)
     end_terminus_ante_normalised = models.CharField(
         'Normalised form', max_length=100, null=True, blank=True)
     end_terminus_ante_type = models.ForeignKey(
         DateType, verbose_name='Type',
-        related_name='end_terminus_ante_type_set', null=True, on_delete=models.CASCADE)
+        related_name='end_terminus_ante_type_set', null=True,
+        on_delete=models.CASCADE)
     end_terminus_ante_confident = models.BooleanField(
         'Confident', default=True)
     note = models.TextField(blank=True)
@@ -1116,7 +1140,8 @@ class Date (models.Model):
         return date
 
     def __str__(self):
-        if self.point_date or self.point_terminus_post or self.point_terminus_ante:
+        if self.point_date or self.point_terminus_post or \
+           self.point_terminus_ante:
             date = self._assemble_date_segment('point')
         else:
             start_date = self._assemble_date_segment('start')
