@@ -665,9 +665,10 @@ class Name (models.Model):
         """Update the search names for name."""
         # If we are creating the name, we may not have a property
         # assertion yet, so do not update the search names.
-        if not self.assertion.all():
+        try:
+            entity = self.assertion.get().entity
+        except AttributeError:
             return
-        entity = self.assertion.get().entity
         language_code = self.language.language_code
         script_code = self.script.script_code
         # First delete any existing search names for this name.

@@ -5,8 +5,8 @@
 {% eats_user_wrap entity get_single_name single_name %}
 <h1>Edit date {{ date }} of {{ date.assertion.get_type }} ... for {{ single_name }}</h1>
 
-<form method="post" action="." name="edit_date">
-
+<form method="post" action="." name="edit_date" novalidate="novalidate">
+  {% csrf_token %}
   <p><input type="submit" name="submit" value="Save"/> <input type="submit" name="submit_continue" value="Save and continue editing"/> <input class="delete-submit" type="submit" name="submit_delete" value="Delete"/></p>
 
   {% include "eats/edit/date_form.html" %}

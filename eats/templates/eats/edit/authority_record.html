@@ -56,7 +56,7 @@ ul { list-style-type: disc !important;
   <li><p>Select the created record.</p></li>
 </ol>
 
-<form action="." method="post">
+<form action="." method="post" novalidate="novalidate">
   {% csrf_token %}
   <ul id="form-menu">
     <li id="form-nav-search"{% if show_search %} class="selected"{% endif %}><a href="#" onclick="switch_class('selected', 'form-nav-search', 'form-nav-create'); switch_sections('search_form', 'create_form'); return false;">Search</a></li>

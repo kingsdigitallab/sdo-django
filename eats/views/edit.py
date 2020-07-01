@@ -402,7 +402,7 @@ def delete_entity(request, entity_id):
     """View to confirm the deletion of an entity."""
     # QAZ: This must be disabled once the site is edited by multiple
     # organisations.
-    model_name = Entity._meta.module_name
+    model_name = Entity._meta.model_name
     entity_object = get_object_or_404(Entity, pk=entity_id)
     if request.method == 'POST':
         kw_args = {}
@@ -451,14 +451,14 @@ def delete_object(request, model_name, object_id):
             # Go to the edit page for the 'parent' object of the
             # deleted object.
             if model == Name:
-                kw_args['model_name'] = Entity._meta.module_name
+                kw_args['model_name'] = Entity._meta.model_name
                 kw_args['object_id'] = Entity.objects.get(
                     assertions__name__pk=object_id).id
             else:
-                parent_model_name = Entity._meta.module_name
+                parent_model_name = Entity._meta.model_name
                 assertion = PropertyAssertion.objects.get(dates__pk=object_id)
                 if assertion.name:
-                    parent_model_name = Name._meta.module_name
+                    parent_model_name = Name._meta.model_name
                     object_id = assertion.name.id
                 else:
                     object_id = assertion.entity.id

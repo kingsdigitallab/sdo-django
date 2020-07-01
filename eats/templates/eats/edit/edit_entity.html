@@ -11,8 +11,8 @@
 
 <p><a href="{{ entity.get_absolute_url }}">Record for display</a></p>
 
-<form method="post" action="." name="edit_entity">
-
+<form method="post" action="." name="edit_entity" novalidate="novalidate">
+  {% csrf_token %}
   <p><input type="submit" value="Save"/></p>
 
   <fieldset id="existences">

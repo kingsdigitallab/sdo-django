@@ -3,8 +3,8 @@
 {% block eats_content %}
 <h1>Edit name {{ name }}</h1>
 
-<form method="post" action="." name="edit_name">
-
+<form method="post" action="." name="edit_name" novalidate="novalidate">
+  {% csrf_token %}
   <p><input type="submit" name="submit" value="Save"/> <input type="submit" name="submit_continue" value="Save and continue editing"/> <input class="delete-submit" type="submit" name="submit_delete" value="Delete"/></p>
 
   {% include "eats/edit/name_forms.html" %}

@@ -3,8 +3,8 @@
 {% block eats_content %}
 <h1>Add date</h1>
 
-<form method="post" action="." name="add_date">
-
+<form method="post" action="." name="add_date" novalidate="novalidate">
+  {% csrf_token %}
   <p><input type="submit" name="submit" value="Add"/> <input type="submit" name="submit_continue" value="Add and continue editing"/></p>
 
   {% include "eats/edit/date_form.html" %}
