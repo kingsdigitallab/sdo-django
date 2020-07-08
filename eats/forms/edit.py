@@ -2,7 +2,11 @@
 
 from django import forms
 from django.forms.utils import ErrorDict
-from eats.models import *
+from eats.models import (
+    Authority, AuthorityRecord, Date, Entity, EntityNote, EntityReference,
+    EntityRelationship, EntityRelationshipNote, EntityType, Existence,
+    GenericProperty, Name, NameNote, NamePart, NameRelationship,
+    PropertyAssertion)
 from eats.forms.main import SearchForm
 
 
@@ -48,9 +52,9 @@ class GenericFormSet (object):
                 # New forms.
                 initial_data = {self.assertion_type: eats_property.id}
                 for i in range(inline['new_forms']):
-                    form = self._create_inline_new_form(key, inline_name,
-                                                        inline_form_class,
-                                                        post_data, i, initial_data)
+                    form = self._create_inline_new_form(
+                        key, inline_name, inline_form_class, post_data, i,
+                        initial_data)
                     keyed_forms.append(form)
                     if form.is_bound and form.has_post_data():
                         self.bound_inline_new_forms.append(form)
@@ -105,9 +109,10 @@ class GenericFormSet (object):
         form = form_class(instance=instance, prefix=prefix, data=post_data)
         return form
 
-    def _create_inline_new_form(
-            self, property_id, inline_name, form_class, post_data, count, initial=None):
-        """Return a form for adding a new inline object, using the extra data."""
+    def _create_inline_new_form(self, property_id, inline_name, form_class,
+                                post_data, count, initial=None):
+        """Return a form for adding a new inline object, using the extra
+        data."""
         prefix = '%s_%s_%s_new_%s' % (self.assertion_type, str(
             property_id), inline_name, str(count))
         form = form_class(prefix=prefix, data=post_data, initial=initial)
@@ -117,8 +122,8 @@ class GenericFormSet (object):
 
 class NameRelationshipFormSet (GenericFormSet):
 
-    def create_forms(self, assertions, extra_data,
-                     post_data, new_forms, inlines):
+    def create_forms(self, assertions, extra_data, post_data, new_forms,
+                     inlines):
         """Create the instance and new forms."""
         for assertion in assertions:
             key = assertion.name_relationship.name.id
@@ -204,10 +209,11 @@ class PropertyForm (EditForm):
 
     # Fields relating to the PropertyAssertion that goes with this
     # property.
-    authority_record = forms.ModelChoiceField(AuthorityRecord.objects.all(), required=True,
-                                              error_messages={
-                                                  'required': 'An authority record must be selected'},
-                                              widget=forms.Select(attrs={'onchange': 'limit_type_selects(); return true;'}))
+    authority_record = forms.ModelChoiceField(
+        AuthorityRecord.objects.all(), required=True, error_messages={
+            'required': 'An authority record must be selected'},
+        widget=forms.Select(
+            attrs={'onchange': 'limit_type_selects(); return true;'}))
     is_preferred = forms.BooleanField(required=False)
 
     def __init__(self, authority_records, extra_data, *args, **kw_args):
@@ -230,8 +236,9 @@ class InlinePropertyForm (PropertyForm):
 
 class AuthorityRecordCreateForm (forms.ModelForm):
 
-    authority = forms.ModelChoiceField(Authority.objects.all(), required=True,
-                                       widget=forms.Select(attrs={'onchange': 'display_authority_data(this); return true;'}))
+    authority = forms.ModelChoiceField(
+        Authority.objects.all(), required=True, widget=forms.Select(
+            attrs={'onchange': 'display_authority_data(this); return true;'}))
 
     def __init__(self, authorities, *args, **kw_args):
         super(AuthorityRecordCreateForm, self).__init__(*args, **kw_args)
@@ -248,7 +255,8 @@ class AuthorityRecordCreateForm (forms.ModelForm):
             record_url = self.cleaned_data['authority_system_url']
             if not (record_id or record_url):
                 raise forms.ValidationError(
-                    'You must fill in at least one of the record ID and record URL fields')
+                    'You must fill in at least one of the record ID and '
+                    'record URL fields')
         return self.cleaned_data
 
     class Meta:
@@ -280,43 +288,44 @@ class AuthorityRecordSearchForm (forms.Form):
             record_url = self.cleaned_data['search_record_url']
             if not (record_id or record_url):
                 raise forms.ValidationError(
-                    'You must fill in at least one of the record ID and record URL fields')
+                    'You must fill in at least one of the record ID and '
+                    'record URL fields')
         return self.cleaned_data
 
 
 class DateForm (forms.ModelForm):
 
-    start_terminus_post = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                                          required=False)
-    start_date = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                                 required=False)
-    start_terminus_ante = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                                          required=False)
-    end_terminus_post = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                                        required=False)
-    end_date = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                               required=False)
-    end_terminus_ante = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                                        required=False)
-    point_terminus_post = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                                          required=False)
-    point_date = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                                 required=False)
-    point_terminus_ante = forms.CharField(widget=forms.TextInput(attrs={'onchange': 'update_normalised_date(this.id)'}),
-                                          required=False)
+    start_terminus_post = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
+    start_date = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
+    start_terminus_ante = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
+    end_terminus_post = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
+    end_date = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
+    end_terminus_ante = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
+    point_terminus_post = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
+    point_date = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
+    point_terminus_ante = forms.CharField(widget=forms.TextInput(
+        attrs={'onchange': 'update_normalised_date(this.id)'}), required=False)
     note = forms.CharField(widget=NoteWidget, required=False)
 
     def clean(self):
         self.cleaned_data = super(DateForm, self).clean()
         if not self.errors and self.cleaned_data:
-            if not (self.cleaned_data['start_date'] or
-                    self.cleaned_data['end_date'] or
-                    self.cleaned_data['point_date'] or
-                    self.cleaned_data['start_terminus_post'] or
-                    self.cleaned_data['start_terminus_ante'] or
-                    self.cleaned_data['end_terminus_post'] or
-                    self.cleaned_data['end_terminus_ante'] or
-                    self.cleaned_data['point_terminus_post'] or
+            if not (self.cleaned_data['start_date'] or  # noqa
+                    self.cleaned_data['end_date'] or  # noqa
+                    self.cleaned_data['point_date'] or  # noqa
+                    self.cleaned_data['start_terminus_post'] or  # noqa
+                    self.cleaned_data['start_terminus_ante'] or  # noqa
+                    self.cleaned_data['end_terminus_post'] or  # noqa
+                    self.cleaned_data['end_terminus_ante'] or  # noqa
+                    self.cleaned_data['point_terminus_post'] or  # noqa
                     self.cleaned_data['point_terminus_ante']):
                 message = 'The date must have some date part set'
                 raise forms.ValidationError(message)
@@ -348,7 +357,8 @@ class EntityTypeForm (InlinePropertyForm):
             authority_record = self.cleaned_data['authority_record']
             if entity_type_authority != authority_record.authority:
                 raise forms.ValidationError(
-                    'The entity type must be associated with the same authority as the authority record.')
+                    'The entity type must be associated with the same '
+                    'authority as the authority record.')
         return self.cleaned_data
 
     class Meta:
@@ -420,7 +430,8 @@ class ExistenceForm (forms.ModelForm):
                 existence__isnull=True)
             if has_dependent_records:
                 raise forms.ValidationError(
-                    'An existence may not be deleted if its authority record is associated with other properties.')
+                    'An existence may not be deleted if its authority record '
+                    'is associated with other properties.')
         return self.cleaned_data
 
     class Meta:
@@ -458,8 +469,10 @@ class NamePartForm (EditForm):
             'name_part_type_choices', name_part_types)
         self.fields['name_part_type'].choices = create_choice_list(
             name_part_type_choices)
-        self.fields['name_part_type'].error_messages['required'] = 'The type may not be empty'
-        self.fields['name_part'].error_messages['required'] = 'The name part may not be empty'
+        self.fields['name_part_type'].error_messages['required'] = \
+            'The type may not be empty'
+        self.fields['name_part'].error_messages['required'] = \
+            'The name part may not be empty'
 
     class Meta:
         model = NamePart
@@ -475,7 +488,8 @@ class NameNoteForm (EditForm):
 
     def __init__(self, *args, **kw_args):
         super(NameNoteForm, self).__init__(*args, **kw_args)
-        self.fields['note'].error_messages['required'] = 'The note may not be empty'
+        self.fields['note'].error_messages['required'] = \
+            'The note may not be empty'
 
     class Meta:
         model = NameNote
@@ -489,8 +503,8 @@ class NameRelationshipForm (InlinePropertyForm):
     unchecked_fields = ['authority_record', 'name']
 
     def __init__(self, authority_records, extra_data, *args, **kw_args):
-        super(NameRelationshipForm, self).__init__(authority_records,
-                                                   extra_data, *args, **kw_args)
+        super(NameRelationshipForm, self).__init__(
+            authority_records, extra_data, *args, **kw_args)
         name = extra_data.get('name')
         self.fields['name'].queryset = name
         self.fields['name'].choices = create_choice_list(name)
@@ -498,7 +512,8 @@ class NameRelationshipForm (InlinePropertyForm):
         self.fields['related_name'].queryset = related_names
         self.fields['related_name'].choices = create_choice_list(related_names)
         name_relationship_types = extra_data.get('name_relationship_types')
-        self.fields['name_relationship_type'].queryset = name_relationship_types
+        self.fields['name_relationship_type'].queryset = \
+            name_relationship_types
         self.fields['name_relationship_type'].choices = create_choice_list(
             name_relationship_types)
 
@@ -510,16 +525,19 @@ class NameRelationshipForm (InlinePropertyForm):
         self.cleaned_data = super(NameRelationshipForm, self).clean()
         if not self.errors and self.cleaned_data:
             error_messages = []
-            relationship_type_authority = self.cleaned_data['name_relationship_type'].authority
-            related_name_authority = self.cleaned_data['related_name'].get_authority(
-            )
+            relationship_type_authority = self.cleaned_data[
+                'name_relationship_type'].authority
+            related_name_authority = self.cleaned_data[
+                'related_name'].get_authority()
             name_authority = self.cleaned_data['authority_record'].authority
             if relationship_type_authority != name_authority:
                 error_messages.append(
-                    'The name relationship type must be associated with the same authority as the authority record.')
+                    'The name relationship type must be associated with the '
+                    'same authority as the authority record.')
             if name_authority != related_name_authority:
                 error_messages.append(
-                    'The related name must be associated with the same authority as the name.')
+                    'The related name must be associated with the same '
+                    'authority as the name.')
             if error_messages:
                 raise forms.ValidationError(' '.join(error_messages))
         return self.cleaned_data
@@ -542,7 +560,8 @@ class EntityRelationshipForm (InlinePropertyForm):
         super(EntityRelationshipForm, self).__init__(
             authority_records, extra_data, *args, **kw_args)
         entity_relationship_types = extra_data.get('entity_relationship_types')
-        self.fields['entity_relationship_type'].queryset = entity_relationship_types
+        self.fields['entity_relationship_type'].queryset = \
+            entity_relationship_types
         self.fields['entity_relationship_type'].choices = create_choice_list(
             entity_relationship_types)
         self.fields['entity_relationship_type'].error_messages = {
@@ -553,7 +572,8 @@ class EntityRelationshipForm (InlinePropertyForm):
         # constructor.
         if kw_args.get('instance'):
             try:
-                related_entity_name = self.instance.related_entity.get_single_name(
+                related_entity = self.instance.related_entity
+                related_entity_name = related_entity.get_single_name(
                     extra_data.get('user_prefs'))
             except BaseException:
                 related_entity_name = '[invalid entity]'
@@ -568,9 +588,11 @@ class EntityRelationshipForm (InlinePropertyForm):
             entity_relationship_type_authority = self.cleaned_data[
                 'entity_relationship_type'].authority
             authority_record = self.cleaned_data['authority_record']
-            if entity_relationship_type_authority != authority_record.authority:
+            if entity_relationship_type_authority != \
+               authority_record.authority:
                 raise forms.ValidationError(
-                    'The entity relationship must be associated with the same authority as the authority record.')
+                    'The entity relationship must be associated with the '
+                    'same authority as the authority record.')
         return self.cleaned_data
 
     class Meta:
@@ -599,7 +621,8 @@ class EntityNoteForm (InlinePropertyForm):
     def __init__(self, authority_records, extra_data, *args, **kw_args):
         super(EntityNoteForm, self).__init__(
             authority_records, extra_data, *args, **kw_args)
-        self.fields['note'].error_messages['required'] = 'The note may not be empty'
+        self.fields['note'].error_messages['required'] = \
+            'The note may not be empty'
 
     class Meta:
         model = EntityNote
@@ -630,7 +653,8 @@ class EntitySelectorForm (SearchForm):
     def __init__(self, authorities, *args, **kw_args):
         super(EntitySelectorForm, self).__init__(*args, **kw_args)
         self.fields['authority'].queryset = authorities
-        self.fields['authority'].choices = create_choice_list(authorities)
+        self.fields['authority'].choices = create_choice_list(
+            authorities, True)
 
 
 class ImportForm (forms.Form):
