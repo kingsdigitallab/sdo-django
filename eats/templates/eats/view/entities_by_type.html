@@ -9,12 +9,12 @@
       {% for record in entity.get_authority_records %}
         <span>{{ record.authority_system_id }}</span>
       {% endfor %}
-      
+
       <a href="{{ entity.get_absolute_url }}">View</a>
       {% if user.is_authenticated %}
-        <a href="{% url 'edit_model_object' "entity", entity.id %}">Edit</a>
+        <a href="{% url 'edit_model_object' 'entity' entity.id %}">Edit</a>
       {% endif %}
-      
+
       <ul>
         {% for name in entity.get_names %}
         <li>
