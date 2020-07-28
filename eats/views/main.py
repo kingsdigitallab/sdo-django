@@ -1,4 +1,3 @@
-
 import os.path
 
 from lxml import etree
@@ -11,8 +10,11 @@ from django.views.generic import ListView
 from django.db.models import Q
 
 import eats.names as namehandler
-from eats.models import *
-from eats.forms.main import *
+from eats.models import (
+    Authority, AuthorityRecord, Calendar, DatePeriod, DateType, Entity,
+    EntityTypeList, Language, Name, NameType, Script, UserProfile,
+    get_default_object)
+from eats.forms.main import SearchForm
 from eats.settings import app_path
 from eats.eatsml.exporter import Exporter
 
@@ -76,10 +78,15 @@ def display_entity(request, entity_id):
     current_site = Site.objects.get_current()
     # QAZ: Hack to specify which, if any, authority records are suitable
     # for producing EAC-CPF.
-    eac_authority_records = [entity_type.assertion.authority_record for entity_type in entity_object.get_entity_types(
-    ) if str(entity_type) in ('person', 'family', 'organisation')]
-    context_data = {'entity': entity_object,
-                    'eac_authority_records': eac_authority_records, 'site': current_site}
+    entity_types = ('person', 'family', 'organisation')
+    eac_authority_records = [
+        entity_type.assertion.authority_record for
+        entity_type in entity_object.get_entity_types()
+        if str(entity_type) in entity_types]
+    context_data = {
+        'entity': entity_object,
+        'eac_authority_records': eac_authority_records,
+        'site': current_site}
     return render(request, 'eats/view/display_entity.html', context_data)
 
 
@@ -157,9 +164,10 @@ def display_entity_eac(request, entity_id, authority_record_id):
         raise Http404
     current_site = Site.objects.get_current()
     eatsml_root = Exporter().export_entities([entity])
-    eac_tree = to_eac_transform(eatsml_root, entity_id="'%s'" % entity_id,
-                                authority_record_id="'%s'" % authority_record_id,
-                                base_url="'%s'" % current_site.domain)
+    eac_tree = to_eac_transform(
+        eatsml_root, entity_id="'%s'" % entity_id,
+        authority_record_id="'%s'" % authority_record_id,
+        base_url="'%s'" % current_site.domain)
     xml = etree.tostring(eac_tree.getroot(), encoding='utf-8',
                          pretty_print=True)
     return HttpResponse(xml, content_type='text/xml')
@@ -174,8 +182,7 @@ def search(request):
     else:
         form_data = None
     authority_id = preferences['authority'].id
-    form = SearchForm(initial={'authority': authority_id},
-                      data=form_data)
+    form = SearchForm(initial={'authority': authority_id}, data=form_data)
     if form.is_valid():
         if form.cleaned_data['name']:
             name = form.cleaned_data['name']
@@ -277,11 +284,11 @@ def get_record_search_results(authority_id, record_id, record_url):
             Qs = Qs | query
         else:
             Qs = query
-    results = set(Entity.objects.filter(
-        Qs, assertions__authority_record__authority__pk=authority_id).distinct())
+    results = set(
+        Entity.objects.filter(
+            Qs, assertions__authority_record__authority__pk=authority_id
+        ).distinct())
     return results
-
-# QAZ: could probably be deleted.
 
 
 def get_names(request):
@@ -302,17 +309,16 @@ def get_names(request):
     return HttpResponse(template.render(context),
                         content_type='text/xml')
 
-# QAZ: could probably be deleted.
-
 
 def get_primary_authority_records(request):
     """Return an XML document listing all primary authority keys which
     are associated with an entity."""
     authority = get_default_object(Authority)
-    results = AuthorityRecord.objects.filter(assertions__existence__isnull=False,
-                                             authority=authority)
-    return ListView(request, results, template_name='eats/primary_authority_records.xml',
-                    allow_empty=True, content_type='text/xml')
+    results = AuthorityRecord.objects.filter(
+        assertions__existence__isnull=False, authority=authority)
+    return ListView(
+        request, results, template_name='eats/primary_authority_records.xml',
+        allow_empty=True, content_type='text/xml')
 
 
 def entity_types(request):
@@ -324,11 +330,13 @@ def entity_types(request):
 
 def entities_by_type(request, entity_type_id):
     """View to display a list of all the entities of a given types."""
-    entity_type = EntityTypeList.objects.filter(pk=entity_type_id)[
-        0].entity_type
+    try:
+        entity_type = EntityTypeList.objects.get(pk=entity_type_id).entity_type
+    except EntityTypeList.DoesNotExist:
+        raise Http404
     entities = Entity.objects.filter(
         assertions__entity_type__entity_type=entity_type_id)
     context_data = {'entities': entities,
-                    'entity_count': entities.count(),
+                    'entity_count': len(entities),
                     'entity_type': entity_type}
     return render(request, 'eats/view/entities_by_type.html', context_data)
