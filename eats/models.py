@@ -568,7 +568,7 @@ class Existence (models.Model):
         super(Existence, self).delete()
 
     def __str__(self):
-        return '%s' % (self.assertion.get().entity)
+        return '%s' % (self.assertion.entity)
 
 
 class SystemNamePartType (models.Model):
@@ -655,7 +655,7 @@ class Name (models.Model):
 
     def get_authority_record(self):
         """Return the AuthorityRecord object for name."""
-        return self.assertion.get().authority_record
+        return self.assertion.authority_record
 
     def get_authority(self):
         """Return the Authority object for name."""
@@ -666,7 +666,7 @@ class Name (models.Model):
         # If we are creating the name, we may not have a property
         # assertion yet, so do not update the search names.
         try:
-            entity = self.assertion.get().entity
+            entity = self.assertion.entity
         except AttributeError:
             return
         language_code = self.language.language_code
